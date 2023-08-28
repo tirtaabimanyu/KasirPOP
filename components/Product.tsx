@@ -1,17 +1,28 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 
-interface ProductProps {
+interface Product {
   name: string;
   stock: number;
+  imageUrl: string | null;
 }
 
-const Product: React.FC<ProductProps> = ({ name, stock }) => {
+interface ProductProps {
+  product: Product;
+}
+
+const Product: React.FC<ProductProps> = ({ product }) => {
   return (
     <View style={styles.container}>
       <Text style={[styles.todoText]}>
-        {name} - {stock}
+        {product.name} - {product.stock} - {product.imageUrl}
       </Text>
+      {product.imageUrl && (
+        <Image
+          source={{ uri: product.imageUrl }}
+          style={{ width: 200, height: 200 }}
+        />
+      )}
     </View>
   );
 };
@@ -21,7 +32,7 @@ export default Product;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 60,
+    // height: 60,
     alignItems: "center",
   },
 

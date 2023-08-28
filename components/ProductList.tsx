@@ -5,11 +5,14 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  Image,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 import { useDatabaseConnection } from "../data/connection";
 
-import Product from "./Product";
+import { default as ProductCard } from "./Product";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface ProductItem {
   id: number;
@@ -43,24 +46,36 @@ const ProductList: React.FC = () => {
 
     setProducts((current) => [...current, product]);
 
-    setNewProduct({ name: "", stock: 0, imageUrl: "" });
+    setNewProduct({ name: "", stock: 0, imageUrl: null });
   }, [newProduct, productsRepository]);
 
   useEffect(() => {
     productsRepository.getAll().then(setProducts);
   }, [productsRepository]);
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setNewProduct({ ...newProduct, imageUrl: result.assets[0].uri });
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.newTodoContainer}>
         <TextInput
           style={styles.newTodoInput}
           value={newProduct.name}
           onChangeText={(e) =>
             setNewProduct({
+              ...newProduct,
               name: e,
-              stock: newProduct.stock,
-              imageUrl: newProduct.imageUrl,
             })
           }
         />
@@ -69,23 +84,27 @@ const ProductList: React.FC = () => {
           value={String(newProduct.stock)}
           onChangeText={(e) =>
             setNewProduct({
-              name: newProduct.name,
+              ...newProduct,
               stock: Number(e),
-              imageUrl: newProduct.imageUrl,
             })
           }
         />
+        <Button title="Pick an image from camera roll" onPress={pickImage} />
+        {newProduct.imageUrl && (
+          <Image
+            source={{ uri: newProduct.imageUrl }}
+            style={{ width: 200, height: 200 }}
+          />
+        )}
         <Button color={"red"} title="Create" onPress={handleCreateProduct} />
       </View>
 
       <View style={styles.todosContainer}>
         {products.map((product) => (
-          <TouchableOpacity key={String(product.id)}>
-            <Product name={product.name} stock={product.stock} />
-          </TouchableOpacity>
+          <ProductCard product={product} key={String(product.id)} />
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -97,10 +116,7 @@ const styles = StyleSheet.create({
     padding: 30,
   },
 
-  newTodoContainer: {
-    marginTop: 80,
-    marginBottom: 40,
-  },
+  newTodoContainer: {},
 
   newTodoInput: {
     height: 48,
