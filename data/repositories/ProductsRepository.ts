@@ -1,15 +1,16 @@
-import { Connection, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
 
 interface ICreateProductData {
   name: string;
   stock: number;
+  imageUrl: string | null;
 }
 
 export class ProductsRepository {
   private ormRepository: Repository<ProductModel>;
 
-  constructor(connection: Connection) {
+  constructor(connection: DataSource) {
     this.ormRepository = connection.getRepository(ProductModel);
   }
 
@@ -22,10 +23,12 @@ export class ProductsRepository {
   public async create({
     name,
     stock,
+    imageUrl,
   }: ICreateProductData): Promise<ProductModel> {
     const todo = this.ormRepository.create({
       name,
       stock,
+      imageUrl,
     });
 
     await this.ormRepository.save(todo);

@@ -10,4 +10,7 @@ export class ProductModel {
 
   @Column()
   stock: number;
+
+  @Column({ nullable: true })
+  imageUrl: string | null;
 }

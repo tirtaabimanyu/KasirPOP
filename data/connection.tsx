@@ -7,10 +7,9 @@ import React, {
   useState,
 } from "react";
 import { ActivityIndicator } from "react-native";
-import { Connection, DataSource, createConnection } from "typeorm";
+import { DataSource } from "typeorm";
 
-import { ProductModel } from "./entities/ProductModel";
-import { Migrations1692982176634 } from "./migrations/1692982176634-migrations";
+import { AppDataSource } from "./app-data-source";
 import { ProductsRepository } from "./repositories/ProductsRepository";
 
 interface DatabaseConnectionContextData {
@@ -21,23 +20,13 @@ const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
 );
 
-const dataSource = new DataSource({
-  type: "expo",
-  database: "db.db",
-  driver: require("expo-sqlite"),
-  entities: [ProductModel],
-  migrations: [Migrations1692982176634],
-  migrationsRun: true,
-  synchronize: false,
-});
-
 export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const [connection, setConnection] = useState<DataSource | null>(null);
 
   const connect = useCallback(async () => {
-    const createdConnection = await dataSource.initialize();
+    const createdConnection = await AppDataSource.initialize();
     setConnection(createdConnection);
   }, []);
 

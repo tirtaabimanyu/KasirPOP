@@ -15,28 +15,35 @@ interface ProductItem {
   id: number;
   name: string;
   stock: number;
+  imageUrl: string | null;
 }
 
 interface Product {
   name: string;
   stock: number;
+  imageUrl: string | null;
 }
 
 const ProductList: React.FC = () => {
   const { productsRepository } = useDatabaseConnection();
 
-  const [newProduct, setNewProduct] = useState<Product>({ name: "", stock: 0 });
+  const [newProduct, setNewProduct] = useState<Product>({
+    name: "",
+    stock: 0,
+    imageUrl: null,
+  });
   const [products, setProducts] = useState<ProductItem[]>([]);
 
   const handleCreateProduct = useCallback(async () => {
     const product = await productsRepository.create({
       name: newProduct.name,
       stock: newProduct.stock,
+      imageUrl: newProduct.imageUrl,
     });
 
     setProducts((current) => [...current, product]);
 
-    setNewProduct({ name: "", stock: 0 });
+    setNewProduct({ name: "", stock: 0, imageUrl: "" });
   }, [newProduct, productsRepository]);
 
   useEffect(() => {
@@ -50,14 +57,22 @@ const ProductList: React.FC = () => {
           style={styles.newTodoInput}
           value={newProduct.name}
           onChangeText={(e) =>
-            setNewProduct({ name: e, stock: newProduct.stock })
+            setNewProduct({
+              name: e,
+              stock: newProduct.stock,
+              imageUrl: newProduct.imageUrl,
+            })
           }
         />
         <TextInput
           style={styles.newTodoInput}
           value={String(newProduct.stock)}
           onChangeText={(e) =>
-            setNewProduct({ name: newProduct.name, stock: Number(e) })
+            setNewProduct({
+              name: newProduct.name,
+              stock: Number(e),
+              imageUrl: newProduct.imageUrl,
+            })
           }
         />
         <Button color={"red"} title="Create" onPress={handleCreateProduct} />
