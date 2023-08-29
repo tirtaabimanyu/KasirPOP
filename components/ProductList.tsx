@@ -3,6 +3,11 @@ import { StyleSheet, View, TextInput, Button, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
+import {
+  manipulateAsync,
+  ActionResize,
+  SaveFormat,
+} from "expo-image-manipulator";
 
 import { useDatabaseConnection } from "../data/connection";
 
@@ -32,40 +37,31 @@ const ProductList: React.FC = () => {
   });
   const [products, setProducts] = useState<ProductItem[]>([]);
 
-  const createPersistentImageUrl = async (
-    imageUrl: string
-  ): Promise<string> => {
-    const PHOTOS_FOLDER = `${FileSystem.documentDirectory || ""}photos`;
-    async function initializeFolder() {
-      const info = await FileSystem.getInfoAsync(PHOTOS_FOLDER);
+  const processImage = async (imageUrl: string): Promise<string> => {
+    const processedImage = await manipulateAsync(
+      imageUrl,
+      [
+        {
+          resize: {
+            height: 100,
+            width: 100,
+          },
+        },
+      ],
+      { base64: true, format: SaveFormat.JPEG }
+    );
 
-      if (info.exists) {
-        return Promise.resolve();
-      }
-
-      return await FileSystem.makeDirectoryAsync(PHOTOS_FOLDER, {
-        intermediates: true,
-      });
-    }
-
-    await initializeFolder();
-
-    const key = Crypto.randomUUID(); // any unique identifer will work
-    const newUri = `${PHOTOS_FOLDER}/${key}.jpg`;
-
-    await FileSystem.copyAsync({ from: imageUrl, to: newUri });
-    return newUri;
+    return "data:image/jpeg;base64," + processedImage.base64;
   };
 
   const handleCreateProduct = useCallback(async () => {
-    const persistentImageUrl =
-      newProduct.imageUrl &&
-      (await createPersistentImageUrl(newProduct.imageUrl));
+    const imageUrl =
+      newProduct.imageUrl && (await processImage(newProduct.imageUrl));
 
     const product = await productsRepository.create({
       name: newProduct.name,
       stock: newProduct.stock,
-      imageUrl: persistentImageUrl,
+      imageUrl: imageUrl,
     });
 
     setProducts((current) => [...current, product]);
@@ -81,7 +77,7 @@ const ProductList: React.FC = () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
