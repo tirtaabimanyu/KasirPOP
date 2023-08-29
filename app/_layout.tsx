@@ -9,7 +9,7 @@ export const unstable_settings = {
 export default function Layout() {
   return (
     <DatabaseConnectionProvider>
-      <Drawer>
+      <Drawer initialRouteName="index" defaultStatus="closed">
         <Drawer.Screen
           name="index"
           options={{
