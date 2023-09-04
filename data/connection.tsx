@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import { DataSource } from "typeorm";
 
 import { AppDataSource } from "./app-data-source";
@@ -31,10 +31,11 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
   }, []);
 
   useEffect(() => {
-    if (!connection) {
-      connect();
-    }
-  }, [connect, connection]);
+    connect();
+    return () => {
+      AppDataSource.destroy();
+    };
+  }, [connect]);
 
   if (!connection) {
     return <ActivityIndicator />;
