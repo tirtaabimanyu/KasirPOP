@@ -2,7 +2,10 @@ import {
   DrawerContentComponentProps,
   createDrawerNavigator,
 } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  NavigationContainerProps,
+} from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
 import { Drawer as PDrawer } from "react-native-paper";
 import CashierStack from "./CashierStack";
@@ -10,7 +13,9 @@ import InventoryScreen from "../screens/InventoryScreen";
 import TransactionsScreen from "../screens/TransactionsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 
-const drawerItems = [
+const Drawer = createDrawerNavigator<RootDrawerParamList>();
+
+const drawerItems: drawerItem[] = [
   {
     label: "Kasir",
     icon: "account-outline",
@@ -37,17 +42,11 @@ const drawerItems = [
   },
 ];
 
-const Drawer = createDrawerNavigator();
-
-const DrawerContent: React.FC<DrawerContentComponentProps> = ({
-  state,
-  navigation,
-}) => {
+const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
   return (
     <View style={styles.drawerContent}>
       <PDrawer.Section style={styles.drawerSection} showDivider={false}>
         {drawerItems.map((item, idx) => {
-          const isActive = state.index == idx;
           return (
             <PDrawer.CollapsedItem
               key={"drawerItem-" + item.route}
@@ -56,7 +55,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
               onPress={() => {
                 navigation.navigate(item.route);
               }}
-              active={isActive}
+              active={state.index == idx}
             />
           );
         })}
@@ -65,18 +64,18 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   );
 };
 
-const Router = () => {
+const Router = (props: NavigationContainerProps) => {
   return (
-    <NavigationContainer>
+    <NavigationContainer {...props}>
       <Drawer.Navigator
         screenOptions={{
           headerShown: false,
           drawerType: "permanent",
           drawerStyle: { width: "auto" },
-          lazy: false,
         }}
-        drawerContent={(props) => <DrawerContent {...props} />}
-        useLegacyImplementation={true}
+        drawerContent={(drawerContentProps) => (
+          <DrawerContent {...drawerContentProps} />
+        )}
       >
         {drawerItems.map((item) => {
           return (
@@ -98,6 +97,7 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
     justifyContent: "space-between",
+    paddingVertical: 44,
   },
   drawerSection: {
     marginTop: 15,

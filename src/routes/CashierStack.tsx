@@ -4,16 +4,11 @@ import {
   SummaryScreen,
   PaymentScreen,
 } from "../screens/Cashier";
-
-export type CashierStackParamList = {
-  cashier: undefined;
-  summary: undefined;
-  payment: undefined;
-};
+import { DrawerScreenProps } from "@react-navigation/drawer";
 
 const Stack = createStackNavigator<CashierStackParamList>();
 
-const CashierStack = () => {
+const CashierStack = (props: DrawerScreenProps<RootDrawerParamList>) => {
   return (
     <Stack.Navigator>
       <Stack.Screen

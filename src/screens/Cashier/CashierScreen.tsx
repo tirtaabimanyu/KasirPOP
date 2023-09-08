@@ -1,12 +1,10 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTheme, MD3Theme, Text, Button, Card } from "react-native-paper";
 
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import CashierItem from "../../components/CashierItem";
 import { FlatList } from "react-native-gesture-handler";
-import { StackNavigationProp, StackScreenProps } from "@react-navigation/stack";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { CashierStackParamList } from "../../routes/CashierStack";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -32,9 +30,9 @@ const Screen1 = () => <Screen />;
 const Screen2 = () => <Screen />;
 const Screen3 = () => <Screen />;
 
-type CashierScreenProps = StackScreenProps<CashierStackParamList, "cashier">;
-
-export const CashierScreen = (props: CashierScreenProps) => {
+export const CashierScreen = ({
+  navigation,
+}: StackScreenProps<CashierStackParamList, "cashier">) => {
   const theme = useTheme();
 
   return (
@@ -42,7 +40,7 @@ export const CashierScreen = (props: CashierScreenProps) => {
       <Card.Title
         title="Kasir"
         titleVariant="headlineLarge"
-        style={{ paddingLeft: 0 }}
+        style={{ paddingLeft: 0, minHeight: 0 }}
       />
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: "transparent" }}
@@ -70,7 +68,7 @@ export const CashierScreen = (props: CashierScreenProps) => {
             mode="elevated"
             contentStyle={styles(theme).floatingRecapButton}
             labelStyle={styles(theme).floatingRecapButtonLabel}
-            onPress={() => props.navigation.navigate("summary")}
+            onPress={() => navigation.navigate("summary")}
           >
             Lihat Pesanan
           </Button>
@@ -88,6 +86,7 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
+      paddingTop: 44,
       backgroundColor: theme.colors.surface,
       width: "100%",
     },

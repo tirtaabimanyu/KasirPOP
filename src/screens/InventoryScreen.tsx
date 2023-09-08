@@ -3,6 +3,7 @@ import InventoryItem from "../components/InventoryItem";
 import { Button, Card, MD3Theme, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -16,14 +17,16 @@ const Screen1 = () => (
   />
 );
 
-export default function InventoryScreen() {
+export const InventoryScreen = (
+  props: DrawerScreenProps<RootDrawerParamList>
+) => {
   const theme = useTheme();
   return (
     <View style={styles(theme).container}>
       <Card.Title
         title="Inventori"
         titleVariant="headlineLarge"
-        style={{ paddingLeft: 0 }}
+        style={{ paddingLeft: 0, minHeight: 0 }}
         right={() => (
           <Button mode="contained" icon={"plus"}>
             Tambah Produk
@@ -49,7 +52,9 @@ export default function InventoryScreen() {
       </Tab.Navigator>
     </View>
   );
-}
+};
+
+export default InventoryScreen;
 
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({
@@ -57,5 +62,6 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       backgroundColor: theme.colors.surface,
       paddingHorizontal: 32,
+      paddingTop: 44,
     },
   });
