@@ -11,22 +11,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "requireFullScreen": true,
-      "supportsTablet": true,
-      "bundleIdentifier": "com.tirtaabimanyu.kasirbodoh"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFFFFF"
       },
       "package": "com.tirtaabimanyu.kasirbodoh"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
@@ -34,21 +34,20 @@
       }
     },
     "plugins": [
-      "expo-router",
       [
-        "expo-screen-orientation",
+        "expo-build-properties",
         {
-          "initialOrientation": "LANDSCAPE"
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends.",
-          "cameraPermission": "The app accesses your camera to let you share them with your friends."
+          "android": {
+            "minSdkVersion": 23,
+            "compileSdkVersion": 31,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
         }
       ]
-    ],
-    "scheme": "kasir"
+    ]
   }
 }
