@@ -1,16 +1,20 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
   Button,
   Card,
+  Dialog,
   Divider,
   List,
   MD3Theme,
+  Portal,
   Text,
   useTheme,
 } from "react-native-paper";
+import InputDatePicker from "../components/InputDatePicker";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -89,8 +93,53 @@ const TransactionsScreen = ({
 }: DrawerScreenProps<RootDrawerParamList>) => {
   const theme = useTheme();
 
+  const [visible, setVisible] = useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date;
+    endDate: Date;
+  }>({ startDate: new Date(), endDate: new Date() });
+
   return (
     <View style={styles(theme).container}>
+      <Portal>
+        <Dialog
+          visible={visible}
+          onDismiss={hideDialog}
+          style={{ backgroundColor: "white" }}
+        >
+          <Dialog.Title>Unduh Laporan Transaksi</Dialog.Title>
+          <Dialog.Content>
+            <InputDatePicker
+              label="Dari Tanggal"
+              date={dateRange.startDate}
+              setDate={(d: Date) =>
+                setDateRange({ ...dateRange, startDate: d })
+              }
+              style={{ marginBottom: 16 }}
+            />
+            <InputDatePicker
+              label="Sampai Tanggal"
+              date={dateRange.endDate}
+              setDate={(d: Date) => setDateRange({ ...dateRange, endDate: d })}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog} style={{ paddingHorizontal: 16 }}>
+              Batal
+            </Button>
+            <Button
+              mode="contained"
+              onPress={hideDialog}
+              style={{ paddingHorizontal: 16 }}
+            >
+              Unduh
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <Card.Title
         title="Riwayat Transaksi"
         titleVariant="headlineLarge"
@@ -100,7 +149,11 @@ const TransactionsScreen = ({
           marginBottom: 24,
         }}
         right={() => (
-          <Button mode="contained" icon={"tray-arrow-down"}>
+          <Button
+            mode="contained"
+            icon={"tray-arrow-down"}
+            onPress={showDialog}
+          >
             Unduh Laporan
           </Button>
         )}
