@@ -76,7 +76,7 @@ const TransactionsScreen = ({
             <Button
               mode="contained"
               onPress={hideDialog}
-              style={{ paddingHorizontal: 16 }}
+              style={{ paddingHorizontal: 24 }}
             >
               Unduh
             </Button>
