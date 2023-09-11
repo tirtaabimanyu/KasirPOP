@@ -23,6 +23,7 @@ const Screen = (props: any) => (
     )}
     data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
     numColumns={2}
+    showsVerticalScrollIndicator={false}
   />
 );
 
@@ -86,8 +87,7 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
-      paddingTop: 44,
-      backgroundColor: theme.colors.surface,
+      paddingTop: 16,
       width: "100%",
     },
     floatingRecapContainer: {

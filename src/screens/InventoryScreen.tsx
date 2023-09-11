@@ -14,6 +14,7 @@ const Screen1 = () => (
     renderItem={() => <InventoryItem itemData={{}} />}
     ItemSeparatorComponent={RowSeparator}
     data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+    showsVerticalScrollIndicator={false}
   />
 );
 
@@ -60,8 +61,7 @@ const styles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.colors.surface,
       paddingHorizontal: 32,
-      paddingTop: 44,
+      paddingTop: 16,
     },
   });

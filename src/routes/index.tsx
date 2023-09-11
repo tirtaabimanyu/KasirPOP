@@ -7,7 +7,7 @@ import {
   NavigationContainerProps,
 } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
-import { Drawer as PDrawer } from "react-native-paper";
+import { MD3Theme, Drawer as PDrawer, useTheme } from "react-native-paper";
 import CashierStack from "./CashierStack";
 import InventoryScreen from "../screens/InventoryScreen";
 import TransactionsScreen from "../screens/TransactionsScreen";
@@ -43,9 +43,10 @@ const drawerItems: drawerItem[] = [
 ];
 
 const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
+  const theme = useTheme();
   return (
-    <View style={styles.drawerContent}>
-      <PDrawer.Section style={styles.drawerSection} showDivider={false}>
+    <View style={styles(theme).drawerContent}>
+      <PDrawer.Section style={styles(theme).drawerSection} showDivider={false}>
         {drawerItems.map((item, idx) => {
           return (
             <PDrawer.CollapsedItem
@@ -65,6 +66,7 @@ const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
 };
 
 const Router = (props: NavigationContainerProps) => {
+  const theme = useTheme();
   return (
     <NavigationContainer {...props}>
       <Drawer.Navigator
@@ -72,6 +74,7 @@ const Router = (props: NavigationContainerProps) => {
           headerShown: false,
           drawerType: "permanent",
           drawerStyle: { width: "auto" },
+          sceneContainerStyle: styles(theme).screenContainer,
         }}
         drawerContent={(drawerContentProps) => (
           <DrawerContent {...drawerContentProps} />
@@ -93,13 +96,15 @@ const Router = (props: NavigationContainerProps) => {
 
 export default Router;
 
-const styles = StyleSheet.create({
-  drawerContent: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingVertical: 44,
-  },
-  drawerSection: {
-    marginTop: 15,
-  },
-});
+const styles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    screenContainer: {
+      backgroundColor: theme.colors.surface,
+    },
+    drawerContent: {
+      flex: 1,
+      justifyContent: "space-between",
+      paddingVertical: 16,
+    },
+    drawerSection: {},
+  });

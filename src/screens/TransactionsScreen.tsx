@@ -232,8 +232,7 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
-      paddingTop: 44,
-      backgroundColor: theme.colors.surface,
+      paddingTop: 16,
       width: "100%",
     },
     summaryContainer: {
