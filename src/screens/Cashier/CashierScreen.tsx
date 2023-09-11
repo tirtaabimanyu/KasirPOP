@@ -38,11 +38,6 @@ export const CashierScreen = ({
 
   return (
     <View style={styles(theme).container}>
-      <Card.Title
-        title="Kasir"
-        titleVariant="headlineLarge"
-        style={{ paddingLeft: 0, minHeight: 0 }}
-      />
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
@@ -87,7 +82,6 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
-      paddingTop: 16,
       width: "100%",
     },
     floatingRecapContainer: {
