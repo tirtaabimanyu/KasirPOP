@@ -16,7 +16,7 @@ import {
 
 interface CashierItemProps {
   itemData: any;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
 const CashierItem = (props: CashierItemProps) => {

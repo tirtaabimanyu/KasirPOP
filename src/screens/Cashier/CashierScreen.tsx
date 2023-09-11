@@ -31,7 +31,7 @@ const Screen1 = () => <Screen />;
 const Screen2 = () => <Screen />;
 const Screen3 = () => <Screen />;
 
-export const CashierScreen = ({
+const CashierScreen = ({
   navigation,
 }: StackScreenProps<CashierStackParamList, "cashier">) => {
   const theme = useTheme();
