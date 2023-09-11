@@ -2,7 +2,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import {
   Button,
   Card,
@@ -15,76 +15,19 @@ import {
   useTheme,
 } from "react-native-paper";
 import InputDatePicker from "../components/InputDatePicker";
+import TransactionsItem from "../components/TransactionsItem";
 
 const Tab = createMaterialTopTabNavigator();
 
+const RowSeparator = () => <View style={{ height: 24 }} />;
 const Screen1 = () => (
-  <ScrollView contentContainerStyle={{ paddingTop: 24 }}>
-    <Card
-      mode="outlined"
-      style={{ flex: 1, marginRight: 12, marginBottom: 24 }}
-      contentStyle={{
-        flex: 1,
-        justifyContent: "space-between",
-      }}
-    >
-      <List.Accordion title={<Text variant="titleMedium">Hari Ini</Text>}>
-        <Divider />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #2</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-        />
-        <Divider />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #1</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-        />
-      </List.Accordion>
-    </Card>
-    <Card
-      mode="outlined"
-      style={{ flex: 1, marginRight: 12 }}
-      contentStyle={{
-        flex: 1,
-        justifyContent: "space-between",
-      }}
-    >
-      <List.Accordion
-        title={<Text variant="titleMedium">28 Agustus 2023</Text>}
-      >
-        <Divider />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #2</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-        />
-        <Divider />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #1</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-        />
-      </List.Accordion>
-    </Card>
-  </ScrollView>
+  <FlatList
+    contentContainerStyle={{ paddingVertical: 24 }}
+    renderItem={() => <TransactionsItem itemData={{}} />}
+    ItemSeparatorComponent={RowSeparator}
+    data={[1, 2, 3]}
+    showsVerticalScrollIndicator={false}
+  />
 );
 
 const TransactionsScreen = ({

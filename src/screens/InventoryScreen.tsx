@@ -7,10 +7,10 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 
 const Tab = createMaterialTopTabNavigator();
 
-const RowSeparator = () => <View style={{ height: 16 }} />;
+const RowSeparator = () => <View style={{ height: 24 }} />;
 const Screen1 = () => (
   <FlatList
-    contentContainerStyle={{ paddingBottom: 200, paddingTop: 24 }}
+    contentContainerStyle={{ paddingVertical: 24 }}
     renderItem={() => <InventoryItem itemData={{}} />}
     ItemSeparatorComponent={RowSeparator}
     data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
