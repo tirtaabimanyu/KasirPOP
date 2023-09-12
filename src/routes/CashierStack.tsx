@@ -70,12 +70,14 @@ const styles = (theme: MD3Theme) =>
     header: {
       paddingHorizontal: 32,
       paddingVertical: 16,
+      flexDirection: "row",
+      alignItems: "center",
     },
     headerBackButton: {
       width: "auto",
       height: "auto",
-      alignItems: "flex-start",
+      alignSelf: "center",
       margin: 0,
-      marginBottom: 24,
+      marginRight: 16,
     },
   });

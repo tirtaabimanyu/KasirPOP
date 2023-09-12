@@ -8,6 +8,7 @@ import {
 } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
 import { MD3Theme, Drawer as PDrawer, useTheme } from "react-native-paper";
+import { enableScreens } from "react-native-screens";
 import CashierStack from "./CashierStack";
 import InventoryScreen from "../screens/InventoryScreen";
 import TransactionsScreen from "../screens/TransactionsScreen";
@@ -67,6 +68,7 @@ const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
 
 const Router = (props: NavigationContainerProps) => {
   const theme = useTheme();
+  enableScreens();
   return (
     <NavigationContainer {...props}>
       <Drawer.Navigator

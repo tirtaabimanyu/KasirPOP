@@ -4,7 +4,6 @@ import { StackScreenProps } from "@react-navigation/stack";
 import {
   Button,
   Card,
-  Chip,
   Dialog,
   MD3Theme,
   Portal,
@@ -12,52 +11,62 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
+import NumericKeyboard from "../../components/NumericKeyboard";
+import { toRupiah } from "../../utils/currencyUtils";
 
-const CashContainer = (
-  <View>
-    <Card
-      mode="outlined"
-      contentStyle={{
-        paddingHorizontal: 24,
-        paddingVertical: 16,
-        alignItems: "center",
-      }}
-      style={{ marginBottom: 16 }}
-    >
-      <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
-        Nominal Pembayaran
-      </Text>
-      <Text variant="headlineMedium">Rp200,000</Text>
-    </Card>
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Chip mode="outlined" style={{ marginRight: 16 }}>
-        <Text variant="labelLarge">Uang Pas</Text>
-      </Chip>
-      <Chip mode="outlined" style={{ marginRight: 16 }}>
-        <Text variant="labelLarge">Rp50,000</Text>
-      </Chip>
-      <Chip mode="outlined">
-        <Text variant="labelLarge">Rp100,000</Text>
-      </Chip>
-    </View>
-  </View>
-);
-
-const QrisContainer = <Text>Gambar QRIS</Text>;
+type PaymentType = "cash" | "qris";
+const isPaymentType = (value: string): value is PaymentType =>
+  value == "cash" || value == "qris";
 
 type PaymentScreenProps = StackScreenProps<CashierStackParamList, "payment">;
 const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
   const theme = useTheme();
-  const [paymentType, setPaymentType] = useState("cash");
+  const [paymentType, setPaymentType] = useState<PaymentType>("cash");
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
+  const hideDialog = () => {
+    navigation.navigate("cashier");
+    setVisible(false);
+  };
+  const [totalOrderPrice, setTotalOrderPrice] = useState<number>(150000);
+  const [moneyReceived, setMoneyReceived] = useState<number>(0);
+  const totalChange = moneyReceived - totalOrderPrice;
+
+  const onPressNumericKeyboard = (value: string) => {
+    const currentValue = moneyReceived;
+    if (value === "clear") {
+      setMoneyReceived(0);
+    } else if (value === "exact") {
+      setMoneyReceived(totalOrderPrice);
+    } else if (value === "backspace") {
+      setMoneyReceived(Math.trunc(currentValue / 10));
+    } else if (value === "000") {
+      setMoneyReceived(moneyReceived * 1000);
+    } else {
+      setMoneyReceived(currentValue * 10 + Number(value));
+    }
+  };
+
+  const onPressPaymentType = (value: string) => {
+    if (!isPaymentType(value)) {
+      throw "value is not of type PaymentType";
+    }
+
+    if (value == "cash") {
+      setMoneyReceived(0);
+      setPaymentType(value);
+    } else {
+      setMoneyReceived(totalOrderPrice);
+      setPaymentType(value);
+    }
+  };
+
+  let showFloatingRecap = false;
+  if (paymentType == "qris" || (paymentType == "cash" && totalChange >= 0)) {
+    showFloatingRecap = true;
+  }
+
   return (
     <View style={styles(theme).container}>
       <Portal>
@@ -88,51 +97,91 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <Card
-        mode="outlined"
-        contentStyle={{
-          paddingHorizontal: 24,
-          paddingVertical: 16,
-          alignItems: "center",
-        }}
-        style={{ marginBottom: 24 }}
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 200, flexDirection: "row" }}
       >
-        <Text variant="titleMedium">Total Tagihan : Rp150,000</Text>
-      </Card>
-      <SegmentedButtons
-        value={paymentType}
-        onValueChange={setPaymentType}
-        buttons={[
-          {
-            value: "cash",
-            label: "Uang Tunai",
-            showSelectedCheck: true,
-          },
-          {
-            value: "qris",
-            label: "QRIS",
-            showSelectedCheck: true,
-          },
-        ]}
-        style={{ marginBottom: 24 }}
-      />
-      {paymentType == "cash" ? CashContainer : QrisContainer}
-
-      <View style={styles(theme).floatingRecapContainer}>
-        <View style={styles(theme).floatingRecap}>
-          <Text variant="titleLarge" style={{ color: theme.colors.onPrimary }}>
-            Total Rp150,000
-          </Text>
-          <Button
-            mode="elevated"
-            contentStyle={styles(theme).floatingRecapButton}
-            labelStyle={styles(theme).floatingRecapButtonLabel}
-            onPress={showDialog}
+        <View style={{ flex: 0.5, marginRight: 40 }}>
+          <SegmentedButtons
+            value={paymentType}
+            onValueChange={onPressPaymentType}
+            buttons={[
+              {
+                value: "cash",
+                label: "Uang Tunai",
+                showSelectedCheck: true,
+              },
+              {
+                value: "qris",
+                label: "QRIS",
+                showSelectedCheck: true,
+              },
+            ]}
+            style={{ marginBottom: 16 }}
+          />
+          <Card
+            mode="outlined"
+            contentStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 16,
+              alignItems: "center",
+            }}
+            style={{ marginBottom: 16 }}
           >
-            Bayar
-          </Button>
+            <Text variant="titleMedium">
+              Total Tagihan : {toRupiah(totalOrderPrice)}
+            </Text>
+          </Card>
+          <Card
+            mode="outlined"
+            contentStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 16,
+              alignItems: "center",
+            }}
+            style={{ marginBottom: 16 }}
+          >
+            <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
+              Nominal Pembayaran
+            </Text>
+            <Text
+              variant="displayMedium"
+              style={{ color: theme.colors.primary }}
+            >
+              {toRupiah(moneyReceived)}
+            </Text>
+          </Card>
         </View>
-      </View>
+        <View style={{ flex: 0.5 }}>
+          {paymentType == "cash" ? (
+            <NumericKeyboard onKeyPress={onPressNumericKeyboard} />
+          ) : (
+            <Text>Gambar QRIS</Text>
+          )}
+        </View>
+      </ScrollView>
+
+      {showFloatingRecap && (
+        <View style={styles(theme).floatingRecapContainer}>
+          <View style={styles(theme).floatingRecap}>
+            <Text
+              variant="titleLarge"
+              style={{ color: theme.colors.onPrimary }}
+            >
+              {paymentType == "cash"
+                ? "Kembalian " + toRupiah(totalChange)
+                : "Pastikan pembayaran sudah dilakukan"}
+            </Text>
+            <Button
+              mode="elevated"
+              contentStyle={styles(theme).floatingRecapButton}
+              labelStyle={styles(theme).floatingRecapButtonLabel}
+              onPress={showDialog}
+            >
+              {paymentType == "cash" ? "Terima Pembayaran" : "Sudah Bayar"}
+            </Button>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
