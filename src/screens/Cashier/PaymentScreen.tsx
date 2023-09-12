@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import {
@@ -14,6 +14,8 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import NumericKeyboard from "../../components/NumericKeyboard";
 import { toRupiah } from "../../utils/currencyUtils";
+import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { resetCart } from "../../redux/slices/cartSlice";
 
 type PaymentType = "cash" | "qris";
 const isPaymentType = (value: string): value is PaymentType =>
@@ -22,23 +24,27 @@ const isPaymentType = (value: string): value is PaymentType =>
 type PaymentScreenProps = StackScreenProps<CashierStackParamList, "payment">;
 const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
   const theme = useTheme();
+  const cart = useAppSelector((state) => state.cart);
+  const dispatch = useAppDispatch();
+
   const [paymentType, setPaymentType] = useState<PaymentType>("cash");
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => {
-    navigation.navigate("cashier");
+    dispatch(resetCart());
     setVisible(false);
+    navigation.navigate("cashier");
   };
-  const [totalOrderPrice, setTotalOrderPrice] = useState<number>(150000);
+
   const [moneyReceived, setMoneyReceived] = useState<number>(0);
-  const totalChange = moneyReceived - totalOrderPrice;
+  const totalChange = moneyReceived - cart.totalPrice;
 
   const onPressNumericKeyboard = (value: string) => {
     const currentValue = moneyReceived;
     if (value === "clear") {
       setMoneyReceived(0);
     } else if (value === "exact") {
-      setMoneyReceived(totalOrderPrice);
+      setMoneyReceived(cart.totalPrice);
     } else if (value === "backspace") {
       setMoneyReceived(Math.trunc(currentValue / 10));
     } else if (value === "000") {
@@ -57,7 +63,7 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
       setMoneyReceived(0);
       setPaymentType(value);
     } else {
-      setMoneyReceived(totalOrderPrice);
+      setMoneyReceived(cart.totalPrice);
       setPaymentType(value);
     }
   };
@@ -128,7 +134,7 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
             style={{ marginBottom: 16 }}
           >
             <Text variant="titleMedium">
-              Total Tagihan : {toRupiah(totalOrderPrice)}
+              Total Tagihan : {toRupiah(cart.totalPrice)}
             </Text>
           </Card>
           <Card
@@ -138,7 +144,6 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
               paddingVertical: 16,
               alignItems: "center",
             }}
-            style={{ marginBottom: 16 }}
           >
             <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
               Nominal Pembayaran
@@ -151,11 +156,29 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
             </Text>
           </Card>
         </View>
-        <View style={{ flex: 0.5 }}>
+        <View
+          style={{
+            flex: 0.5,
+            aspectRatio: 0.709375,
+          }}
+        >
           {paymentType == "cash" ? (
             <NumericKeyboard onKeyPress={onPressNumericKeyboard} />
           ) : (
-            <Text>Gambar QRIS</Text>
+            <View style={{ flex: 1, height: "100%" }}>
+              <Image
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  height: "100%",
+                }}
+                resizeMode="contain"
+                source={require("../../helpers/QR_Static.png")}
+                // placeholder={blurhash}
+                // contentFit="cover"
+                // transition={1000}
+              />
+            </View>
           )}
         </View>
       </ScrollView>

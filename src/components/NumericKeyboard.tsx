@@ -78,20 +78,22 @@ const NumericKeyboard = ({
       contentStyle={[styles(theme).cardContent, contentStyle]}
     >
       {keyArray.map((row, rowIdx) => (
-        <View style={styles(theme).keyRow} key={"row-" + rowIdx}>
-          {row.map((key, keyIdx) => {
-            if (key === null) {
+        <View style={styles(theme).keyRow} key={`row-${rowIdx}`}>
+          {row.map((keyData, keyIdx) => {
+            if (keyData === null) {
               return (
-                <View style={styles(theme).keyButton} key={"key-" + keyIdx} />
+                <View style={styles(theme).keyButton} key={`key-${keyIdx}`} />
               );
             }
 
-            const keyComponent = isTextKey(key.component) ? (
-              <Text variant={key.component.variant}>{key.component.label}</Text>
+            const keyComponent = isTextKey(keyData.component) ? (
+              <Text variant={keyData.component.variant}>
+                {keyData.component.label}
+              </Text>
             ) : (
               <MaterialCommunityIcons
-                name={key.component.name}
-                size={key.component.size}
+                name={keyData.component.name}
+                size={keyData.component.size}
               />
             );
 
@@ -99,7 +101,8 @@ const NumericKeyboard = ({
               <Pressable
                 style={styles(theme).keyButton}
                 android_ripple={{ ...styles(theme).keyRipple, ...rippleConfig }}
-                onPress={() => onKeyPress(key.value)}
+                onPress={() => onKeyPress(keyData.value)}
+                key={`key-${keyIdx}`}
               >
                 {keyComponent}
               </Pressable>

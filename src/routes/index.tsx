@@ -19,19 +19,19 @@ const Drawer = createDrawerNavigator<RootDrawerParamList>();
 const drawerItems: drawerItem[] = [
   {
     label: "Kasir",
-    icon: "account-outline",
+    icon: "cash-register",
     route: "cashier-stack",
     component: CashierStack,
   },
   {
     label: "Inventori",
-    icon: "tune",
+    icon: "store",
     route: "inventory",
     component: InventoryScreen,
   },
   {
     label: "Riwayat Transaksi",
-    icon: "bookmark-outline",
+    icon: "history",
     route: "transactions",
     component: TransactionsScreen,
   },

@@ -36,7 +36,7 @@ const CashierItem = (props: CashierItemProps) => {
   stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
 
   const increaseDisabled =
-    props.itemData.isAlwaysInStock ||
+    !props.itemData.isAlwaysInStock &&
     props.cartQuantity == props.itemData.stock;
   return (
     <Card mode="outlined" style={props.style}>
@@ -60,8 +60,6 @@ const CashierItem = (props: CashierItemProps) => {
           {props.cartQuantity > 0 ? (
             <View
               style={{
-                // paddingHorizontal: 16,
-                // paddingVertical: 10,
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",

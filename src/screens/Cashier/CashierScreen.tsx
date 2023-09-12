@@ -5,7 +5,10 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import CashierItem from "../../components/CashierItem";
 import { FlatList } from "react-native-gesture-handler";
 import { StackScreenProps } from "@react-navigation/stack";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
+import { toRupiah } from "../../utils/currencyUtils";
+import mockProducts from "../../helpers/mockProducts";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -16,7 +19,11 @@ const NormalizedCashierItem = ({
   itemData: CashierItemData;
   index: number;
 }) => {
-  const [cartQuantity, setCartQuantity] = useState<number>(0);
+  const cart = useAppSelector((state) => state.cart);
+  const dispatch = useAppDispatch();
+  const cartQuantity =
+    itemData.id in cart.products ? cart.products[itemData.id].quantity : 0;
+
   return (
     <CashierItem
       itemData={itemData}
@@ -24,8 +31,8 @@ const NormalizedCashierItem = ({
         { flex: 0.5 },
         index % 2 === 0 ? { marginRight: 16 } : { marginRight: 0 },
       ]}
-      onPressDecrease={() => setCartQuantity(cartQuantity - 1)}
-      onPressIncrease={() => setCartQuantity(cartQuantity + 1)}
+      onPressDecrease={() => dispatch(removeFromCart(itemData))}
+      onPressIncrease={() => dispatch(addToCart(itemData))}
       cartQuantity={cartQuantity}
     />
   );
@@ -38,15 +45,7 @@ const Screen = (props: any) => (
     renderItem={({ item, index }) => (
       <NormalizedCashierItem itemData={item} index={index} />
     )}
-    data={[
-      {
-        name: "Bakso Kasar",
-        price: 50000,
-        isAlwaysInStock: false,
-        stock: 5,
-        imgUri: null,
-      },
-    ]}
+    data={mockProducts}
     numColumns={2}
     showsVerticalScrollIndicator={false}
   />
@@ -60,6 +59,7 @@ const CashierScreen = ({
   navigation,
 }: StackScreenProps<CashierStackParamList, "cashier">) => {
   const theme = useTheme();
+  const cart = useAppSelector((state) => state.cart);
 
   return (
     <View style={styles(theme).container}>
@@ -80,21 +80,26 @@ const CashierScreen = ({
         <Tab.Screen name="Etalase 1" component={Screen2} />
         <Tab.Screen name="Etalase 2" component={Screen3} />
       </Tab.Navigator>
-      <View style={styles(theme).floatingRecapContainer}>
-        <View style={styles(theme).floatingRecap}>
-          <Text variant="titleLarge" style={{ color: theme.colors.onPrimary }}>
-            3 Produk • Rp150,000
-          </Text>
-          <Button
-            mode="elevated"
-            contentStyle={styles(theme).floatingRecapButton}
-            labelStyle={styles(theme).floatingRecapButtonLabel}
-            onPress={() => navigation.navigate("summary")}
-          >
-            Lihat Pesanan
-          </Button>
+      {cart.totalItem > 0 && (
+        <View style={styles(theme).floatingRecapContainer}>
+          <View style={styles(theme).floatingRecap}>
+            <Text
+              variant="titleLarge"
+              style={{ color: theme.colors.onPrimary }}
+            >
+              {`${cart.totalItem} Produk • ${toRupiah(cart.totalPrice)}`}
+            </Text>
+            <Button
+              mode="elevated"
+              contentStyle={styles(theme).floatingRecapButton}
+              labelStyle={styles(theme).floatingRecapButtonLabel}
+              onPress={() => navigation.navigate("summary")}
+            >
+              Lihat Pesanan
+            </Button>
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };
