@@ -217,9 +217,6 @@ const styles = (theme: MD3Theme) =>
       height: 40,
     },
     floatingRecapButtonLabel: {
-      fontFamily: theme.fonts.labelLarge.fontFamily,
-      fontSize: theme.fonts.labelLarge.fontSize,
-      fontStyle: theme.fonts.labelLarge.fontStyle,
-      fontWeight: theme.fonts.labelLarge.fontWeight,
+      ...theme.fonts.labelLarge,
     },
   });

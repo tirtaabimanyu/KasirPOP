@@ -5,23 +5,48 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import CashierItem from "../../components/CashierItem";
 import { FlatList } from "react-native-gesture-handler";
 import { StackScreenProps } from "@react-navigation/stack";
+import { useState } from "react";
 
 const Tab = createMaterialTopTabNavigator();
+
+const NormalizedCashierItem = ({
+  itemData,
+  index,
+}: {
+  itemData: CashierItemData;
+  index: number;
+}) => {
+  const [cartQuantity, setCartQuantity] = useState<number>(0);
+  return (
+    <CashierItem
+      itemData={itemData}
+      style={[
+        { flex: 0.5 },
+        index % 2 === 0 ? { marginRight: 16 } : { marginRight: 0 },
+      ]}
+      onPressDecrease={() => setCartQuantity(cartQuantity - 1)}
+      onPressIncrease={() => setCartQuantity(cartQuantity + 1)}
+      cartQuantity={cartQuantity}
+    />
+  );
+};
 
 const Screen = (props: any) => (
   <FlatList
     contentContainerStyle={{ paddingBottom: 200, paddingTop: 24 }}
     columnWrapperStyle={{ paddingBottom: 12, justifyContent: "space-between" }}
     renderItem={({ item, index }) => (
-      <CashierItem
-        itemData={item}
-        style={[
-          { flex: 0.5 },
-          index % 2 === 0 ? { marginRight: 16 } : { marginRight: 0 },
-        ]}
-      />
+      <NormalizedCashierItem itemData={item} index={index} />
     )}
-    data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+    data={[
+      {
+        name: "Bakso Kasar",
+        price: 50000,
+        isAlwaysInStock: false,
+        stock: 5,
+        imgUri: null,
+      },
+    ]}
     numColumns={2}
     showsVerticalScrollIndicator={false}
   />
@@ -105,10 +130,7 @@ const styles = (theme: MD3Theme) =>
       height: 40,
     },
     floatingRecapButtonLabel: {
-      fontFamily: theme.fonts.labelLarge.fontFamily,
-      fontSize: theme.fonts.labelLarge.fontSize,
-      fontStyle: theme.fonts.labelLarge.fontStyle,
-      fontWeight: theme.fonts.labelLarge.fontWeight,
+      ...theme.fonts.labelLarge,
     },
     cashierItem: {
       flex: 0.5,
