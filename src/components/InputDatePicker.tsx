@@ -3,7 +3,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { Pressable, StyleProp, View, ViewStyle } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 
 type InputDatePickerProps = {
   setDate: (d: Date) => void;

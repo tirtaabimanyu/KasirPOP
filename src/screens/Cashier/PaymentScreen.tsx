@@ -72,8 +72,8 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
       <Portal>
         <Dialog
           visible={visible}
-          onDismiss={hideDialog}
           style={{ backgroundColor: "white" }}
+          dismissable={false}
         >
           <Dialog.Icon
             icon={"check-circle"}
