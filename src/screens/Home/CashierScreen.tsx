@@ -9,6 +9,8 @@ import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
 import { toRupiah } from "../../utils/currencyUtils";
 import mockProducts from "../../helpers/mockProducts";
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -57,7 +59,10 @@ const Screen3 = () => <Screen />;
 
 const CashierScreen = ({
   navigation,
-}: DrawerScreenProps<HomeDrawerParamList, "cashier">) => {
+}: CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList, "home">,
+  DrawerScreenProps<HomeDrawerParamList, "cashier">
+>) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);
 

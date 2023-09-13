@@ -4,10 +4,10 @@ import {
 } from "@react-navigation/drawer";
 import { View, StyleSheet } from "react-native";
 import { MD3Theme, Drawer as PDrawer, useTheme } from "react-native-paper";
-import InventoryScreen from "../screens/InventoryScreen";
-import TransactionsScreen from "../screens/TransactionsScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import { CashierScreen } from "../screens/Cashier";
+import InventoryScreen from "../screens/Home/InventoryScreen";
+import TransactionsScreen from "../screens/Home/TransactionsScreen";
+import SettingsScreen from "../screens/Home/SettingsScreen";
+import CashierScreen from "../screens/Home/CashierScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
 
@@ -86,6 +86,7 @@ const HomeDrawer = (props: NativeStackScreenProps<HomeDrawerParamList>) => {
       drawerContent={(drawerContentProps) => (
         <DrawerContent {...drawerContentProps} />
       )}
+      initialRouteName="cashier"
     >
       {drawerItems.map((item) => {
         return (

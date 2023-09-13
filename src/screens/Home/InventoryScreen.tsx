@@ -1,9 +1,11 @@
 import { StyleSheet, View } from "react-native";
-import InventoryItem from "../components/InventoryItem";
+import InventoryItem from "../../components/InventoryItem";
 import { Button, Card, MD3Theme, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -19,7 +21,10 @@ const Screen1 = () => (
 );
 
 export const InventoryScreen = (
-  props: DrawerScreenProps<RootDrawerParamList>
+  props: CompositeScreenProps<
+    NativeStackScreenProps<RootStackParamList, "home">,
+    DrawerScreenProps<HomeDrawerParamList, "inventory">
+  >
 ) => {
   const theme = useTheme();
   return (

@@ -1,21 +1,21 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
+import { FlatList } from "react-native-gesture-handler";
 import {
   Button,
   Card,
   Dialog,
-  Divider,
-  List,
   MD3Theme,
   Portal,
   Text,
   useTheme,
 } from "react-native-paper";
-import InputDatePicker from "../components/InputDatePicker";
-import TransactionsItem from "../components/TransactionsItem";
+import InputDatePicker from "../../components/InputDatePicker";
+import TransactionsItem from "../../components/TransactionsItem";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -33,7 +33,10 @@ const Screen1 = () => (
 const TransactionsScreen = ({
   navigation,
   route,
-}: DrawerScreenProps<RootDrawerParamList>) => {
+}: CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList, "home">,
+  DrawerScreenProps<HomeDrawerParamList, "transactions">
+>) => {
   const theme = useTheme();
 
   const [visible, setVisible] = useState(false);

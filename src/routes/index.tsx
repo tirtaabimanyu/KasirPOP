@@ -5,7 +5,8 @@ import {
 import { View, StyleSheet } from "react-native";
 import { MD3Theme, useTheme, IconButton, Text } from "react-native-paper";
 import { enableFreeze, enableScreens } from "react-native-screens";
-import { SummaryScreen, PaymentScreen } from "../screens/Cashier";
+import SummaryScreen from "../screens/SummaryScreen";
+import PaymentScreen from "../screens/PaymentScreen";
 import {
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
@@ -51,6 +52,7 @@ const Router = (props: NavigationContainerProps) => {
           contentStyle: styles(theme).card,
           header: (props) => <Header {...props} theme={theme} />,
         }}
+        initialRouteName="home"
       >
         <Stack.Screen
           name="home"

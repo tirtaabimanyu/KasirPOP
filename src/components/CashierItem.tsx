@@ -68,46 +68,54 @@ const CashierItem = (props: CashierItemProps) => {
                 borderRadius: 100,
               }}
             >
-              <TouchableRipple
+              <View
                 style={{
                   borderRadius: 100,
+                  overflow: "hidden",
                   width: 40,
                   height: 40,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                rippleColor={theme.colors.primaryContainer}
-                onPress={props.onPressDecrease}
-                borderless
               >
-                <MaterialCommunityIcons name="minus" size={22} />
-              </TouchableRipple>
+                <TouchableRipple
+                  rippleColor={theme.colors.primaryContainer}
+                  onPress={props.onPressDecrease}
+                  borderless
+                >
+                  <MaterialCommunityIcons name="minus" size={22} />
+                </TouchableRipple>
+              </View>
               <Text variant="labelLarge" style={{ marginHorizontal: 8 }}>
                 {props.cartQuantity}
               </Text>
-              <TouchableRipple
+              <View
                 style={{
                   borderRadius: 100,
+                  overflow: "hidden",
                   width: 40,
                   height: 40,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                rippleColor={theme.colors.primaryContainer}
-                onPress={props.onPressIncrease}
-                borderless
-                disabled={increaseDisabled}
               >
-                <MaterialCommunityIcons
-                  name="plus"
-                  size={22}
-                  color={
-                    increaseDisabled
-                      ? theme.colors.onSurfaceDisabled
-                      : theme.colors.onSurface
-                  }
-                />
-              </TouchableRipple>
+                <TouchableRipple
+                  rippleColor={theme.colors.primaryContainer}
+                  onPress={props.onPressIncrease}
+                  borderless
+                  disabled={increaseDisabled}
+                >
+                  <MaterialCommunityIcons
+                    name="plus"
+                    size={22}
+                    color={
+                      increaseDisabled
+                        ? theme.colors.onSurfaceDisabled
+                        : theme.colors.onSurface
+                    }
+                  />
+                </TouchableRipple>
+              </View>
             </View>
           ) : (
             <IconButton

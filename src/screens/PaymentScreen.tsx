@@ -1,6 +1,5 @@
 import { Image, StyleSheet, View } from "react-native";
 import { useState } from "react";
-import { StackScreenProps } from "@react-navigation/stack";
 import {
   Button,
   Card,
@@ -12,17 +11,19 @@ import {
   useTheme,
 } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
-import NumericKeyboard from "../../components/NumericKeyboard";
-import { toRupiah } from "../../utils/currencyUtils";
-import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
-import { resetCart } from "../../redux/slices/cartSlice";
+import NumericKeyboard from "../components/NumericKeyboard";
+import { toRupiah } from "../utils/currencyUtils";
+import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
+import { resetCart } from "../redux/slices/cartSlice";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type PaymentType = "cash" | "qris";
 const isPaymentType = (value: string): value is PaymentType =>
   value == "cash" || value == "qris";
 
-type PaymentScreenProps = StackScreenProps<RootStackParamList, "payment">;
-const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
+const PaymentScreen = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, "payment">) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
   const hideDialog = () => {
     dispatch(resetCart());
     setVisible(false);
-    navigation.navigate("cashier");
+    navigation.navigate("home");
   };
 
   const [moneyReceived, setMoneyReceived] = useState<number>(0);
@@ -173,7 +174,7 @@ const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
                   height: "100%",
                 }}
                 resizeMode="contain"
-                source={require("../../helpers/QR_Static.png")}
+                source={require("../helpers/QR_Static.png")}
                 // placeholder={blurhash}
                 // contentFit="cover"
                 // transition={1000}

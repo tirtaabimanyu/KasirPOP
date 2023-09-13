@@ -1,17 +1,17 @@
-import { StackScreenProps } from "@react-navigation/stack";
 import { StyleSheet, View } from "react-native";
 import { Button, MD3Theme, Text, useTheme } from "react-native-paper";
-import CashierItem from "../../components/CashierItem";
+import CashierItem from "../components/CashierItem";
 import { FlatList } from "react-native-gesture-handler";
-import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import {
   CartState,
   addToCart,
   removeFromCart,
-} from "../../redux/slices/cartSlice";
+} from "../redux/slices/cartSlice";
 import { useEffect } from "react";
-import { toRupiah } from "../../utils/currencyUtils";
-import { AppDispatch, RootState } from "../../redux/store";
+import { toRupiah } from "../utils/currencyUtils";
+import { AppDispatch, RootState } from "../redux/store";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const RowSeparator = () => <View style={{ height: 12 }} />;
 
@@ -37,14 +37,15 @@ const NormalizedCashierItem = ({
   );
 };
 
-type SummaryScreenProps = StackScreenProps<RootStackParamList, "summary">;
-const SummaryScreen = ({ navigation }: SummaryScreenProps) => {
+const SummaryScreen = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, "summary">) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (cart.totalItem == 0) navigation.navigate("cashier");
+    if (cart.totalItem == 0) navigation.navigate("home");
   }, [cart.totalItem]);
 
   return (
