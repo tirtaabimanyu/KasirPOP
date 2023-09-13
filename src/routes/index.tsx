@@ -14,6 +14,7 @@ import InventoryScreen from "../screens/InventoryScreen";
 import TransactionsScreen from "../screens/TransactionsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 
+enableScreens();
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
 const drawerItems: drawerItem[] = [
@@ -45,6 +46,7 @@ const drawerItems: drawerItem[] = [
 
 const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
   const theme = useTheme();
+
   return (
     <View style={styles(theme).drawerContent}>
       <PDrawer.Section style={styles(theme).drawerSection} showDivider={false}>
@@ -55,6 +57,7 @@ const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
               focusedIcon={item.icon}
               label={item.label}
               onPress={() => {
+                if (state.index == idx) return;
                 navigation.navigate(item.route);
               }}
               active={state.index == idx}
@@ -68,7 +71,6 @@ const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
 
 const Router = (props: NavigationContainerProps) => {
   const theme = useTheme();
-  enableScreens();
   return (
     <NavigationContainer {...props}>
       <Drawer.Navigator
@@ -77,6 +79,7 @@ const Router = (props: NavigationContainerProps) => {
           drawerType: "permanent",
           drawerStyle: { width: "auto" },
           sceneContainerStyle: styles(theme).screenContainer,
+          lazy: false,
         }}
         drawerContent={(drawerContentProps) => (
           <DrawerContent {...drawerContentProps} />

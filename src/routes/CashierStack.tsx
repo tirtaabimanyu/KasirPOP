@@ -1,8 +1,4 @@
 import {
-  StackHeaderProps,
-  createStackNavigator,
-} from "@react-navigation/stack";
-import {
   CashierScreen,
   SummaryScreen,
   PaymentScreen,
@@ -10,12 +6,22 @@ import {
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { IconButton, MD3Theme, Text, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
+import {
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
+import { ParamListBase, Route } from "@react-navigation/native";
 
-const Stack = createStackNavigator<CashierStackParamList>();
+const Stack = createNativeStackNavigator<CashierStackParamList>();
 
-interface HeaderProps extends StackHeaderProps {
+type HeaderProps = {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: Route<string>;
+  options: NativeStackNavigationOptions;
+  back?: { title: string };
   theme: MD3Theme;
-}
+};
 const Header = ({ theme, options, navigation, back }: HeaderProps) => {
   return (
     <View style={styles(theme).header}>
@@ -37,7 +43,7 @@ const CashierStack = (props: DrawerScreenProps<RootDrawerParamList>) => {
   return (
     <Stack.Navigator
       screenOptions={{
-        cardStyle: styles(theme).card,
+        contentStyle: styles(theme).card,
         header: (props) => <Header {...props} theme={theme} />,
       }}
     >
