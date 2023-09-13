@@ -71,7 +71,6 @@ const CashierItem = (props: CashierItemProps) => {
               <View
                 style={{
                   borderRadius: 100,
-                  overflow: "hidden",
                   width: 40,
                   height: 40,
                   justifyContent: "center",
@@ -92,7 +91,6 @@ const CashierItem = (props: CashierItemProps) => {
               <View
                 style={{
                   borderRadius: 100,
-                  overflow: "hidden",
                   width: 40,
                   height: 40,
                   justifyContent: "center",
