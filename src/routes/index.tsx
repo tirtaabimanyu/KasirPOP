@@ -1,70 +1,43 @@
 import {
-  DrawerContentComponentProps,
-  createDrawerNavigator,
-} from "@react-navigation/drawer";
-import {
   NavigationContainer,
   NavigationContainerProps,
 } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
-import { MD3Theme, Drawer as PDrawer, useTheme } from "react-native-paper";
-import { enableScreens } from "react-native-screens";
-import CashierStack from "./CashierStack";
-import InventoryScreen from "../screens/InventoryScreen";
-import TransactionsScreen from "../screens/TransactionsScreen";
-import SettingsScreen from "../screens/SettingsScreen";
+import { MD3Theme, useTheme, IconButton, Text } from "react-native-paper";
+import { enableFreeze, enableScreens } from "react-native-screens";
+import { SummaryScreen, PaymentScreen } from "../screens/Cashier";
+import {
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
+import { ParamListBase, Route } from "@react-navigation/native";
+import HomeDrawer from "./HomeDrawer";
 
 enableScreens();
-const Drawer = createDrawerNavigator<RootDrawerParamList>();
+enableFreeze();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const drawerItems: drawerItem[] = [
-  {
-    label: "Kasir",
-    icon: "cash-register",
-    route: "cashier-stack",
-    component: CashierStack,
-  },
-  {
-    label: "Inventori",
-    icon: "store",
-    route: "inventory",
-    component: InventoryScreen,
-  },
-  {
-    label: "Riwayat Transaksi",
-    icon: "history",
-    route: "transactions",
-    component: TransactionsScreen,
-  },
-  {
-    label: "Pengaturan",
-    icon: "cog",
-    route: "settings",
-    component: SettingsScreen,
-  },
-];
+type HeaderProps = {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: Route<string>;
+  options: NativeStackNavigationOptions;
+  back?: { title: string };
+  theme: MD3Theme;
+};
 
-const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
-  const theme = useTheme();
-
+const Header = ({ theme, options, navigation, back }: HeaderProps) => {
   return (
-    <View style={styles(theme).drawerContent}>
-      <PDrawer.Section style={styles(theme).drawerSection} showDivider={false}>
-        {drawerItems.map((item, idx) => {
-          return (
-            <PDrawer.CollapsedItem
-              key={"drawerItem-" + item.route}
-              focusedIcon={item.icon}
-              label={item.label}
-              onPress={() => {
-                if (state.index == idx) return;
-                navigation.navigate(item.route);
-              }}
-              active={state.index == idx}
-            />
-          );
-        })}
-      </PDrawer.Section>
+    <View style={styles(theme).header}>
+      {back && (
+        <IconButton
+          icon="arrow-left"
+          size={24}
+          style={styles(theme).headerBackButton}
+          onPress={navigation.goBack}
+        />
+      )}
+      <Text variant="headlineLarge">{options.title}</Text>
     </View>
   );
 };
@@ -73,28 +46,28 @@ const Router = (props: NavigationContainerProps) => {
   const theme = useTheme();
   return (
     <NavigationContainer {...props}>
-      <Drawer.Navigator
+      <Stack.Navigator
         screenOptions={{
-          headerShown: false,
-          drawerType: "permanent",
-          drawerStyle: { width: "auto" },
-          sceneContainerStyle: styles(theme).screenContainer,
-          lazy: false,
+          contentStyle: styles(theme).card,
+          header: (props) => <Header {...props} theme={theme} />,
         }}
-        drawerContent={(drawerContentProps) => (
-          <DrawerContent {...drawerContentProps} />
-        )}
       >
-        {drawerItems.map((item) => {
-          return (
-            <Drawer.Screen
-              name={item.route}
-              component={item.component}
-              key={"DrawerScreen-" + item.route}
-            />
-          );
-        })}
-      </Drawer.Navigator>
+        <Stack.Screen
+          name="home"
+          component={HomeDrawer}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="summary"
+          component={SummaryScreen}
+          options={{ title: "Ringkasan Pesanan" }}
+        />
+        <Stack.Screen
+          name="payment"
+          component={PaymentScreen}
+          options={{ title: "Pembayaran" }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
@@ -103,13 +76,21 @@ export default Router;
 
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({
-    screenContainer: {
+    card: {
       backgroundColor: theme.colors.surface,
     },
-    drawerContent: {
-      flex: 1,
-      justifyContent: "space-between",
+    header: {
+      paddingHorizontal: 32,
       paddingVertical: 16,
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.colors.surface,
     },
-    drawerSection: {},
+    headerBackButton: {
+      width: "auto",
+      height: "auto",
+      alignSelf: "center",
+      margin: 0,
+      marginRight: 16,
+    },
   });

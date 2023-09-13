@@ -37,7 +37,7 @@ const NormalizedCashierItem = ({
   );
 };
 
-type SummaryScreenProps = StackScreenProps<CashierStackParamList, "summary">;
+type SummaryScreenProps = StackScreenProps<RootStackParamList, "summary">;
 const SummaryScreen = ({ navigation }: SummaryScreenProps) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);

@@ -21,7 +21,7 @@ type PaymentType = "cash" | "qris";
 const isPaymentType = (value: string): value is PaymentType =>
   value == "cash" || value == "qris";
 
-type PaymentScreenProps = StackScreenProps<CashierStackParamList, "payment">;
+type PaymentScreenProps = StackScreenProps<RootStackParamList, "payment">;
 const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);

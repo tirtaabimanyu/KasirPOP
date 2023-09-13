@@ -4,11 +4,11 @@ import { useTheme, MD3Theme, Text, Button, Card } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import CashierItem from "../../components/CashierItem";
 import { FlatList } from "react-native-gesture-handler";
-import { StackScreenProps } from "@react-navigation/stack";
 import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
 import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
 import { toRupiah } from "../../utils/currencyUtils";
 import mockProducts from "../../helpers/mockProducts";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -57,12 +57,17 @@ const Screen3 = () => <Screen />;
 
 const CashierScreen = ({
   navigation,
-}: StackScreenProps<CashierStackParamList, "cashier">) => {
+}: DrawerScreenProps<HomeDrawerParamList, "cashier">) => {
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);
 
   return (
     <View style={styles(theme).container}>
+      <Card.Title
+        title="Kasir"
+        titleVariant="headlineLarge"
+        style={{ paddingLeft: 0, minHeight: 0 }}
+      />
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
@@ -112,6 +117,7 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
+      paddingTop: 15,
       width: "100%",
     },
     floatingRecapContainer: {
