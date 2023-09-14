@@ -2,6 +2,11 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: ["babel-preset-expo"],
-    plugins: ["react-native-paper/babel", "react-native-reanimated/plugin"],
+    plugins: [
+      "react-native-paper/babel",
+      "react-native-reanimated/plugin",
+      "@babel/transform-react-jsx-source",
+      "babel-plugin-transform-typescript-metadata",
+    ],
   };
 };

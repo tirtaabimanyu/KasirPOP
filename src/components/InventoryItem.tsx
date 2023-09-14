@@ -3,45 +3,71 @@ import {
   Avatar,
   Card,
   useTheme,
-  IconButton,
   MD3Theme,
   Text,
   Button,
+  Chip,
 } from "react-native-paper";
+import { toRupiah } from "../utils/currencyUtils";
 
 interface InventoryItemProps {
-  itemData: any;
+  itemData: CashierItemData;
+  onPressEditStock: () => void;
+  onPressEditDetail: () => void;
 }
 
 const InventoryItem = (props: InventoryItemProps) => {
   const theme = useTheme();
+  const itemAcronym = props.itemData.name.match(/\b(\w)/g)?.join("") || "?";
+
+  const isInStock = props.itemData.stock > 0;
+  let stockDisplay = props.itemData.stock.toString();
+  stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
+
   return (
     <Card mode="outlined">
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
-          <Avatar.Text label="QW" size={40} />
+          {props.itemData.imgUri ? (
+            <Avatar.Image size={40} source={props.itemData.imgUri} />
+          ) : (
+            <Avatar.Text label={itemAcronym} size={40} />
+          )}
         </View>
         <View style={styles(theme).content}>
-          <Text variant="titleMedium">Bakso Kasar</Text>
+          <Text variant="titleMedium">{props.itemData.name}</Text>
           <View style={{ flexDirection: "row" }}>
             <View style={{ minWidth: 48 }}>
               <Text>Harga</Text>
             </View>
-            <Text>: Rp50,000</Text>
+            <Text>{`: ${toRupiah(props.itemData.price)}`}</Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <View style={{ minWidth: 48 }}>
               <Text>Stok</Text>
             </View>
-            <Text>: Selalu Ada</Text>
+            <Text>{`: ${stockDisplay}`}</Text>
           </View>
+          {!isInStock && (
+            <Chip
+              style={{
+                backgroundColor: theme.colors.errorContainer,
+                alignSelf: "flex-start",
+                borderRadius: 100,
+                marginTop: 4,
+              }}
+              textStyle={{
+                marginVertical: 4,
+                color: theme.colors.error,
+                ...theme.fonts.labelSmall,
+              }}
+            >
+              Stok Habis
+            </Chip>
+          )}
         </View>
+
         <View style={styles(theme).right}>
-          <IconButton
-            icon={"delete-outline"}
-            size={24}
-            style={{ marginRight: 8 }}
-          />
           <Button mode="outlined" style={{ marginRight: 8 }}>
             Ubah Produk
           </Button>
@@ -71,7 +97,6 @@ const styles = (theme: MD3Theme) =>
       marginRight: 16,
     },
     right: {
-      //   backgroundColor: "green",
       flexDirection: "row",
       justifyContent: "flex-end",
       alignItems: "center",

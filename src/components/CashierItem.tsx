@@ -28,11 +28,9 @@ interface CashierItemProps {
 const CashierItem = (props: CashierItemProps) => {
   const theme = useTheme();
   const itemAcronym = props.itemData.name.match(/\b(\w)/g)?.join("") || "?";
-  const stockIsEmpty = props.itemData.stock > 0;
 
-  let stockDisplay = stockIsEmpty
-    ? props.itemData.stock.toString()
-    : "STOK HABIS";
+  const isInStock = props.itemData.stock > 0;
+  let stockDisplay = isInStock ? props.itemData.stock.toString() : "STOK HABIS";
   stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
 
   const increaseDisabled =
@@ -122,6 +120,9 @@ const CashierItem = (props: CashierItemProps) => {
               size={24}
               onPress={props.onPressIncrease}
               style={{ margin: 0 }}
+              containerColor={theme.colors.primary}
+              iconColor="white"
+              disabled={!isInStock}
             />
           )}
         </View>

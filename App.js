@@ -5,18 +5,21 @@ import { Provider as ReduxProvider } from "react-redux";
 
 import Router from "./src/routes";
 import store from "./src/redux/store";
+import { DatabaseConnectionProvider } from "./src/data/connection";
 
 export default function App() {
   return (
-    <PaperProvider>
+    <DatabaseConnectionProvider>
       <ReduxProvider store={store}>
         <SafeAreaProvider>
-          <SafeAreaView style={{ flex: 1 }}>
-            <StatusBar style="auto" />
-            <Router />
-          </SafeAreaView>
+          <PaperProvider>
+            <SafeAreaView style={{ flex: 1 }}>
+              <StatusBar style="auto" />
+              <Router />
+            </SafeAreaView>
+          </PaperProvider>
         </SafeAreaProvider>
       </ReduxProvider>
-    </PaperProvider>
+    </DatabaseConnectionProvider>
   );
 }

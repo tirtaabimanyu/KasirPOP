@@ -20,7 +20,7 @@ const mockProducts: CashierItemData[] = [
     name: "Bakso Ayam",
     price: 30000,
     isAlwaysInStock: false,
-    stock: 5,
+    stock: 0,
     imgUri: null,
   },
 ];
