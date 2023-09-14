@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { ProductModel } from "../../data/entities/ProductModel";
 
 export type ProductState = {
   products: ProductData[];

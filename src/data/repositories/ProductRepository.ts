@@ -1,12 +1,13 @@
 import { DataSource, MoreThan, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
+import { ImageSourcePropType } from "react-native";
 
 interface ICreateProductData {
   name: string;
   stock: number;
   isAlwaysInStock: boolean;
   price: number;
-  imgUri?: string;
+  imgUri?: ImageSourcePropType;
 }
 
 export class ProductRepository {

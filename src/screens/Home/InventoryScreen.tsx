@@ -1,16 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import InventoryItem from "../../components/InventoryItem";
 import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
-import {
-  MaterialTopTabScreenProps,
-  createMaterialTopTabNavigator,
-} from "@react-navigation/material-top-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ProductModel } from "../../data/entities/ProductModel";
 
 type TabFlatListType = {
@@ -47,9 +44,25 @@ export const InventoryScreen = (
     setProducts(serializedProducts);
   };
 
+  const fetchCategory = async () => {
+    const productCategories = await productCategoryRepository.getAll();
+    const serializedProductCategories: { id: string; name: string }[] = [];
+    productCategories.forEach((v) =>
+      serializedProductCategories.push({
+        id: v.id.toString(),
+        name: v.name,
+      })
+    );
+    setCategories(serializedProductCategories);
+  };
+
   const theme = useTheme();
-  const { productRepository } = useDatabaseConnection();
+  const { productRepository, productCategoryRepository } =
+    useDatabaseConnection();
   const [products, setProducts] = useState<ProductData[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
   const inStockProducts = products.filter(
     (product) => product.isAlwaysInStock || product.stock > 0
   );
@@ -68,11 +81,15 @@ export const InventoryScreen = (
   useFocusEffect(
     useCallback(() => {
       fetch();
+      fetchCategory();
     }, [])
   );
 
   return (
     <View style={styles(theme).container}>
+      {categories.map((e, idx) => (
+        <Text key={`cat-${idx}`}>{e.name}</Text>
+      ))}
       <Card.Title
         title="Inventori"
         titleVariant="headlineLarge"
@@ -102,7 +119,29 @@ export const InventoryScreen = (
                 await fetch();
               }}
             >
-              Hapus Semua
+              Hapus Semua Produk
+            </Button>
+            <Button
+              mode="contained"
+              icon={"plus"}
+              onPress={async () => {
+                await productCategoryRepository.create({
+                  name: Math.random().toString(),
+                });
+                await fetchCategory();
+              }}
+            >
+              Tambah Kategori
+            </Button>
+            <Button
+              mode="contained"
+              icon={"minus"}
+              onPress={async () => {
+                await productCategoryRepository.deleteAll();
+                await fetchCategory();
+              }}
+            >
+              Hapus Semua Kategori
             </Button>
           </View>
         )}
