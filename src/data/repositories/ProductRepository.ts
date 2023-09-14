@@ -9,7 +9,7 @@ interface ICreateProductData {
   imgUri?: string;
 }
 
-export class ProductsRepository {
+export class ProductRepository {
   private ormRepository: Repository<ProductModel>;
 
   constructor(connection: DataSource) {

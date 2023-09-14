@@ -63,9 +63,9 @@ const CashierScreen = ({
   const theme = useTheme();
   const cartState = useAppSelector((state) => state.cart);
 
-  const { productsRepository } = useDatabaseConnection();
+  const { productRepository } = useDatabaseConnection();
   const fetch = async () => {
-    const products = await productsRepository.getAll();
+    const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
     products.forEach((product) =>
       serializedProducts.push({

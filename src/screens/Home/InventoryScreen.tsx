@@ -32,7 +32,7 @@ export const InventoryScreen = (
   >
 ) => {
   const fetch = async () => {
-    const products = await productsRepository.getAll();
+    const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
     products.forEach((v) =>
       serializedProducts.push({
@@ -48,7 +48,7 @@ export const InventoryScreen = (
   };
 
   const theme = useTheme();
-  const { productsRepository } = useDatabaseConnection();
+  const { productRepository } = useDatabaseConnection();
   const [products, setProducts] = useState<ProductData[]>([]);
   const inStockProducts = products.filter(
     (product) => product.isAlwaysInStock || product.stock > 0
@@ -83,7 +83,7 @@ export const InventoryScreen = (
               mode="contained"
               icon={"plus"}
               onPress={async () => {
-                await productsRepository.create({
+                await productRepository.create({
                   name: Math.random().toString(),
                   stock: Math.round(Math.random()),
                   isAlwaysInStock: false,
@@ -98,7 +98,7 @@ export const InventoryScreen = (
               mode="contained"
               icon={"minus"}
               onPress={async () => {
-                await productsRepository.deleteAll();
+                await productRepository.deleteAll();
                 await fetch();
               }}
             >

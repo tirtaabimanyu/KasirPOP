@@ -1,7 +1,6 @@
 import React, {
   PropsWithChildren,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -10,11 +9,13 @@ import { ActivityIndicator } from "react-native-paper";
 import { DataSource } from "typeorm";
 
 import { AppDataSource } from "./app-data-source";
-import { ProductsRepository } from "./repositories/ProductsRepository";
+import { ProductRepository } from "./repositories/ProductRepository";
+import { ProductCategoryRepository } from "./repositories/ProductCategoryRepository";
 import { StyleSheet, View } from "react-native";
 
 interface DatabaseConnectionContextData {
-  productsRepository: ProductsRepository;
+  productRepository: ProductRepository;
+  productCategoryRepository: ProductCategoryRepository;
 }
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
@@ -55,7 +56,8 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
   return (
     <DatabaseConnectionContext.Provider
       value={{
-        productsRepository: new ProductsRepository(connection),
+        productRepository: new ProductRepository(connection),
+        productCategoryRepository: new ProductCategoryRepository(connection),
       }}
     >
       {children}
