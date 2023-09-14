@@ -1,10 +1,4 @@
-import {
-  StyleProp,
-  StyleSheet,
-  StyleSheetProperties,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import {
   Avatar,
   Card,
@@ -18,7 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { toRupiah } from "../utils/currencyUtils";
 
 interface CashierItemProps {
-  itemData: CashierItemData;
+  itemData: ProductData;
   cartQuantity: number;
   onPressDecrease: () => void;
   onPressIncrease: () => void;

@@ -1,4 +1,4 @@
-type CashierItemData = {
+type ProductData = {
   id: string;
   name: string;
   price: number;

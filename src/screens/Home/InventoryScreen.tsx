@@ -12,39 +12,18 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
 import { useCallback, useEffect, useState } from "react";
 import { ProductModel } from "../../data/entities/ProductModel";
-import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
-import { AppDispatch } from "../../redux/store";
-import { fetchProducts } from "../../redux/slices/productSlice";
 
+type TabFlatListType = {
+  products: ProductModel[];
+};
 type InventoryTabParamList = {
-  semua: undefined;
-  inStock: undefined;
-  outOfStock: undefined;
+  allProduct: TabFlatListType;
+  inStock: TabFlatListType;
+  outOfStock: TabFlatListType;
 };
 const Tab = createMaterialTopTabNavigator<InventoryTabParamList>();
 
 const RowSeparator = () => <View style={{ height: 24 }} />;
-const Semua = ({
-  route,
-}: MaterialTopTabScreenProps<InventoryTabParamList, "semua">) => {
-  const productsState = useAppSelector((state) => state.products);
-
-  return (
-    <FlatList
-      contentContainerStyle={{ paddingVertical: 24 }}
-      renderItem={({ item }) => (
-        <InventoryItem
-          itemData={item}
-          onPressEditStock={() => null}
-          onPressEditDetail={() => null}
-        />
-      )}
-      ItemSeparatorComponent={RowSeparator}
-      data={productsState.products}
-      showsVerticalScrollIndicator={false}
-    />
-  );
-};
 
 export const InventoryScreen = (
   props: CompositeScreenProps<
@@ -52,12 +31,9 @@ export const InventoryScreen = (
     DrawerScreenProps<HomeDrawerParamList, "inventory">
   >
 ) => {
-  const theme = useTheme();
-  const { productsRepository } = useDatabaseConnection();
-
-  const fetch = async (dispatch: AppDispatch) => {
+  const fetch = async () => {
     const products = await productsRepository.getAll();
-    const serializedProducts: CashierItemData[] = [];
+    const serializedProducts: ProductData[] = [];
     products.forEach((v) =>
       serializedProducts.push({
         id: v.id.toString(),
@@ -68,13 +44,32 @@ export const InventoryScreen = (
         imgUri: v.imgUri,
       })
     );
-    dispatch(fetchProducts(serializedProducts));
+    setProducts(serializedProducts);
   };
 
-  const dispatch = useAppDispatch();
-  useFocusEffect(() => {
-    fetch(dispatch);
-  });
+  const theme = useTheme();
+  const { productsRepository } = useDatabaseConnection();
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const inStockProducts = products.filter(
+    (product) => product.isAlwaysInStock || product.stock > 0
+  );
+  const outOfStockProducts = products.filter(
+    (product) => !product.isAlwaysInStock && product.stock == 0
+  );
+  const tabCategories = [
+    { name: "Semua", data: products },
+    { name: "Aktif", data: inStockProducts },
+    {
+      name: `Stok Habis (${outOfStockProducts.length})`,
+      data: outOfStockProducts,
+    },
+  ];
+
+  useFocusEffect(
+    useCallback(() => {
+      fetch();
+    }, [])
+  );
 
   return (
     <View style={styles(theme).container}>
@@ -94,7 +89,7 @@ export const InventoryScreen = (
                   isAlwaysInStock: false,
                   price: 10000,
                 });
-                await fetch(dispatch);
+                await fetch();
               }}
             >
               Tambah Produk
@@ -104,7 +99,7 @@ export const InventoryScreen = (
               icon={"minus"}
               onPress={async () => {
                 await productsRepository.deleteAll();
-                await fetch(dispatch);
+                await fetch();
               }}
             >
               Hapus Semua
@@ -126,21 +121,63 @@ export const InventoryScreen = (
           tabBarItemStyle: { width: "auto" },
         }}
       >
-        <Tab.Screen
-          name="semua"
-          options={{ title: "Semua" }}
-          component={Semua}
-        />
-        {/* <Tab.Screen
-          name="inStock"
-          options={{ title: "Aktif" }}
-          component={Screen1}
-        />
+        <Tab.Screen name="allProduct" options={{ title: "Semua" }}>
+          {(props) => (
+            <FlatList
+              {...props}
+              contentContainerStyle={{ paddingVertical: 24 }}
+              renderItem={({ item }) => (
+                <InventoryItem
+                  itemData={item}
+                  onPressEditStock={() => null}
+                  onPressEditDetail={() => null}
+                />
+              )}
+              ItemSeparatorComponent={RowSeparator}
+              data={products}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </Tab.Screen>
+        <Tab.Screen name="inStock" options={{ title: "Aktif" }}>
+          {(props) => (
+            <FlatList
+              {...props}
+              contentContainerStyle={{ paddingVertical: 24 }}
+              renderItem={({ item }) => (
+                <InventoryItem
+                  itemData={item}
+                  onPressEditStock={() => null}
+                  onPressEditDetail={() => null}
+                />
+              )}
+              ItemSeparatorComponent={RowSeparator}
+              data={inStockProducts}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </Tab.Screen>
         <Tab.Screen
           name="outOfStock"
-          options={{ title: "Stok Habis" }}
-          component={Screen1}
-        /> */}
+          options={{ title: `Stok Habis (${outOfStockProducts.length})` }}
+        >
+          {(props) => (
+            <FlatList
+              {...props}
+              contentContainerStyle={{ paddingVertical: 24 }}
+              renderItem={({ item }) => (
+                <InventoryItem
+                  itemData={item}
+                  onPressEditStock={() => null}
+                  onPressEditDetail={() => null}
+                />
+              )}
+              ItemSeparatorComponent={RowSeparator}
+              data={outOfStockProducts}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </Tab.Screen>
       </Tab.Navigator>
     </View>
   );

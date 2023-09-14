@@ -5,7 +5,7 @@ import { default as productReducer } from "./slices/productSlice";
 const store = configureStore({
   reducer: {
     cart: cartReducer,
-    products: productReducer,
+    product: productReducer,
   },
 });
 

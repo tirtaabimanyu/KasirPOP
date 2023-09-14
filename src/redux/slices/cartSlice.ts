@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-interface CartItemData extends CashierItemData {
+interface CartItemData extends ProductData {
   quantity: number;
 }
 
@@ -19,7 +19,7 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<CashierItemData>) => {
+    addToCart: (state, action: PayloadAction<ProductData>) => {
       const id = action.payload.id;
       if (id in state.products) {
         state.products[id].quantity += 1;
@@ -29,7 +29,7 @@ export const cartSlice = createSlice({
       state.totalItem += 1;
       state.totalPrice += action.payload.price;
     },
-    removeFromCart: (state, action: PayloadAction<CashierItemData>) => {
+    removeFromCart: (state, action: PayloadAction<ProductData>) => {
       const id = action.payload.id;
       if (!(id in state.products)) {
         return;

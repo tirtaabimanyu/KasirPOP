@@ -11,7 +11,7 @@ import {
 import { toRupiah } from "../utils/currencyUtils";
 
 interface InventoryItemProps {
-  itemData: CashierItemData;
+  itemData: ProductData;
   onPressEditStock: () => void;
   onPressEditDetail: () => void;
 }

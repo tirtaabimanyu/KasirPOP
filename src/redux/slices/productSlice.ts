@@ -3,16 +3,16 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { ProductModel } from "../../data/entities/ProductModel";
 
 export type ProductState = {
-  products: CashierItemData[];
+  products: ProductData[];
 };
 
 const initialState: ProductState = { products: [] };
 
 export const productSlice = createSlice({
-  name: "cart",
+  name: "product",
   initialState: initialState,
   reducers: {
-    fetchProducts: (state, action: PayloadAction<CashierItemData[]>) => {
+    fetchProducts: (state, action: PayloadAction<ProductData[]>) => {
       state.products = action.payload;
     },
   },

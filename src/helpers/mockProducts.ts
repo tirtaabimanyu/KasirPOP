@@ -1,4 +1,4 @@
-const mockProducts: CashierItemData[] = [
+const mockProducts: ProductData[] = [
   {
     id: "1",
     name: "Bakso Komplit",

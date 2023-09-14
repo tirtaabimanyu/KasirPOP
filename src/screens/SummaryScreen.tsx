@@ -20,7 +20,7 @@ const NormalizedCashierItem = ({
   cart,
   dispatch,
 }: {
-  itemData: CashierItemData;
+  itemData: ProductData;
   cart: CartState;
   dispatch: AppDispatch;
 }) => {
