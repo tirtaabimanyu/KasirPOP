@@ -34,6 +34,7 @@ const AddProductScreen = ({
     isAlwaysInStock: false,
     price: 0,
     imgUri: undefined,
+    categories: undefined,
   };
   const [productData, setProductData] =
     useState<CreateProductData>(initialData);
@@ -65,7 +66,10 @@ const AddProductScreen = ({
   };
 
   const createItem = async () => {
-    const data = { ...productData, categories: Object.values(categories) };
+    const data = {
+      ...productData,
+      categories: Object.values(selectedCategories),
+    };
     await productRepository.create(data);
     navigation.navigate("home", { screen: "inventory" });
   };
@@ -177,9 +181,12 @@ const AddProductScreen = ({
               icon={"plus"}
               mode="outlined"
               style={{ backgroundColor: "transparent" }}
-              onPress={() =>
-                navigation.navigate("home", { screen: "settings" })
-              }
+              onPress={async () => {
+                await categoryRepository.create({
+                  name: Math.random().toString(),
+                });
+                await fetchCategory();
+              }}
             >
               Tambah Etalase
             </Chip>

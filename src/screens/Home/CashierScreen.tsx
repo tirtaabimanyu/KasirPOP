@@ -22,9 +22,15 @@ import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
 import { useCallback, useEffect, useState } from "react";
+import { CategoryModel } from "../../data/entities/CategoryModel";
+import { CategoryRepository } from "../../data/repositories/CategoryRepository";
+import { ProductRepository } from "../../data/repositories/ProductRepository";
 
+type TabScreenParams = {
+  category: CategoryModel;
+};
 type CashierTopTabParamList = {
-  [key: string]: { products: ProductData[] };
+  [key: string]: TabScreenParams;
 };
 const Tab = createMaterialTopTabNavigator<CashierTopTabParamList>();
 
@@ -54,6 +60,101 @@ const NormalizedCashierItem = ({
   );
 };
 
+interface TabFlatListProps
+  extends MaterialTopTabScreenProps<CashierTopTabParamList> {
+  data: ProductData[];
+}
+const TabFlatList = (props: TabFlatListProps) => (
+  <FlatList
+    {...props}
+    contentContainerStyle={{ paddingBottom: 200, paddingTop: 24 }}
+    columnWrapperStyle={{
+      paddingBottom: 12,
+      justifyContent: "space-between",
+    }}
+    renderItem={({ item, index }) => (
+      <NormalizedCashierItem itemData={item} index={index} />
+    )}
+    data={props.data}
+    numColumns={2}
+    showsVerticalScrollIndicator={false}
+  />
+);
+
+const AllFlatList = (
+  props: MaterialTopTabScreenProps<CashierTopTabParamList>
+) => {
+  const { productRepository } = useDatabaseConnection();
+  const [products, setProducts] = useState<ProductData[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProducts = async (
+        repository: ProductRepository,
+        setValue: React.Dispatch<React.SetStateAction<ProductData[]>>
+      ) => {
+        const fetchedProducts = await repository.getAll();
+        const serializedProducts: ProductData[] = [];
+
+        fetchedProducts.forEach((product) =>
+          serializedProducts.push({
+            id: product.id.toString(),
+            name: product.name,
+            stock: product.stock,
+            isAlwaysInStock: product.isAlwaysInStock,
+            price: product.price,
+            imgUri: product.imgUri,
+          })
+        );
+
+        setValue(serializedProducts);
+      };
+
+      fetchProducts(productRepository, setProducts);
+    }, [setProducts])
+  );
+
+  return <TabFlatList {...props} data={products} />;
+};
+
+const CategoryFlatList = (
+  props: MaterialTopTabScreenProps<CashierTopTabParamList>
+) => {
+  const { categoryRepository } = useDatabaseConnection();
+  const [products, setProducts] = useState<ProductData[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProducts = async (
+        category: CategoryModel,
+        repository: CategoryRepository,
+        setValue: React.Dispatch<React.SetStateAction<ProductData[]>>
+      ) => {
+        const fetchedCategory = await repository.getWithProducts(category);
+
+        const serializedProducts: ProductData[] = [];
+        fetchedCategory?.products.forEach((product) =>
+          serializedProducts.push({
+            id: product.id.toString(),
+            name: product.name,
+            stock: product.stock,
+            isAlwaysInStock: product.isAlwaysInStock,
+            price: product.price,
+            imgUri: product.imgUri,
+          })
+        );
+
+        setValue(serializedProducts);
+      };
+
+      const { category } = props.route.params;
+      fetchProducts(category, categoryRepository, setProducts);
+    }, [setProducts])
+  );
+
+  return <TabFlatList {...props} data={products} />;
+};
+
 const CashierScreen = ({
   navigation,
 }: CompositeScreenProps<
@@ -63,64 +164,44 @@ const CashierScreen = ({
   const theme = useTheme();
   const cartState = useAppSelector((state) => state.cart);
 
-  const { productRepository } = useDatabaseConnection();
-  const fetch = async () => {
-    const products = await productRepository.getAll();
-    const serializedProducts: ProductData[] = [];
-    products.forEach((product) =>
-      serializedProducts.push({
-        id: product.id.toString(),
-        name: product.name,
-        stock: product.stock,
-        isAlwaysInStock: product.isAlwaysInStock,
-        price: product.price,
-        imgUri: product.imgUri,
-      })
-    );
-    return serializedProducts;
-  };
+  const { categoryRepository } = useDatabaseConnection();
 
-  const productCategories = ["Semua"];
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [tabScreens, setTabScreens] = useState<
     {
       name: string;
       component: (
         props: MaterialTopTabScreenProps<CashierTopTabParamList>
       ) => React.JSX.Element;
+      initialParams: TabScreenParams;
     }[]
   >([]);
 
   useFocusEffect(
     useCallback(() => {
-      setTabScreens([]);
-      productCategories.forEach(async (category) => {
-        const products = await fetch();
-        const component = (
-          props: MaterialTopTabScreenProps<CashierTopTabParamList>
-        ) => (
-          <FlatList
-            {...props}
-            contentContainerStyle={{ paddingBottom: 200, paddingTop: 24 }}
-            columnWrapperStyle={{
-              paddingBottom: 12,
-              justifyContent: "space-between",
-            }}
-            renderItem={({ item, index }) => (
-              <NormalizedCashierItem itemData={item} index={index} />
-            )}
-            data={products}
-            numColumns={2}
-            showsVerticalScrollIndicator={false}
-          />
-        );
-        const tabScreen = {
-          name: category,
-          component: component,
-        };
-        setTabScreens([...tabScreens, tabScreen]);
-        console.log(tabScreens);
-      });
+      const fetchCategories = async () => {
+        const categories = await categoryRepository.getAll();
+        setCategories(categories);
+      };
+      fetchCategories();
     }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setTabScreens([]);
+      categories.forEach(async (category) => {
+        const component = CategoryFlatList;
+        const tabScreen = {
+          name: category.name,
+          component: component,
+          initialParams: {
+            category: category,
+          },
+        };
+        setTabScreens((state) => [...state, tabScreen]);
+      });
+    }, [categories])
   );
 
   return (
@@ -144,10 +225,14 @@ const CashierScreen = ({
             tabBarItemStyle: { width: "auto" },
           }}
         >
+          <Tab.Screen name={"Semua"} component={AllFlatList} />
           {tabScreens.map((screen) => (
-            <Tab.Screen key={`tabScreen-${screen.name}`} name={screen.name}>
-              {screen.component}
-            </Tab.Screen>
+            <Tab.Screen
+              key={`tabScreen-${screen.name}`}
+              name={screen.name}
+              component={screen.component}
+              initialParams={screen.initialParams}
+            />
           ))}
         </Tab.Navigator>
       ) : (

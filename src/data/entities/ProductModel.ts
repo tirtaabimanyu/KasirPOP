@@ -4,8 +4,9 @@ import {
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
+  Relation,
 } from "typeorm";
-import { CategoryModel } from "./CategoryModel";
+import type { CategoryModel } from "./CategoryModel";
 
 @Entity("products")
 export class ProductModel {
@@ -27,7 +28,9 @@ export class ProductModel {
   @Column({ nullable: true })
   imgUri?: string;
 
-  @ManyToMany(() => CategoryModel)
+  @ManyToMany("CategoryModel", "products", {
+    cascade: true,
+  })
   @JoinTable()
-  categories: CategoryModel[];
+  categories: Relation<CategoryModel[]>;
 }

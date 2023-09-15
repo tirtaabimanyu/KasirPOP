@@ -12,10 +12,31 @@ export class CategoryRepository {
     this.ormRepository = connection.getRepository(CategoryModel);
   }
 
-  public async getAll(): Promise<CategoryModel[]> {
-    const categories = await this.ormRepository.find();
+  public async getAll(options?: {
+    withProducts: boolean;
+  }): Promise<CategoryModel[]> {
+    const categories = await this.ormRepository.find({
+      relations: {
+        products: options?.withProducts,
+      },
+    });
 
     return categories;
+  }
+
+  public async getWithProducts(
+    category: CategoryModel
+  ): Promise<CategoryModel | null> {
+    const newCategory = await this.ormRepository.findOne({
+      relations: {
+        products: true,
+      },
+      where: {
+        id: category.id,
+      },
+    });
+
+    return newCategory;
   }
 
   public async create({

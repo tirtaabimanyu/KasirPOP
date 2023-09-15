@@ -1,5 +1,6 @@
-import { DataSource, MoreThan, Repository } from "typeorm";
+import { ArrayContains, DataSource, MoreThan, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
+import { CategoryModel } from "../entities/CategoryModel";
 
 export class ProductRepository {
   private ormRepository: Repository<ProductModel>;
@@ -9,7 +10,11 @@ export class ProductRepository {
   }
 
   public async getAll(): Promise<ProductModel[]> {
-    const products = await this.ormRepository.find();
+    const products = await this.ormRepository.find({
+      relations: {
+        categories: true,
+      },
+    });
 
     return products;
   }
@@ -44,11 +49,11 @@ export class ProductRepository {
       isAlwaysInStock,
       price,
       imgUri,
-      categories,
     });
-
+    if (categories != undefined) {
+      product.categories = categories;
+    }
     await this.ormRepository.save(product);
-
     return product;
   }
 

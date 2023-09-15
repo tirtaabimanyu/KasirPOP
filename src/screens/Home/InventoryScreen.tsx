@@ -41,7 +41,7 @@ const InventoryScreen = ({
   const fetch = async () => {
     const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
-    products.forEach((v) =>
+    products.forEach((v) => {
       serializedProducts.push({
         id: v.id.toString(),
         name: v.name,
@@ -49,8 +49,8 @@ const InventoryScreen = ({
         isAlwaysInStock: v.isAlwaysInStock,
         price: v.price,
         imgUri: v.imgUri,
-      })
-    );
+      });
+    });
     setProducts(serializedProducts);
   };
 
