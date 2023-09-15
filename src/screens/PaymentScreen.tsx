@@ -81,11 +81,7 @@ const PaymentScreen = ({
   return (
     <View style={styles(theme).container}>
       <Portal>
-        <Dialog
-          visible={visible}
-          style={{ backgroundColor: "white" }}
-          dismissable={false}
-        >
+        <Dialog visible={visible} dismissable={false}>
           <Dialog.Icon
             icon={"check-circle"}
             size={24}

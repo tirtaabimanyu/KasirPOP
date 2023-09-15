@@ -33,8 +33,13 @@ const CashierItem = (props: CashierItemProps) => {
   return (
     <Card
       mode="outlined"
-      style={props.style}
-      contentStyle={{ backgroundColor: theme.colors.onPrimary }}
+      style={[
+        {
+          borderColor: theme.colors.outlineVariant,
+          backgroundColor: theme.colors.onPrimary,
+        },
+        props.style,
+      ]}
     >
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>

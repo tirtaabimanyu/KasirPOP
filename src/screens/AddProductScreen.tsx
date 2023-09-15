@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Alert, Image, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
@@ -10,13 +10,13 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { toNumber, toRupiah } from "../utils/currencyUtils";
-import * as ImagePicker from "expo-image-picker";
 import { useDatabaseConnection } from "../data/connection";
 import { ScrollView } from "react-native-gesture-handler";
 import { CategoryModel } from "../data/entities/CategoryModel";
+import InputImagePicker from "../components/InputImagePicker";
 
 const AddProductScreen = ({
   navigation,
@@ -24,9 +24,13 @@ const AddProductScreen = ({
   const theme = useTheme();
   const { productRepository, categoryRepository } = useDatabaseConnection();
   const [categories, setCategories] = useState<CategoryModel[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<{
+
+  const initialSelectedCategories: {
     [key: number]: CategoryModel;
-  }>({});
+  } = {};
+  const [selectedCategories, setSelectedCategories] = useState(
+    initialSelectedCategories
+  );
 
   const initialData: CreateProductData = {
     name: "",
@@ -34,62 +38,113 @@ const AddProductScreen = ({
     isAlwaysInStock: false,
     price: 0,
     imgUri: undefined,
-    categories: undefined,
   };
   const [productData, setProductData] =
     useState<CreateProductData>(initialData);
+  const hasUnsavedChanges =
+    JSON.stringify(initialData) !== JSON.stringify(productData) ||
+    Object.keys(selectedCategories).length > 0;
 
-  const productImage = productData.imgUri
-    ? { uri: productData.imgUri }
-    : require("../../assets/image-placeholder.png");
+  const initialIsDirty: { [key in keyof CreateProductData]: boolean } = {
+    name: false,
+    stock: false,
+    isAlwaysInStock: false,
+    price: false,
+    imgUri: false,
+    categories: false,
+  };
+  const [isDirty, setIsDirty] = useState(initialIsDirty);
 
-  const fetchCategory = async () => {
+  const initialErrors: { [key in keyof CreateProductData]: string[] } = {
+    name: [],
+    stock: [],
+    isAlwaysInStock: [],
+    price: [],
+  };
+  const [errors, setErrors] = useState(initialErrors);
+  const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
+
+  const resetForm = useCallback(() => {
+    setProductData(initialData);
+    setSelectedCategories(initialSelectedCategories);
+    setIsDirty(initialIsDirty);
+    setErrors(initialErrors);
+  }, [setProductData, setSelectedCategories, setIsDirty, setErrors]);
+
+  const fetchCategory = useCallback(async () => {
     const categories = await categoryRepository.getAll();
     setCategories(categories);
-  };
+  }, [categoryRepository, setCategories]);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-      base64: true,
-    });
-
-    if (!result.cancelled) {
-      setProductData({
-        ...productData,
-        imgUri: `data:image/jpeg;base64,${result.base64}`,
-      });
-    }
-  };
-
-  const createItem = async () => {
+  const createItem = useCallback(async () => {
     const data = {
       ...productData,
       categories: Object.values(selectedCategories),
     };
     await productRepository.create(data);
+    resetForm();
     navigation.navigate("home", { screen: "inventory" });
-  };
+  }, [
+    productData,
+    selectedCategories,
+    productRepository,
+    resetForm,
+    navigation,
+  ]);
 
-  const toggleCategory = (category: CategoryModel) => {
-    if (category.id in selectedCategories) {
-      setSelectedCategories((state) => {
-        const { [category.id]: categoryId, ...rest } = state;
-        return rest;
-      });
-    } else {
-      setSelectedCategories((state) => {
-        return { ...state, [category.id]: category };
-      });
+  const toggleCategory = useCallback(
+    (category: CategoryModel) => {
+      setIsDirty((state) => ({ ...state, categories: true }));
+      if (category.id in selectedCategories) {
+        setSelectedCategories((state) => {
+          const { [category.id]: categoryId, ...rest } = state;
+          return rest;
+        });
+      } else {
+        setSelectedCategories((state) => {
+          return { ...state, [category.id]: category };
+        });
+      }
+    },
+    [selectedCategories, setSelectedCategories, setIsDirty]
+  );
+
+  useEffect(() => {
+    const newErrors = initialErrors;
+    if (productData.name.length == 0) {
+      newErrors["name"].push("Nama produk tidak boleh kosong");
     }
-  };
+    setErrors(newErrors);
+  }, [productData, hasUnsavedChanges]);
 
   useEffect(() => {
     fetchCategory();
   }, []);
+
+  useEffect(
+    () =>
+      navigation.addListener("beforeRemove", (e) => {
+        if (!hasUnsavedChanges) {
+          return;
+        }
+
+        e.preventDefault();
+
+        Alert.alert(
+          "Apakah Anda yakin keluar halaman?",
+          "Perubahan yang ada di halaman ini akan hilang jika Anda keluar halaman.",
+          [
+            { text: "Batal", style: "cancel", onPress: () => {} },
+            {
+              text: "Keluar Halaman",
+              style: "destructive",
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ]
+        );
+      }),
+    [navigation, hasUnsavedChanges]
+  );
 
   return (
     <ScrollView
@@ -98,63 +153,52 @@ const AddProductScreen = ({
     >
       <Card
         mode="outlined"
-        style={{ marginBottom: 24 }}
-        contentStyle={{ padding: 24, backgroundColor: "white" }}
+        style={styles(theme).formCard}
+        contentStyle={styles(theme).formCardContent}
       >
-        <View style={{ marginBottom: 24 }}>
-          <Text variant="bodySmall" style={{ marginBottom: 8 }}>
+        <View style={styles(theme).formItem}>
+          <Text variant="bodySmall" style={styles(theme).label}>
             Foto Produk (Opsional)
           </Text>
-          <Card
-            mode="outlined"
-            style={{ borderRadius: 4, backgroundColor: "transparent" }}
-            contentStyle={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 8,
+          <InputImagePicker
+            imgUri={productData.imgUri}
+            onRemoveImage={() => {
+              setProductData((state) => ({ ...state, imgUri: undefined }));
             }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image source={productImage} style={{ width: 56, height: 56 }} />
-              <Text variant="bodySmall" style={{ marginLeft: 8 }}>
-                {productData.imgUri
-                  ? "Gambar berhasil dipilih"
-                  : "Belum ada gambar terpilih"}
-              </Text>
-            </View>
-            {productData.imgUri ? (
-              <Button
-                mode="text"
-                icon={"trash-can-outline"}
-                onPress={() =>
-                  setProductData({ ...productData, imgUri: undefined })
-                }
-                textColor={theme.colors.error}
-              >
-                Hapus Foto
-              </Button>
-            ) : (
-              <Button mode="text" icon={"plus"} onPress={pickImage}>
-                Unggah Foto
-              </Button>
-            )}
-          </Card>
+            onSelectImage={(uri) => {
+              setIsDirty((state) => ({ ...state, imgUri: true }));
+              setProductData((state) => ({ ...state, imgUri: uri }));
+            }}
+            base64
+          />
         </View>
-        <TextInput
-          label={"Nama Produk"}
-          mode="outlined"
-          value={productData.name}
-          onChangeText={(value) =>
-            setProductData({ ...productData, name: value })
-          }
-          style={{ marginBottom: 24, backgroundColor: "transparent" }}
-        />
+        <View style={styles(theme).formItem}>
+          <TextInput
+            label={"Nama Produk"}
+            mode="outlined"
+            value={productData.name}
+            onChangeText={(value) => {
+              setIsDirty((state) => ({ ...state, name: true }));
+              setProductData({ ...productData, name: value });
+            }}
+            style={styles(theme).transparent}
+            error={isDirty["name"] && errors["name"].length > 0}
+          />
+          {isDirty["name"] &&
+            errors["name"].map((value, idx) => (
+              <Text
+                key={`error-name-${idx}`}
+                style={{ color: theme.colors.error, marginTop: 4 }}
+              >
+                {value}
+              </Text>
+            ))}
+        </View>
         <View style={{ marginBottom: 24 }}>
-          <Text variant="bodySmall" style={{ marginBottom: 8 }}>
+          <Text variant="bodySmall" style={styles(theme).label}>
             Etalase (Opsional)
           </Text>
-          <View style={{ flexDirection: "row" }}>
+          <View style={[styles(theme).row, { justifyContent: "flex-start" }]}>
             {categories.map((category, idx) => {
               const isSelected = category.id in selectedCategories;
               return (
@@ -180,7 +224,7 @@ const AddProductScreen = ({
             <Chip
               icon={"plus"}
               mode="outlined"
-              style={{ backgroundColor: "transparent" }}
+              style={styles(theme).transparent}
               onPress={async () => {
                 await categoryRepository.create({
                   name: Math.random().toString(),
@@ -192,55 +236,30 @@ const AddProductScreen = ({
             </Chip>
           </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 24,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+        <View style={[styles(theme).row, styles(theme).formItem]}>
+          <View style={styles(theme).row}>
             <Text variant="bodySmall">Stok Selalu Ada</Text>
             <Switch
               value={productData.isAlwaysInStock}
-              onValueChange={() =>
+              onValueChange={() => {
+                setIsDirty((state) => ({ ...state, isAlwaysInStock: true }));
                 setProductData({
                   ...productData,
                   isAlwaysInStock: !productData.isAlwaysInStock,
-                })
-              }
+                });
+              }}
             />
           </View>
-          <Divider
-            style={{
-              width: 1,
-              height: "100%",
-              marginLeft: 32,
-              marginRight: 40,
-            }}
-          />
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <Divider style={styles(theme).divider} />
+          <View style={styles(theme).row}>
             <Text variant="bodySmall">Jumlah Stok</Text>
             <TextInput
               keyboardType="numeric"
               value={productData.stock.toString()}
-              onChangeText={(value) =>
-                setProductData({ ...productData, stock: toNumber(value) })
-              }
+              onChangeText={(value) => {
+                setIsDirty((state) => ({ ...state, stock: true }));
+                setProductData({ ...productData, stock: toNumber(value) });
+              }}
               disabled={productData.isAlwaysInStock}
             />
           </View>
@@ -250,16 +269,18 @@ const AddProductScreen = ({
           mode="outlined"
           keyboardType="numeric"
           value={toRupiah(productData.price)}
-          onChangeText={(value) =>
-            setProductData({ ...productData, price: toNumber(value) })
-          }
-          style={{ backgroundColor: "transparent" }}
+          onChangeText={(value) => {
+            setIsDirty((state) => ({ ...state, price: true }));
+            setProductData({ ...productData, price: toNumber(value) });
+          }}
+          style={styles(theme).transparent}
         />
       </Card>
       <Button
         mode="contained"
-        style={{ alignSelf: "flex-end" }}
+        style={styles(theme).saveButton}
         onPress={createItem}
+        disabled={canSubmit}
       >
         Simpan
       </Button>
@@ -276,4 +297,22 @@ const styles = (theme: MD3Theme) =>
       position: "relative",
       paddingHorizontal: 32,
     },
+    formCard: { marginBottom: 24 },
+    formCardContent: { padding: 24, backgroundColor: "white" },
+    divider: {
+      width: 1,
+      height: "100%",
+      marginLeft: 32,
+      marginRight: 40,
+    },
+    saveButton: { alignSelf: "flex-end" },
+    formItem: { marginBottom: 24 },
+    transparent: { backgroundColor: "transparent" },
+    row: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    label: { marginBottom: 8 },
   });
