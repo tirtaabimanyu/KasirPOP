@@ -1,5 +1,5 @@
 type RootStackParamList = {
-  home: undefined;
+  home?: { screen?: keyof HomeDrawerParamList };
   summary: undefined;
   payment: undefined;
   addProduct: undefined;

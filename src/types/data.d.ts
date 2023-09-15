@@ -7,6 +7,15 @@ type ProductData = {
   imgUri?: ImageSourcePropType;
 };
 
+type CreateProductData = {
+  name: string;
+  stock: number;
+  isAlwaysInStock: boolean;
+  price: number;
+  imgUri?: string;
+  categories?: CategoryModel[];
+};
+
 type ProductCategoryData = {
   id: string;
   name: string;

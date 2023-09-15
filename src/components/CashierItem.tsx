@@ -23,7 +23,7 @@ const CashierItem = (props: CashierItemProps) => {
   const theme = useTheme();
   const itemAcronym = props.itemData.name.match(/\b(\w)/g)?.join("") || "?";
 
-  const isInStock = props.itemData.stock > 0;
+  const isInStock = props.itemData.isAlwaysInStock || props.itemData.stock > 0;
   let stockDisplay = isInStock ? props.itemData.stock.toString() : "STOK HABIS";
   stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
 
@@ -39,7 +39,7 @@ const CashierItem = (props: CashierItemProps) => {
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
           {props.itemData.imgUri ? (
-            <Avatar.Image size={40} source={props.itemData.imgUri} />
+            <Avatar.Image size={40} source={{ uri: props.itemData.imgUri }} />
           ) : (
             <Avatar.Text label={itemAcronym} size={40} />
           )}
@@ -64,7 +64,10 @@ const CashierItem = (props: CashierItemProps) => {
                 borderRadius: 100,
               }}
             >
-              <View
+              <TouchableRipple
+                rippleColor={theme.colors.primaryContainer}
+                onPress={props.onPressDecrease}
+                borderless
                 style={{
                   borderRadius: 100,
                   width: 40,
@@ -73,18 +76,15 @@ const CashierItem = (props: CashierItemProps) => {
                   alignItems: "center",
                 }}
               >
-                <TouchableRipple
-                  rippleColor={theme.colors.primaryContainer}
-                  onPress={props.onPressDecrease}
-                  borderless
-                >
-                  <MaterialCommunityIcons name="minus" size={22} />
-                </TouchableRipple>
-              </View>
+                <MaterialCommunityIcons name="minus" size={22} />
+              </TouchableRipple>
               <Text variant="labelLarge" style={{ marginHorizontal: 8 }}>
                 {props.cartQuantity}
               </Text>
-              <View
+              <TouchableRipple
+                rippleColor={theme.colors.primaryContainer}
+                onPress={props.onPressIncrease}
+                borderless
                 style={{
                   borderRadius: 100,
                   width: 40,
@@ -93,23 +93,16 @@ const CashierItem = (props: CashierItemProps) => {
                   alignItems: "center",
                 }}
               >
-                <TouchableRipple
-                  rippleColor={theme.colors.primaryContainer}
-                  onPress={props.onPressIncrease}
-                  borderless
-                  disabled={increaseDisabled}
-                >
-                  <MaterialCommunityIcons
-                    name="plus"
-                    size={22}
-                    color={
-                      increaseDisabled
-                        ? theme.colors.onSurfaceDisabled
-                        : theme.colors.onSurface
-                    }
-                  />
-                </TouchableRipple>
-              </View>
+                <MaterialCommunityIcons
+                  name="plus"
+                  size={22}
+                  color={
+                    increaseDisabled
+                      ? theme.colors.onSurfaceDisabled
+                      : theme.colors.onSurface
+                  }
+                />
+              </TouchableRipple>
             </View>
           ) : (
             <IconButton
@@ -137,6 +130,7 @@ const styles = (theme: MD3Theme) =>
       flexGrow: 1,
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
       padding: 16,
     },
     left: {

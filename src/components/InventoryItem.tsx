@@ -20,7 +20,7 @@ const InventoryItem = (props: InventoryItemProps) => {
   const theme = useTheme();
   const itemAcronym = props.itemData.name.match(/\b(\w)/g)?.join("") || "?";
 
-  const isInStock = props.itemData.stock > 0;
+  const isInStock = props.itemData.isAlwaysInStock || props.itemData.stock > 0;
   let stockDisplay = props.itemData.stock.toString();
   stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
 
@@ -29,7 +29,7 @@ const InventoryItem = (props: InventoryItemProps) => {
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
           {props.itemData.imgUri ? (
-            <Avatar.Image size={40} source={props.itemData.imgUri} />
+            <Avatar.Image size={40} source={{ uri: props.itemData.imgUri }} />
           ) : (
             <Avatar.Text label={itemAcronym} size={40} />
           )}
