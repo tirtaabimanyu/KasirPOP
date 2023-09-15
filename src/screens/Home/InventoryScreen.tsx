@@ -1,7 +1,10 @@
 import { StyleSheet, View } from "react-native";
 import InventoryItem from "../../components/InventoryItem";
 import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import {
+  MaterialTopTabScreenProps,
+  createMaterialTopTabNavigator,
+} from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
@@ -20,6 +23,29 @@ type InventoryTabParamList = {
 };
 const Tab = createMaterialTopTabNavigator<InventoryTabParamList>();
 
+interface TabFlatListProps
+  extends MaterialTopTabScreenProps<InventoryTabParamList> {
+  data: ProductData[];
+}
+const TabFlatList = (props: TabFlatListProps) => {
+  return (
+    <FlatList
+      {...props}
+      contentContainerStyle={{ paddingVertical: 24 }}
+      renderItem={({ item }) => (
+        <InventoryItem
+          itemData={item}
+          onPressEditStock={() => null}
+          onPressEditDetail={() => null}
+        />
+      )}
+      ItemSeparatorComponent={RowSeparator}
+      data={props.data}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+};
+
 const RowSeparator = () => <View style={{ height: 24 }} />;
 
 const InventoryScreen = ({
@@ -29,7 +55,7 @@ const InventoryScreen = ({
   DrawerScreenProps<HomeDrawerParamList, "inventory">
 >) => {
   const theme = useTheme();
-  const { productRepository, categoryRepository } = useDatabaseConnection();
+  const { productRepository } = useDatabaseConnection();
   const [products, setProducts] = useState<ProductData[]>([]);
   const inStockProducts = products.filter(
     (product) => product.isAlwaysInStock || product.stock > 0
@@ -38,7 +64,7 @@ const InventoryScreen = ({
     (product) => !product.isAlwaysInStock && product.stock == 0
   );
 
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
     products.forEach((v) => {
@@ -52,7 +78,7 @@ const InventoryScreen = ({
       });
     });
     setProducts(serializedProducts);
-  };
+  }, [productRepository, setProducts]);
 
   useFocusEffect(
     useCallback(() => {
@@ -105,61 +131,16 @@ const InventoryScreen = ({
         }}
       >
         <Tab.Screen name="allProduct" options={{ title: "Semua" }}>
-          {(props) => (
-            <FlatList
-              {...props}
-              contentContainerStyle={{ paddingVertical: 24 }}
-              renderItem={({ item }) => (
-                <InventoryItem
-                  itemData={item}
-                  onPressEditStock={() => null}
-                  onPressEditDetail={() => null}
-                />
-              )}
-              ItemSeparatorComponent={RowSeparator}
-              data={products}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+          {(props) => <TabFlatList {...props} data={products} />}
         </Tab.Screen>
         <Tab.Screen name="inStock" options={{ title: "Aktif" }}>
-          {(props) => (
-            <FlatList
-              {...props}
-              contentContainerStyle={{ paddingVertical: 24 }}
-              renderItem={({ item }) => (
-                <InventoryItem
-                  itemData={item}
-                  onPressEditStock={() => null}
-                  onPressEditDetail={() => null}
-                />
-              )}
-              ItemSeparatorComponent={RowSeparator}
-              data={inStockProducts}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+          {(props) => <TabFlatList {...props} data={inStockProducts} />}
         </Tab.Screen>
         <Tab.Screen
           name="outOfStock"
           options={{ title: `Stok Habis (${outOfStockProducts.length})` }}
         >
-          {(props) => (
-            <FlatList
-              {...props}
-              contentContainerStyle={{ paddingVertical: 24 }}
-              renderItem={({ item }) => (
-                <InventoryItem
-                  itemData={item}
-                  onPressEditStock={() => null}
-                  onPressEditDetail={() => null}
-                />
-              )}
-              ItemSeparatorComponent={RowSeparator}
-              data={outOfStockProducts}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+          {(props) => <TabFlatList {...props} data={outOfStockProducts} />}
         </Tab.Screen>
       </Tab.Navigator>
     </View>
