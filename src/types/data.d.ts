@@ -6,3 +6,8 @@ type ProductData = {
   stock: number;
   imgUri?: ImageSourcePropType;
 };
+
+type ProductCategoryData = {
+  id: string;
+  name: string;
+};

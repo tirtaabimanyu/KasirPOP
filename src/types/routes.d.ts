@@ -2,6 +2,7 @@ type RootStackParamList = {
   home: undefined;
   summary: undefined;
   payment: undefined;
+  addProduct: undefined;
 };
 
 type HomeDrawerParamList = {

@@ -48,6 +48,12 @@
             "deploymentTarget": "13.0"
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you choose suitable picture for your products."
+        }
       ]
     ]
   }

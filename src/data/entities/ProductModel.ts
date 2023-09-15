@@ -5,8 +5,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { ProductCategoryModel } from "./ProductCategoryModel";
-import { ImageSourcePropType } from "react-native";
+import { CategoryModel } from "./CategoryModel";
 
 @Entity("products")
 export class ProductModel {
@@ -26,9 +25,9 @@ export class ProductModel {
   price: number;
 
   @Column({ nullable: true })
-  imgUri?: ImageSourcePropType;
+  imgUri?: string;
 
-  @ManyToMany(() => ProductCategoryModel)
+  @ManyToMany(() => CategoryModel)
   @JoinTable()
-  categories: ProductCategoryModel[];
+  categories: CategoryModel[];
 }

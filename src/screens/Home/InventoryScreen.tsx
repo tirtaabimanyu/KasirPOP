@@ -22,12 +22,22 @@ const Tab = createMaterialTopTabNavigator<InventoryTabParamList>();
 
 const RowSeparator = () => <View style={{ height: 24 }} />;
 
-export const InventoryScreen = (
-  props: CompositeScreenProps<
-    NativeStackScreenProps<RootStackParamList, "home">,
-    DrawerScreenProps<HomeDrawerParamList, "inventory">
-  >
-) => {
+const InventoryScreen = ({
+  navigation,
+}: CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList>,
+  DrawerScreenProps<HomeDrawerParamList, "inventory">
+>) => {
+  const theme = useTheme();
+  const { productRepository, categoryRepository } = useDatabaseConnection();
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const inStockProducts = products.filter(
+    (product) => product.isAlwaysInStock || product.stock > 0
+  );
+  const outOfStockProducts = products.filter(
+    (product) => !product.isAlwaysInStock && product.stock == 0
+  );
+
   const fetch = async () => {
     const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
@@ -44,52 +54,14 @@ export const InventoryScreen = (
     setProducts(serializedProducts);
   };
 
-  const fetchCategory = async () => {
-    const productCategories = await productCategoryRepository.getAll();
-    const serializedProductCategories: { id: string; name: string }[] = [];
-    productCategories.forEach((v) =>
-      serializedProductCategories.push({
-        id: v.id.toString(),
-        name: v.name,
-      })
-    );
-    setCategories(serializedProductCategories);
-  };
-
-  const theme = useTheme();
-  const { productRepository, productCategoryRepository } =
-    useDatabaseConnection();
-  const [products, setProducts] = useState<ProductData[]>([]);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    []
-  );
-  const inStockProducts = products.filter(
-    (product) => product.isAlwaysInStock || product.stock > 0
-  );
-  const outOfStockProducts = products.filter(
-    (product) => !product.isAlwaysInStock && product.stock == 0
-  );
-  const tabCategories = [
-    { name: "Semua", data: products },
-    { name: "Aktif", data: inStockProducts },
-    {
-      name: `Stok Habis (${outOfStockProducts.length})`,
-      data: outOfStockProducts,
-    },
-  ];
-
   useFocusEffect(
     useCallback(() => {
       fetch();
-      fetchCategory();
     }, [])
   );
 
   return (
     <View style={styles(theme).container}>
-      {categories.map((e, idx) => (
-        <Text key={`cat-${idx}`}>{e.name}</Text>
-      ))}
       <Card.Title
         title="Inventori"
         titleVariant="headlineLarge"
@@ -99,14 +71,8 @@ export const InventoryScreen = (
             <Button
               mode="contained"
               icon={"plus"}
-              onPress={async () => {
-                await productRepository.create({
-                  name: Math.random().toString(),
-                  stock: Math.round(Math.random()),
-                  isAlwaysInStock: false,
-                  price: 10000,
-                });
-                await fetch();
+              onPress={() => {
+                navigation.navigate("addProduct");
               }}
             >
               Tambah Produk
@@ -120,28 +86,6 @@ export const InventoryScreen = (
               }}
             >
               Hapus Semua Produk
-            </Button>
-            <Button
-              mode="contained"
-              icon={"plus"}
-              onPress={async () => {
-                await productCategoryRepository.create({
-                  name: Math.random().toString(),
-                });
-                await fetchCategory();
-              }}
-            >
-              Tambah Kategori
-            </Button>
-            <Button
-              mode="contained"
-              icon={"minus"}
-              onPress={async () => {
-                await productCategoryRepository.deleteAll();
-                await fetchCategory();
-              }}
-            >
-              Hapus Semua Kategori
             </Button>
           </View>
         )}

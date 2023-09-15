@@ -31,7 +31,11 @@ const CashierItem = (props: CashierItemProps) => {
     !props.itemData.isAlwaysInStock &&
     props.cartQuantity == props.itemData.stock;
   return (
-    <Card mode="outlined" style={props.style}>
+    <Card
+      mode="outlined"
+      style={props.style}
+      contentStyle={{ backgroundColor: theme.colors.onPrimary }}
+    >
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
           {props.itemData.imgUri ? (

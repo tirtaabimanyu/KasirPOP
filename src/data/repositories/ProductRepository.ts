@@ -1,13 +1,15 @@
 import { DataSource, MoreThan, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
 import { ImageSourcePropType } from "react-native";
+import { ProductCategoryModel } from "../entities/CategoryModel";
 
 interface ICreateProductData {
   name: string;
   stock: number;
   isAlwaysInStock: boolean;
   price: number;
-  imgUri?: ImageSourcePropType;
+  imgUri?: string;
+  categories?: ProductCategoryModel[];
 }
 
 export class ProductRepository {
@@ -45,6 +47,7 @@ export class ProductRepository {
     isAlwaysInStock,
     price,
     imgUri,
+    categories,
   }: ICreateProductData): Promise<ProductModel> {
     const product = this.ormRepository.create({
       name,
@@ -52,6 +55,7 @@ export class ProductRepository {
       isAlwaysInStock,
       price,
       imgUri,
+      categories,
     });
 
     await this.ormRepository.save(product);

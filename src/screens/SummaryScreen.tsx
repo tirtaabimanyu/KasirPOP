@@ -10,7 +10,7 @@ import {
 } from "../redux/slices/cartSlice";
 import { useEffect } from "react";
 import { toRupiah } from "../utils/currencyUtils";
-import { AppDispatch, RootState } from "../redux/store";
+import { AppDispatch } from "../redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const RowSeparator = () => <View style={{ height: 12 }} />;

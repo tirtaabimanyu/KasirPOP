@@ -10,12 +10,12 @@ import { DataSource } from "typeorm";
 
 import { AppDataSource } from "./app-data-source";
 import { ProductRepository } from "./repositories/ProductRepository";
-import { ProductCategoryRepository } from "./repositories/ProductCategoryRepository";
+import { CategoryRepository } from "./repositories/CategoryRepository";
 import { StyleSheet, View } from "react-native";
 
 interface DatabaseConnectionContextData {
   productRepository: ProductRepository;
-  productCategoryRepository: ProductCategoryRepository;
+  categoryRepository: CategoryRepository;
 }
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
@@ -57,7 +57,7 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
     <DatabaseConnectionContext.Provider
       value={{
         productRepository: new ProductRepository(connection),
-        productCategoryRepository: new ProductCategoryRepository(connection),
+        categoryRepository: new CategoryRepository(connection),
       }}
     >
       {children}

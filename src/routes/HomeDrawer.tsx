@@ -72,7 +72,9 @@ const DrawerContent = ({ state, navigation }: DrawerContentComponentProps) => {
   );
 };
 
-const HomeDrawer = (props: NativeStackScreenProps<HomeDrawerParamList>) => {
+const HomeDrawer = (
+  props: NativeStackScreenProps<RootStackParamList, "home">
+) => {
   const theme = useTheme();
   return (
     <Drawer.Navigator
