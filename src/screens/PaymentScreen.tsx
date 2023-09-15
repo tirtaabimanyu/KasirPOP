@@ -1,5 +1,5 @@
 import { Image, StyleSheet, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -27,6 +27,10 @@ const PaymentScreen = ({
   const theme = useTheme();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (cart.totalItem == 0) navigation.navigate("home");
+  }, [cart.totalItem]);
 
   const [paymentType, setPaymentType] = useState<PaymentType>("cash");
   const [visible, setVisible] = useState(false);
