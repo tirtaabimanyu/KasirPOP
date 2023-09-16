@@ -211,37 +211,29 @@ const CashierScreen = ({
         titleVariant="headlineLarge"
         style={{ paddingLeft: 0, minHeight: 0 }}
       />
-      {tabScreens.length > 0 ? (
-        <Tab.Navigator
-          sceneContainerStyle={{ backgroundColor: "transparent" }}
-          screenOptions={{
-            tabBarScrollEnabled: true,
-            tabBarLabelStyle: { fontSize: 12 },
-            tabBarStyle: { backgroundColor: theme.colors.surface },
-            tabBarActiveTintColor: theme.colors.primary,
-            tabBarIndicatorStyle: {
-              backgroundColor: theme.colors.primary,
-            },
-            tabBarItemStyle: { width: "auto" },
-          }}
-        >
-          <Tab.Screen name={"Semua"} component={AllFlatList} />
-          {tabScreens.map((screen) => (
-            <Tab.Screen
-              key={`tabScreen-${screen.name}`}
-              name={screen.name}
-              component={screen.component}
-              initialParams={screen.initialParams}
-            />
-          ))}
-        </Tab.Navigator>
-      ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size={"large"} />
-        </View>
-      )}
+      <Tab.Navigator
+        sceneContainerStyle={{ backgroundColor: "transparent" }}
+        screenOptions={{
+          tabBarScrollEnabled: true,
+          tabBarLabelStyle: { fontSize: 12 },
+          tabBarStyle: { backgroundColor: theme.colors.surface },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarIndicatorStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          tabBarItemStyle: { width: "auto" },
+        }}
+      >
+        <Tab.Screen name={"Semua"} component={AllFlatList} />
+        {tabScreens.map((screen) => (
+          <Tab.Screen
+            key={`tabScreen-${screen.name}`}
+            name={screen.name}
+            component={screen.component}
+            initialParams={screen.initialParams}
+          />
+        ))}
+      </Tab.Navigator>
       {cartState.totalItem > 0 && (
         <View style={styles(theme).floatingRecapContainer}>
           <View style={styles(theme).floatingRecap}>

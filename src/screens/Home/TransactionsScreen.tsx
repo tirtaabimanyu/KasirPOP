@@ -4,18 +4,11 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import {
-  Button,
-  Card,
-  Dialog,
-  MD3Theme,
-  Portal,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
 import InputDatePicker from "../../components/InputDatePicker";
 import TransactionsItem from "../../components/TransactionsItem";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import BaseDialog from "../../components/BaseDialog";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -50,42 +43,34 @@ const TransactionsScreen = ({
 
   return (
     <View style={styles(theme).container}>
-      <Portal>
-        <Dialog
-          visible={visible}
-          onDismiss={hideDialog}
-          style={{ backgroundColor: "white" }}
-        >
-          <Dialog.Title>Unduh Laporan Transaksi</Dialog.Title>
-          <Dialog.Content>
-            <InputDatePicker
-              label="Dari Tanggal"
-              date={dateRange.startDate}
-              setDate={(d: Date) =>
-                setDateRange({ ...dateRange, startDate: d })
-              }
-              style={{ marginBottom: 16 }}
-            />
-            <InputDatePicker
-              label="Sampai Tanggal"
-              date={dateRange.endDate}
-              setDate={(d: Date) => setDateRange({ ...dateRange, endDate: d })}
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} style={{ paddingHorizontal: 16 }}>
-              Batal
-            </Button>
-            <Button
-              mode="contained"
-              onPress={hideDialog}
-              style={{ paddingHorizontal: 24 }}
-            >
-              Unduh
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <BaseDialog visible={visible} onDismiss={hideDialog} dismissable={true}>
+        <BaseDialog.Title>Unduh Laporan Transaksi</BaseDialog.Title>
+        <BaseDialog.Content>
+          <InputDatePicker
+            label="Dari Tanggal"
+            date={dateRange.startDate}
+            setDate={(d: Date) => setDateRange({ ...dateRange, startDate: d })}
+            style={{ marginBottom: 16 }}
+          />
+          <InputDatePicker
+            label="Sampai Tanggal"
+            date={dateRange.endDate}
+            setDate={(d: Date) => setDateRange({ ...dateRange, endDate: d })}
+          />
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button onPress={hideDialog} style={{ paddingHorizontal: 16 }}>
+            Batal
+          </Button>
+          <Button
+            mode="contained"
+            onPress={hideDialog}
+            style={{ paddingHorizontal: 24 }}
+          >
+            Unduh
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <Card.Title
         title="Riwayat Transaksi"
         titleVariant="headlineLarge"

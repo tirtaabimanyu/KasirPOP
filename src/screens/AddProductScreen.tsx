@@ -1,22 +1,12 @@
-import { Alert, Image, StyleSheet, View } from "react-native";
-import {
-  Button,
-  Card,
-  Chip,
-  Divider,
-  MD3Theme,
-  Switch,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Alert, StyleSheet } from "react-native";
+import { Button, MD3Theme, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { toNumber, toRupiah } from "../utils/currencyUtils";
 import { useDatabaseConnection } from "../data/connection";
 import { ScrollView } from "react-native-gesture-handler";
 import { CategoryModel } from "../data/entities/CategoryModel";
-import InputImagePicker from "../components/InputImagePicker";
+import ProductForm from "../components/ProductForm";
+import BaseDialog from "../components/BaseDialog";
 
 const AddProductScreen = ({
   navigation,
@@ -45,16 +35,6 @@ const AddProductScreen = ({
     JSON.stringify(initialData) !== JSON.stringify(productData) ||
     Object.keys(selectedCategories).length > 0;
 
-  const initialIsDirty: { [key in keyof CreateProductData]: boolean } = {
-    name: false,
-    stock: false,
-    isAlwaysInStock: false,
-    price: false,
-    imgUri: false,
-    categories: false,
-  };
-  const [isDirty, setIsDirty] = useState(initialIsDirty);
-
   const initialErrors: { [key in keyof CreateProductData]: string[] } = {
     name: [],
     stock: [],
@@ -67,9 +47,8 @@ const AddProductScreen = ({
   const resetForm = useCallback(() => {
     setProductData(initialData);
     setSelectedCategories(initialSelectedCategories);
-    setIsDirty(initialIsDirty);
     setErrors(initialErrors);
-  }, [setProductData, setSelectedCategories, setIsDirty, setErrors]);
+  }, [setProductData, setSelectedCategories, setErrors]);
 
   const fetchCategory = useCallback(async () => {
     const categories = await categoryRepository.getAll();
@@ -92,58 +71,35 @@ const AddProductScreen = ({
     navigation,
   ]);
 
-  const toggleCategory = useCallback(
-    (category: CategoryModel) => {
-      setIsDirty((state) => ({ ...state, categories: true }));
-      if (category.id in selectedCategories) {
-        setSelectedCategories((state) => {
-          const { [category.id]: categoryId, ...rest } = state;
-          return rest;
-        });
-      } else {
-        setSelectedCategories((state) => {
-          return { ...state, [category.id]: category };
-        });
-      }
-    },
-    [selectedCategories, setSelectedCategories, setIsDirty]
-  );
-
-  useEffect(() => {
+  const validation = () => {
     const newErrors = initialErrors;
     if (productData.name.length == 0) {
       newErrors["name"].push("Nama produk tidak boleh kosong");
     }
     setErrors(newErrors);
-  }, [productData, hasUnsavedChanges]);
+  };
+
+  const [backAlertVisible, setBackAlertVisible] = useState(false);
+  const showBackAlert = () => setBackAlertVisible(true);
+  const hideBackAlert = () => setBackAlertVisible(false);
 
   useEffect(() => {
     fetchCategory();
   }, []);
 
+  useEffect(validation, [productData, hasUnsavedChanges]);
+
   useEffect(
     () =>
       navigation.addListener("beforeRemove", (e) => {
-        if (!hasUnsavedChanges) {
+        if (!hasUnsavedChanges || backAlertVisible) {
           return;
         }
 
         e.preventDefault();
-
-        Alert.alert(
-          "Apakah Anda yakin keluar halaman?",
-          "Perubahan yang ada di halaman ini akan hilang jika Anda keluar halaman.",
-          [
-            { text: "Batal", style: "cancel", onPress: () => {} },
-            {
-              text: "Keluar Halaman",
-              style: "destructive",
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ]
-        );
+        showBackAlert();
       }),
-    [navigation, hasUnsavedChanges]
+    [navigation, hasUnsavedChanges, backAlertVisible, showBackAlert]
   );
 
   return (
@@ -151,131 +107,39 @@ const AddProductScreen = ({
       style={styles(theme).container}
       automaticallyAdjustKeyboardInsets
     >
-      <Card
-        mode="outlined"
-        style={styles(theme).formCard}
-        contentStyle={styles(theme).formCardContent}
+      <BaseDialog
+        visible={backAlertVisible}
+        onDismiss={hideBackAlert}
+        dismissable={true}
       >
-        <View style={styles(theme).formItem}>
-          <Text variant="bodySmall" style={styles(theme).label}>
-            Foto Produk (Opsional)
+        <BaseDialog.Title>Apakah Anda yakin keluar halaman?</BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text variant="bodyMedium">
+            {`Perubahan yang ada di halaman ini akan hilang jika Anda keluar halaman.`}
           </Text>
-          <InputImagePicker
-            imgUri={productData.imgUri}
-            onRemoveImage={() => {
-              setProductData((state) => ({ ...state, imgUri: undefined }));
-            }}
-            onSelectImage={(uri) => {
-              setIsDirty((state) => ({ ...state, imgUri: true }));
-              setProductData((state) => ({ ...state, imgUri: uri }));
-            }}
-            base64
-          />
-        </View>
-        <View style={styles(theme).formItem}>
-          <TextInput
-            label={"Nama Produk"}
-            mode="outlined"
-            value={productData.name}
-            onChangeText={(value) => {
-              setIsDirty((state) => ({ ...state, name: true }));
-              setProductData({ ...productData, name: value });
-            }}
-            style={styles(theme).transparent}
-            error={isDirty["name"] && errors["name"].length > 0}
-          />
-          {isDirty["name"] &&
-            errors["name"].map((value, idx) => (
-              <Text
-                key={`error-name-${idx}`}
-                style={{ color: theme.colors.error, marginTop: 4 }}
-              >
-                {value}
-              </Text>
-            ))}
-        </View>
-        <View style={{ marginBottom: 24 }}>
-          <Text variant="bodySmall" style={styles(theme).label}>
-            Etalase (Opsional)
-          </Text>
-          <View style={[styles(theme).row, { justifyContent: "flex-start" }]}>
-            {categories.map((category, idx) => {
-              const isSelected = category.id in selectedCategories;
-              return (
-                <Chip
-                  key={`category-${idx}`}
-                  mode="outlined"
-                  style={[
-                    isSelected && {
-                      backgroundColor: theme.colors.primaryContainer,
-                    },
-                    {
-                      marginRight: 8,
-                    },
-                  ]}
-                  onPress={() => toggleCategory(category)}
-                  selected={isSelected}
-                  showSelectedCheck={false}
-                >
-                  {category.name}
-                </Chip>
-              );
-            })}
-            <Chip
-              icon={"plus"}
-              mode="outlined"
-              style={styles(theme).transparent}
-              onPress={async () => {
-                await categoryRepository.create({
-                  name: Math.random().toString(),
-                });
-                await fetchCategory();
-              }}
-            >
-              Tambah Etalase
-            </Chip>
-          </View>
-        </View>
-        <View style={[styles(theme).row, styles(theme).formItem]}>
-          <View style={styles(theme).row}>
-            <Text variant="bodySmall">Stok Selalu Ada</Text>
-            <Switch
-              value={productData.isAlwaysInStock}
-              onValueChange={() => {
-                setIsDirty((state) => ({ ...state, isAlwaysInStock: true }));
-                setProductData({
-                  ...productData,
-                  isAlwaysInStock: !productData.isAlwaysInStock,
-                });
-              }}
-            />
-          </View>
-          <Divider style={styles(theme).divider} />
-          <View style={styles(theme).row}>
-            <Text variant="bodySmall">Jumlah Stok</Text>
-            <TextInput
-              keyboardType="numeric"
-              value={productData.stock.toString()}
-              onChangeText={(value) => {
-                setIsDirty((state) => ({ ...state, stock: true }));
-                setProductData({ ...productData, stock: toNumber(value) });
-              }}
-              disabled={productData.isAlwaysInStock}
-            />
-          </View>
-        </View>
-        <TextInput
-          label={"Harga Produk"}
-          mode="outlined"
-          keyboardType="numeric"
-          value={toRupiah(productData.price)}
-          onChangeText={(value) => {
-            setIsDirty((state) => ({ ...state, price: true }));
-            setProductData({ ...productData, price: toNumber(value) });
-          }}
-          style={styles(theme).transparent}
-        />
-      </Card>
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button onPress={hideBackAlert} style={{ paddingHorizontal: 16 }}>
+            Batal
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => navigation.goBack()}
+            style={{ paddingHorizontal: 24 }}
+          >
+            Keluar Halaman
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
+      <ProductForm
+        categories={categories}
+        productData={productData}
+        setProductData={setProductData}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        errors={errors}
+        setErrors={setErrors}
+      />
       <Button
         mode="contained"
         style={styles(theme).saveButton}
@@ -297,22 +161,7 @@ const styles = (theme: MD3Theme) =>
       position: "relative",
       paddingHorizontal: 32,
     },
-    formCard: { marginBottom: 24 },
-    formCardContent: { padding: 24, backgroundColor: "white" },
-    divider: {
-      width: 1,
-      height: "100%",
-      marginLeft: 32,
-      marginRight: 40,
+    saveButton: {
+      alignSelf: "flex-end",
     },
-    saveButton: { alignSelf: "flex-end" },
-    formItem: { marginBottom: 24 },
-    transparent: { backgroundColor: "transparent" },
-    row: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    label: { marginBottom: 8 },
   });
