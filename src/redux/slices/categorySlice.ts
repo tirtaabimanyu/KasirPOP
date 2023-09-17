@@ -1,20 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { CategoryRepository } from "../../data/repositories/CategoryRepository";
+import CategorySerializer from "../../data/serializers/CategorySerializer";
 
 export const fetchAllCategories = createAsyncThunk(
   "category/fetchAll",
   async (repository: CategoryRepository) => {
-    const fetchedCategories = await repository.getAll();
-    const serializedCategories: CategoryData[] = [];
+    const categories = await repository.getAll();
 
-    fetchedCategories.forEach((category) => {
-      serializedCategories.push({
-        id: category.id,
-        name: category.name,
-      });
-    });
-
-    return serializedCategories;
+    return CategorySerializer.serializeMany(categories);
   }
 );
 

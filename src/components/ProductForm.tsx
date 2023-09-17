@@ -10,7 +10,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import InputImagePicker from "./InputImagePicker";
-import { CategoryModel } from "../data/entities/CategoryModel";
 import { useCallback, useState } from "react";
 import { toNumber, toRupiah } from "../utils/currencyUtils";
 import InputCounter from "./InputCounter";

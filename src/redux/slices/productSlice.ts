@@ -1,30 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ProductRepository } from "../../data/repositories/ProductRepository";
 import { CategoryModel } from "../../data/entities/CategoryModel";
+import ProductSerializer from "../../data/serializers/ProductSerializer";
 
 export const fetchAllProducts = createAsyncThunk(
   "product/fetchAll",
   async (repository: ProductRepository): Promise<ProductData[]> => {
-    const fetchedProducts = await repository.getAll();
-    const serializedProducts: ProductData[] = [];
+    const products = await repository.getAll();
 
-    fetchedProducts.forEach((product) => {
-      const serializedCategories = product.categories?.map((category) => ({
-        id: category.id,
-        name: category.name,
-      }));
-      serializedProducts.push({
-        id: product.id,
-        name: product.name,
-        stock: product.stock,
-        isAlwaysInStock: product.isAlwaysInStock,
-        price: product.price,
-        imgUri: product.imgUri,
-        categories: serializedCategories,
-      });
-    });
-
-    return serializedProducts;
+    return ProductSerializer.serializeMany(products);
   }
 );
 
@@ -43,23 +27,7 @@ export const createProduct = createAsyncThunk(
       categories,
     });
 
-    const serializedCategories = product.categories?.map(
-      (category: CategoryModel) => ({
-        id: category.id,
-        name: category.name,
-      })
-    );
-    const serializedProduct = {
-      id: product.id,
-      name: product.name,
-      stock: product.stock,
-      isAlwaysInStock: product.isAlwaysInStock,
-      price: product.price,
-      imgUri: product.imgUri,
-      categories: serializedCategories,
-    };
-
-    return serializedProduct;
+    return ProductSerializer.serialize(product);
   }
 );
 
@@ -78,23 +46,7 @@ export const updateProduct = createAsyncThunk(
       categories,
     });
 
-    const serializedCategories = product.categories?.map(
-      (category: CategoryModel) => ({
-        id: category.id,
-        name: category.name,
-      })
-    );
-    const serializedProduct = {
-      id: product.id,
-      name: product.name,
-      stock: product.stock,
-      isAlwaysInStock: product.isAlwaysInStock,
-      price: product.price,
-      imgUri: product.imgUri,
-      categories: serializedCategories,
-    };
-
-    return serializedProduct;
+    return ProductSerializer.serialize(product);
   }
 );
 
