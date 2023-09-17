@@ -1,4 +1,4 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, In, Repository } from "typeorm";
 import { CategoryModel } from "../entities/CategoryModel";
 
 export class CategoryRepository {
@@ -14,6 +14,16 @@ export class CategoryRepository {
     const categories = await this.ormRepository.find({
       relations: {
         products: options?.withProducts,
+      },
+    });
+
+    return categories;
+  }
+
+  public async getByIds(ids: number[]): Promise<CategoryModel[]> {
+    const categories = await this.ormRepository.find({
+      where: {
+        id: In(ids),
       },
     });
 

@@ -1,33 +1,22 @@
+import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import {
-  useTheme,
-  MD3Theme,
-  Text,
-  Button,
-  Card,
-  ActivityIndicator,
-} from "react-native-paper";
-
+import { useTheme, MD3Theme, Text, Button, Card } from "react-native-paper";
 import {
   MaterialTopTabScreenProps,
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
-import CashierItem from "../../components/CashierItem";
-import { FlatList } from "react-native-gesture-handler";
-import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
-import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
-import { toRupiah } from "../../utils/currencyUtils";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useDatabaseConnection } from "../../data/connection";
-import { useCallback, useEffect, useState } from "react";
-import { CategoryModel } from "../../data/entities/CategoryModel";
-import { CategoryRepository } from "../../data/repositories/CategoryRepository";
-import { ProductRepository } from "../../data/repositories/ProductRepository";
+import { FlatList } from "react-native-gesture-handler";
+
+import CashierItem from "../../components/CashierItem";
+import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
+import { toRupiah } from "../../utils/currencyUtils";
 
 type TabScreenParams = {
-  category: CategoryModel;
+  category: CategoryData;
 };
 type CashierTopTabParamList = {
   [key: string]: TabScreenParams;
@@ -84,75 +73,26 @@ const TabFlatList = (props: TabFlatListProps) => (
 const AllFlatList = (
   props: MaterialTopTabScreenProps<CashierTopTabParamList>
 ) => {
-  const { productRepository } = useDatabaseConnection();
-  const [products, setProducts] = useState<ProductData[]>([]);
+  const productState = useAppSelector((state) => state.product);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchProducts = async (
-        repository: ProductRepository,
-        setValue: React.Dispatch<React.SetStateAction<ProductData[]>>
-      ) => {
-        const fetchedProducts = await repository.getAll();
-        const serializedProducts: ProductData[] = [];
-
-        fetchedProducts.forEach((product) =>
-          serializedProducts.push({
-            id: product.id,
-            name: product.name,
-            stock: product.stock,
-            isAlwaysInStock: product.isAlwaysInStock,
-            price: product.price,
-            imgUri: product.imgUri,
-          })
-        );
-
-        setValue(serializedProducts);
-      };
-
-      fetchProducts(productRepository, setProducts);
-    }, [setProducts])
-  );
-
-  return <TabFlatList {...props} data={products} />;
+  return <TabFlatList {...props} data={productState.products} />;
 };
 
 const CategoryFlatList = (
   props: MaterialTopTabScreenProps<CashierTopTabParamList>
 ) => {
-  const { categoryRepository } = useDatabaseConnection();
-  const [products, setProducts] = useState<ProductData[]>([]);
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchProducts = async (
-        category: CategoryModel,
-        repository: CategoryRepository,
-        setValue: React.Dispatch<React.SetStateAction<ProductData[]>>
-      ) => {
-        const fetchedCategory = await repository.getWithProducts(category);
-
-        const serializedProducts: ProductData[] = [];
-        fetchedCategory?.products.forEach((product) =>
-          serializedProducts.push({
-            id: product.id,
-            name: product.name,
-            stock: product.stock,
-            isAlwaysInStock: product.isAlwaysInStock,
-            price: product.price,
-            imgUri: product.imgUri,
-          })
-        );
-
-        setValue(serializedProducts);
-      };
-
-      const { category } = props.route.params;
-      fetchProducts(category, categoryRepository, setProducts);
-    }, [setProducts])
+  const productState = useAppSelector((state) => state.product);
+  const { category } = props.route.params;
+  const filteredProducts = productState.products.filter(
+    (product: ProductData) => {
+      const productCategoryIds = product.categories?.map(
+        (category) => category.id
+      );
+      return productCategoryIds?.includes(category.id);
+    }
   );
 
-  return <TabFlatList {...props} data={products} />;
+  return <TabFlatList {...props} data={filteredProducts} />;
 };
 
 const CashierScreen = ({
@@ -163,10 +103,8 @@ const CashierScreen = ({
 >) => {
   const theme = useTheme();
   const cartState = useAppSelector((state) => state.cart);
+  const categoryState = useAppSelector((state) => state.category);
 
-  const { categoryRepository } = useDatabaseConnection();
-
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [tabScreens, setTabScreens] = useState<
     {
       name: string;
@@ -179,18 +117,8 @@ const CashierScreen = ({
 
   useFocusEffect(
     useCallback(() => {
-      const fetchCategories = async () => {
-        const categories = await categoryRepository.getAll();
-        setCategories(categories);
-      };
-      fetchCategories();
-    }, [])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
       setTabScreens([]);
-      categories.forEach(async (category) => {
+      categoryState.categories.forEach(async (category) => {
         const component = CategoryFlatList;
         const tabScreen = {
           name: category.name,
@@ -201,7 +129,7 @@ const CashierScreen = ({
         };
         setTabScreens((state) => [...state, tabScreen]);
       });
-    }, [categories])
+    }, [categoryState])
   );
 
   return (

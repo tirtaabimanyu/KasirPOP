@@ -13,11 +13,6 @@ import { ProductRepository } from "./repositories/ProductRepository";
 import { CategoryRepository } from "./repositories/CategoryRepository";
 import { StyleSheet, View } from "react-native";
 
-interface DatabaseConnectionContextData {
-  productRepository: ProductRepository;
-  categoryRepository: CategoryRepository;
-}
-
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
 );

@@ -4,17 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../data/connection";
 import { ScrollView } from "react-native-gesture-handler";
-import { CategoryModel } from "../data/entities/CategoryModel";
 import ProductForm from "../components/ProductForm";
 import BaseDialog from "../components/BaseDialog";
+import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
+import { createProduct } from "../redux/slices/productSlice";
 
 const AddProductScreen = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "addProduct">) => {
   const theme = useTheme();
-  const { productRepository, categoryRepository } = useDatabaseConnection();
+  const repositories = useDatabaseConnection();
+  const dispatch = useAppDispatch();
 
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const { categories } = useAppSelector((state) => state.category);
 
   const initialData: ProductData = {
     id: 0,
@@ -43,26 +45,17 @@ const AddProductScreen = ({
   const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  const fetchCategory = useCallback(async () => {
-    const categories = await categoryRepository.getAll();
-    setCategories(categories);
-  }, [categoryRepository, setCategories]);
-
   const createItem = useCallback(async () => {
-    const selectedCategories: CategoryModel[] = categories.filter((category) =>
-      productData.categories?.some(
-        (selectedCategory) => selectedCategory.id == category.id
-      )
-    );
-    const data: CreateProductData = {
-      ...productData,
-      categories: selectedCategories,
-    };
-    productRepository.create(data).then(() => {
+    dispatch(
+      createProduct({
+        data: productData,
+        repositories,
+      })
+    ).then(() => {
       setSubmitSuccess(true);
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [productData, productRepository, navigation]);
+  }, [productData, repositories, navigation]);
 
   const validation = () => {
     const newErrors = initialErrors;
@@ -75,10 +68,6 @@ const AddProductScreen = ({
   const [backAlertVisible, setBackAlertVisible] = useState(false);
   const showBackAlert = () => setBackAlertVisible(true);
   const hideBackAlert = () => setBackAlertVisible(false);
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
 
   useEffect(validation, [productData, hasUnsavedChanges]);
 

@@ -18,7 +18,7 @@ import InputCounter from "./InputCounter";
 type ErrorsType = { [key in keyof CreateProductData]: string[] };
 
 type ProductFormProps = {
-  categories: CategoryModel[];
+  categories: CategoryData[];
   productData: ProductData;
   errors: ErrorsType;
   setProductData: React.Dispatch<React.SetStateAction<ProductData>>;
@@ -38,7 +38,7 @@ const ProductForm = (props: ProductFormProps) => {
   const [isDirty, setIsDirty] = useState(initialIsDirty);
 
   const toggleCategory = useCallback(
-    (category: CategoryModel) => {
+    (category: CategoryData) => {
       setIsDirty((state) => ({ ...state, categories: true }));
       props.setProductData((state) => {
         if (

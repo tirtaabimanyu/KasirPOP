@@ -16,6 +16,11 @@ import { ParamListBase, Route } from "@react-navigation/native";
 import HomeDrawer from "./HomeDrawer";
 import AddProductScreen from "../screens/AddProductScreen";
 import UpdateProductScreen from "../screens/UpdateProductScreen";
+import { useAppDispatch } from "../hooks/typedStore";
+import { useEffect } from "react";
+import { fetchAllProducts } from "../redux/slices/productSlice";
+import { useDatabaseConnection } from "../data/connection";
+import { fetchAllCategories } from "../redux/slices/categorySlice";
 
 enableScreens();
 enableFreeze();
@@ -47,6 +52,14 @@ const Header = ({ theme, options, navigation, back }: HeaderProps) => {
 
 const Router = (props: NavigationContainerProps) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const { productRepository, categoryRepository } = useDatabaseConnection();
+
+  useEffect(() => {
+    dispatch(fetchAllProducts(productRepository));
+    dispatch(fetchAllCategories(categoryRepository));
+  }, []);
+
   return (
     <NavigationContainer {...props}>
       <Stack.Navigator

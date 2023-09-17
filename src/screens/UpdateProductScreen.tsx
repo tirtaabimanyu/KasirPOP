@@ -4,18 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../data/connection";
 import { ScrollView } from "react-native-gesture-handler";
-import { CategoryModel } from "../data/entities/CategoryModel";
 import ProductForm from "../components/ProductForm";
 import BaseDialog from "../components/BaseDialog";
+import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
+import { deleteProduct, updateProduct } from "../redux/slices/productSlice";
 
 const UpdateProductScreen = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, "updateProduct">) => {
   const theme = useTheme();
-  const { productRepository, categoryRepository } = useDatabaseConnection();
-
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const repositories = useDatabaseConnection();
+  const dispatch = useAppDispatch();
+  const { categories } = useAppSelector((state) => state.category);
 
   const initialData: ProductData = route.params.productData;
   const [newProductData, setNewProductData] =
@@ -37,31 +38,29 @@ const UpdateProductScreen = ({
   const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
   const [canNavigate, setCanNavigate] = useState(false);
 
-  const fetchCategory = useCallback(async () => {
-    const categories = await categoryRepository.getAll();
-    setCategories(categories);
-  }, [categoryRepository, setCategories]);
-
   const updateItem = useCallback(async () => {
-    const selectedCategories: CategoryModel[] = categories.filter((category) =>
-      newProductData.categories?.some(
-        (selectedCategory) => selectedCategory.id == category.id
-      )
-    );
-    const data: UpdateProductData = {
-      ...newProductData,
-      categories: selectedCategories,
-    };
-    await productRepository.update(data);
-    setCanNavigate(true);
-    navigation.navigate("home", { screen: "inventory" });
-  }, [newProductData, productRepository, navigation]);
+    dispatch(
+      updateProduct({
+        data: newProductData,
+        repositories,
+      })
+    ).then(() => {
+      setCanNavigate(true);
+      navigation.navigate("home", { screen: "inventory" });
+    });
+  }, [newProductData, repositories, navigation]);
 
   const deleteItem = useCallback(async () => {
-    await productRepository.delete(route.params.productData.id);
-    setCanNavigate(true);
-    navigation.navigate("home", { screen: "inventory" });
-  }, [productRepository]);
+    dispatch(
+      deleteProduct({
+        id: route.params.productData.id,
+        repository: repositories.productRepository,
+      })
+    ).then(() => {
+      setCanNavigate(true);
+      navigation.navigate("home", { screen: "inventory" });
+    });
+  }, [repositories]);
 
   const validation = () => {
     const newErrors = initialErrors;
@@ -78,10 +77,6 @@ const UpdateProductScreen = ({
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const showDeleteAlert = () => setDeleteAlertVisible(true);
   const hideDeleteAlert = () => setDeleteAlertVisible(false);
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
 
   useEffect(validation, [newProductData, hasUnsavedChanges]);
 
@@ -168,7 +163,6 @@ const UpdateProductScreen = ({
           icon={"trash-can-outline"}
           style={styles(theme).saveButton}
           onPress={showDeleteAlert}
-          disabled={canSubmit}
         >
           Hapus Produk
         </Button>

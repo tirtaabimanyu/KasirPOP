@@ -1,26 +1,19 @@
 import { StyleSheet, View } from "react-native";
 import InventoryItem from "../../components/InventoryItem";
-import {
-  Button,
-  Card,
-  MD3Theme,
-  Switch,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, Card, MD3Theme, useTheme } from "react-native-paper";
 import {
   MaterialTopTabScreenProps,
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
-import { useCallback, useState } from "react";
 import { ProductModel } from "../../data/entities/ProductModel";
-import BaseDialog from "../../components/BaseDialog";
-import InputCounter from "../../components/InputCounter";
+import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { updateProduct } from "../../redux/slices/productSlice";
+import { AppDispatch } from "../../redux/store";
 
 type TabFlatListType = {
   products: ProductModel[];
@@ -41,12 +34,18 @@ interface TabFlatListProps
     >
   > {
   data: ProductData[];
+  repositories: DatabaseConnectionContextData;
+  dispatch: AppDispatch;
 }
 const TabFlatList = (props: TabFlatListProps) => {
-  const { productRepository } = useDatabaseConnection();
   const updateStock =
     (itemData: ProductData) => (newStockData: ProductStockData) => {
-      productRepository.update({ ...itemData, ...newStockData });
+      props.dispatch(
+        updateProduct({
+          data: { ...itemData, ...newStockData },
+          repositories: props.repositories,
+        })
+      );
     };
 
   return (
@@ -78,43 +77,15 @@ const InventoryScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
-  const { productRepository } = useDatabaseConnection();
-  const [products, setProducts] = useState<ProductData[]>([]);
-  const inStockProducts = products.filter(
+  const repositories = useDatabaseConnection();
+  const dispatch = useAppDispatch();
+
+  const productState = useAppSelector((state) => state.product);
+  const inStockProducts = productState.products.filter(
     (product) => product.isAlwaysInStock || product.stock > 0
   );
-  const outOfStockProducts = products.filter(
+  const outOfStockProducts = productState.products.filter(
     (product) => !product.isAlwaysInStock && product.stock == 0
-  );
-
-  const fetch = useCallback(async () => {
-    const products = await productRepository.getAll();
-    const serializedProducts: ProductData[] = [];
-    products.forEach((v) => {
-      const categories: CategoryData[] = [];
-      if (v.categories != undefined) {
-        v.categories.forEach((category) => {
-          categories.push({ id: category.id, name: category.name });
-        });
-      }
-      const serializedData = {
-        id: v.id,
-        name: v.name,
-        stock: v.stock,
-        isAlwaysInStock: v.isAlwaysInStock,
-        price: v.price,
-        imgUri: v.imgUri,
-        categories: categories,
-      };
-      serializedProducts.push(serializedData);
-    });
-    setProducts(serializedProducts);
-  }, [productRepository, setProducts]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetch();
-    }, [])
   );
 
   return (
@@ -134,16 +105,6 @@ const InventoryScreen = ({
             >
               Tambah Produk
             </Button>
-            <Button
-              mode="contained"
-              icon={"minus"}
-              onPress={async () => {
-                await productRepository.deleteAll();
-                await fetch();
-              }}
-            >
-              Hapus Semua Produk
-            </Button>
           </View>
         )}
       />
@@ -161,17 +122,36 @@ const InventoryScreen = ({
         }}
       >
         <Tab.Screen name="allProduct" options={{ title: "Semua" }}>
-          {(tabProps) => <TabFlatList {...tabProps} data={products} />}
+          {(tabProps) => (
+            <TabFlatList
+              {...tabProps}
+              data={productState.products}
+              repositories={repositories}
+              dispatch={dispatch}
+            />
+          )}
         </Tab.Screen>
         <Tab.Screen name="inStock" options={{ title: "Aktif" }}>
-          {(tabProps) => <TabFlatList {...tabProps} data={inStockProducts} />}
+          {(tabProps) => (
+            <TabFlatList
+              {...tabProps}
+              data={inStockProducts}
+              repositories={repositories}
+              dispatch={dispatch}
+            />
+          )}
         </Tab.Screen>
         <Tab.Screen
           name="outOfStock"
           options={{ title: `Stok Habis (${outOfStockProducts.length})` }}
         >
           {(tabProps) => (
-            <TabFlatList {...tabProps} data={outOfStockProducts} />
+            <TabFlatList
+              {...tabProps}
+              data={outOfStockProducts}
+              repositories={repositories}
+              dispatch={dispatch}
+            />
           )}
         </Tab.Screen>
       </Tab.Navigator>
