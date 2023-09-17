@@ -29,3 +29,5 @@ interface UpdateProductData extends CreateProductData {
 type CreateCategoryData = {
   name: string;
 };
+
+type ProductStockData = { isAlwaysInStock: boolean; stock: number };

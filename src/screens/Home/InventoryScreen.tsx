@@ -1,6 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import InventoryItem from "../../components/InventoryItem";
-import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
+import {
+  Button,
+  Card,
+  MD3Theme,
+  Switch,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import {
   MaterialTopTabScreenProps,
   createMaterialTopTabNavigator,
@@ -12,6 +19,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
 import { useCallback, useState } from "react";
 import { ProductModel } from "../../data/entities/ProductModel";
+import BaseDialog from "../../components/BaseDialog";
+import InputCounter from "../../components/InputCounter";
 
 type TabFlatListType = {
   products: ProductModel[];
@@ -34,6 +43,12 @@ interface TabFlatListProps
   data: ProductData[];
 }
 const TabFlatList = (props: TabFlatListProps) => {
+  const { productRepository } = useDatabaseConnection();
+  const updateStock =
+    (itemData: ProductData) => (newStockData: ProductStockData) => {
+      productRepository.update({ ...itemData, ...newStockData });
+    };
+
   return (
     <FlatList
       {...props}
@@ -41,7 +56,7 @@ const TabFlatList = (props: TabFlatListProps) => {
       renderItem={({ item }) => (
         <InventoryItem
           itemData={item}
-          onPressUpdateStock={() => null}
+          onPressSaveUpdateStock={updateStock(item)}
           onPressUpdateDetail={() =>
             props.navigation.navigate("updateProduct", { productData: item })
           }
@@ -132,7 +147,6 @@ const InventoryScreen = ({
           </View>
         )}
       />
-
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{

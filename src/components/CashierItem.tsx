@@ -6,10 +6,9 @@ import {
   IconButton,
   MD3Theme,
   Text,
-  TouchableRipple,
 } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { toRupiah } from "../utils/currencyUtils";
+import InputCounter from "./InputCounter";
 
 interface CashierItemProps {
   itemData: ProductData;
@@ -59,56 +58,13 @@ const CashierItem = (props: CashierItemProps) => {
         </View>
         <View style={styles(theme).right}>
           {props.cartQuantity > 0 ? (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: theme.colors.outline,
-                borderRadius: 100,
-              }}
-            >
-              <TouchableRipple
-                rippleColor={theme.colors.primaryContainer}
-                onPress={props.onPressDecrease}
-                borderless
-                style={{
-                  borderRadius: 100,
-                  width: 40,
-                  height: 40,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <MaterialCommunityIcons name="minus" size={22} />
-              </TouchableRipple>
-              <Text variant="labelLarge" style={{ marginHorizontal: 8 }}>
-                {props.cartQuantity}
-              </Text>
-              <TouchableRipple
-                rippleColor={theme.colors.primaryContainer}
-                onPress={props.onPressIncrease}
-                borderless
-                style={{
-                  borderRadius: 100,
-                  width: 40,
-                  height: 40,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <MaterialCommunityIcons
-                  name="plus"
-                  size={22}
-                  color={
-                    increaseDisabled
-                      ? theme.colors.onSurfaceDisabled
-                      : theme.colors.onSurface
-                  }
-                />
-              </TouchableRipple>
-            </View>
+            <InputCounter
+              value={props.cartQuantity}
+              onPressDecrease={props.onPressDecrease}
+              onPressIncrease={props.onPressIncrease}
+              disableDecrement={props.cartQuantity == 0}
+              disableIncrement={props.cartQuantity == props.itemData.stock}
+            />
           ) : (
             <IconButton
               mode="contained"

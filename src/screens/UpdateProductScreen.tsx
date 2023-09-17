@@ -131,7 +131,11 @@ const UpdateProductScreen = ({
           </Button>
         </BaseDialog.Actions>
       </BaseDialog>
-      <BaseDialog visible={deleteAlertVisible} onDismiss={hideDeleteAlert}>
+      <BaseDialog
+        visible={deleteAlertVisible}
+        dismissable={true}
+        onDismiss={hideDeleteAlert}
+      >
         <BaseDialog.Title>{`Hapus ${route.params.productData.name}?`}</BaseDialog.Title>
         <BaseDialog.Content>
           <Text variant="bodyMedium">

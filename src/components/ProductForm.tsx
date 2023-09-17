@@ -13,6 +13,7 @@ import InputImagePicker from "./InputImagePicker";
 import { CategoryModel } from "../data/entities/CategoryModel";
 import { useCallback, useState } from "react";
 import { toNumber, toRupiah } from "../utils/currencyUtils";
+import InputCounter from "./InputCounter";
 
 type ErrorsType = { [key in keyof CreateProductData]: string[] };
 
@@ -167,17 +168,25 @@ const ProductForm = (props: ProductFormProps) => {
         <Divider style={styles(theme).divider} />
         <View style={styles(theme).row}>
           <Text variant="bodySmall">Jumlah Stok</Text>
-          <TextInput
-            keyboardType="numeric"
-            value={props.productData.stock.toString()}
-            onChangeText={(value) => {
-              setIsDirty((state) => ({ ...state, stock: true }));
+          <InputCounter
+            disabled={props.productData.isAlwaysInStock}
+            value={props.productData.stock}
+            onPressDecrease={() =>
               props.setProductData((state) => ({
                 ...state,
-                stock: toNumber(value),
-              }));
-            }}
-            disabled={props.productData.isAlwaysInStock}
+                stock: state.stock - 1,
+              }))
+            }
+            onPressIncrease={() =>
+              props.setProductData((state) => ({
+                ...state,
+                stock: state.stock + 1,
+              }))
+            }
+            editable={true}
+            onChangeText={(value) =>
+              props.setProductData((state) => ({ ...state, stock: value }))
+            }
           />
         </View>
       </View>

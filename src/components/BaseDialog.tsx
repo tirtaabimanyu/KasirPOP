@@ -1,31 +1,36 @@
 import { Dialog, Portal } from "react-native-paper";
 
-type BaseDialogProps = {
+type CommonProps = {
   visible: boolean;
-  dismissable?: boolean;
-  onDismiss: () => void;
-  children: React.JSX.Element[];
+  children: React.JSX.Element[] | React.JSX.Element;
 };
 
-const BaseDialog = ({
-  visible,
-  onDismiss,
-  children,
-  dismissable = true,
-}: BaseDialogProps) => {
+type ConditionalProps =
+  | {
+      dismissable?: false;
+      onDismiss?: never;
+    }
+  | {
+      dismissable: true;
+      onDismiss: () => void;
+    };
+
+type BaseDialogProps = CommonProps & ConditionalProps;
+
+const BaseDialog = (props: BaseDialogProps) => {
   return (
     <Portal>
       <Dialog
-        visible={visible}
-        dismissable={dismissable}
-        onDismiss={onDismiss}
+        visible={props.visible}
+        dismissable={props.dismissable}
+        onDismiss={props.onDismiss}
         style={{
           backgroundColor: "white",
           width: "50%",
           alignSelf: "center",
         }}
       >
-        {children}
+        {props.children}
       </Dialog>
     </Portal>
   );
