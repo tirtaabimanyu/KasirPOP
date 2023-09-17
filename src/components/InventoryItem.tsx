@@ -48,22 +48,24 @@ const UpdateStockDialog = ({
             onValueChange={() => setIsAlwaysInStock((state) => !state)}
           />
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text>Jumlah Stok</Text>
-          <InputCounter
-            value={stock}
-            onPressDecrease={() => setStock((state) => state - 1)}
-            onPressIncrease={() => setStock((state) => state + 1)}
-            editable={true}
-            onChangeText={setStock}
-          />
-        </View>
+        {!isAlwaysInStock && (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text>Jumlah Stok</Text>
+            <InputCounter
+              value={stock}
+              onPressDecrease={() => setStock((state) => state - 1)}
+              onPressIncrease={() => setStock((state) => state + 1)}
+              editable={true}
+              onChangeText={setStock}
+            />
+          </View>
+        )}
       </BaseDialog.Content>
       <BaseDialog.Actions>
         <Button style={{ marginRight: 8 }} onPress={onCancel}>

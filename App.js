@@ -6,6 +6,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import Router from "./src/routes";
 import store from "./src/redux/store";
 import { DatabaseConnectionProvider } from "./src/data/connection";
+import GlobalSnackbar from "./src/components/GlobalSnackbar";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <PaperProvider>
             <SafeAreaView style={{ flex: 1 }}>
               <StatusBar style="auto" />
+              <GlobalSnackbar />
               <Router />
             </SafeAreaView>
           </PaperProvider>

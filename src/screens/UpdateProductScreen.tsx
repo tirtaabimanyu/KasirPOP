@@ -8,6 +8,7 @@ import ProductForm from "../components/ProductForm";
 import BaseDialog from "../components/BaseDialog";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { deleteProduct, updateProduct } from "../redux/slices/productSlice";
+import { showSnackbar } from "../redux/slices/layoutSlice";
 
 const UpdateProductScreen = ({
   navigation,
@@ -58,6 +59,11 @@ const UpdateProductScreen = ({
       })
     ).then(() => {
       setCanNavigate(true);
+      dispatch(
+        showSnackbar({
+          message: `${route.params.productData.name} telah dihapus`,
+        })
+      );
       navigation.navigate("home", { screen: "inventory" });
     });
   }, [repositories]);

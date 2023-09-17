@@ -7,7 +7,7 @@ import {
 } from "@react-navigation/material-top-tabs";
 import { FlatList } from "react-native-gesture-handler";
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDatabaseConnection } from "../../data/connection";
 import { ProductModel } from "../../data/entities/ProductModel";
