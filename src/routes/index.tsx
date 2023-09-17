@@ -15,6 +15,7 @@ import {
 import { ParamListBase, Route } from "@react-navigation/native";
 import HomeDrawer from "./HomeDrawer";
 import AddProductScreen from "../screens/AddProductScreen";
+import UpdateProductScreen from "../screens/UpdateProductScreen";
 
 enableScreens();
 enableFreeze();
@@ -74,6 +75,11 @@ const Router = (props: NavigationContainerProps) => {
           name="addProduct"
           component={AddProductScreen}
           options={{ title: "Tambah Produk" }}
+        />
+        <Stack.Screen
+          name="updateProduct"
+          component={UpdateProductScreen}
+          options={{ title: "Ubah Produk" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -24,7 +24,13 @@ type InventoryTabParamList = {
 const Tab = createMaterialTopTabNavigator<InventoryTabParamList>();
 
 interface TabFlatListProps
-  extends MaterialTopTabScreenProps<InventoryTabParamList> {
+  extends CompositeScreenProps<
+    MaterialTopTabScreenProps<InventoryTabParamList>,
+    CompositeScreenProps<
+      NativeStackScreenProps<RootStackParamList, "home">,
+      DrawerScreenProps<HomeDrawerParamList, "inventory">
+    >
+  > {
   data: ProductData[];
 }
 const TabFlatList = (props: TabFlatListProps) => {
@@ -35,8 +41,10 @@ const TabFlatList = (props: TabFlatListProps) => {
       renderItem={({ item }) => (
         <InventoryItem
           itemData={item}
-          onPressEditStock={() => null}
-          onPressEditDetail={() => null}
+          onPressUpdateStock={() => null}
+          onPressUpdateDetail={() =>
+            props.navigation.navigate("updateProduct", { productData: item })
+          }
         />
       )}
       ItemSeparatorComponent={RowSeparator}
@@ -51,8 +59,8 @@ const RowSeparator = () => <View style={{ height: 24 }} />;
 const InventoryScreen = ({
   navigation,
 }: CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList>,
-  DrawerScreenProps<HomeDrawerParamList, "inventory">
+  DrawerScreenProps<HomeDrawerParamList, "inventory">,
+  NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
   const { productRepository } = useDatabaseConnection();
@@ -68,14 +76,22 @@ const InventoryScreen = ({
     const products = await productRepository.getAll();
     const serializedProducts: ProductData[] = [];
     products.forEach((v) => {
-      serializedProducts.push({
-        id: v.id.toString(),
+      const categories: CategoryData[] = [];
+      if (v.categories != undefined) {
+        v.categories.forEach((category) => {
+          categories.push({ id: category.id, name: category.name });
+        });
+      }
+      const serializedData = {
+        id: v.id,
         name: v.name,
         stock: v.stock,
         isAlwaysInStock: v.isAlwaysInStock,
         price: v.price,
         imgUri: v.imgUri,
-      });
+        categories: categories,
+      };
+      serializedProducts.push(serializedData);
     });
     setProducts(serializedProducts);
   }, [productRepository, setProducts]);
@@ -131,16 +147,18 @@ const InventoryScreen = ({
         }}
       >
         <Tab.Screen name="allProduct" options={{ title: "Semua" }}>
-          {(props) => <TabFlatList {...props} data={products} />}
+          {(tabProps) => <TabFlatList {...tabProps} data={products} />}
         </Tab.Screen>
         <Tab.Screen name="inStock" options={{ title: "Aktif" }}>
-          {(props) => <TabFlatList {...props} data={inStockProducts} />}
+          {(tabProps) => <TabFlatList {...tabProps} data={inStockProducts} />}
         </Tab.Screen>
         <Tab.Screen
           name="outOfStock"
           options={{ title: `Stok Habis (${outOfStockProducts.length})` }}
         >
-          {(props) => <TabFlatList {...props} data={outOfStockProducts} />}
+          {(tabProps) => (
+            <TabFlatList {...tabProps} data={outOfStockProducts} />
+          )}
         </Tab.Screen>
       </Tab.Navigator>
     </View>

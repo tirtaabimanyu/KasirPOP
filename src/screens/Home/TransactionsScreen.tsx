@@ -27,8 +27,8 @@ const TransactionsScreen = ({
   navigation,
   route,
 }: CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, "home">,
-  DrawerScreenProps<HomeDrawerParamList, "transactions">
+  DrawerScreenProps<HomeDrawerParamList, "transactions">,
+  NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
 

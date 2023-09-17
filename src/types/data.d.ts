@@ -1,10 +1,16 @@
 type ProductData = {
-  id: string;
+  id: number;
   name: string;
   price: number;
   isAlwaysInStock: boolean;
   stock: number;
   imgUri?: ImageSourcePropType;
+  categories?: CategoryData[];
+};
+
+type CategoryData = {
+  id: number;
+  name: string;
 };
 
 type CreateProductData = {
@@ -16,7 +22,10 @@ type CreateProductData = {
   categories?: CategoryModel[];
 };
 
-type ProductCategoryData = {
-  id: string;
+interface UpdateProductData extends CreateProductData {
+  id: number;
+}
+
+type CreateCategoryData = {
   name: string;
 };

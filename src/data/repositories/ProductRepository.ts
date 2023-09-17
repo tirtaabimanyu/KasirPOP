@@ -1,6 +1,5 @@
-import { ArrayContains, DataSource, MoreThan, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
-import { CategoryModel } from "../entities/CategoryModel";
 
 export class ProductRepository {
   private ormRepository: Repository<ProductModel>;
@@ -14,22 +13,6 @@ export class ProductRepository {
       relations: {
         categories: true,
       },
-    });
-
-    return products;
-  }
-
-  public async getAllInStock(): Promise<ProductModel[]> {
-    const products = await this.ormRepository.find({
-      where: [{ isAlwaysInStock: true }, { stock: MoreThan(0) }],
-    });
-
-    return products;
-  }
-
-  public async getAllOutOfStock(): Promise<ProductModel[]> {
-    const products = await this.ormRepository.find({
-      where: [{ isAlwaysInStock: false, stock: MoreThan(0) }],
     });
 
     return products;
@@ -57,8 +40,26 @@ export class ProductRepository {
     return product;
   }
 
+  public async update(data: UpdateProductData): Promise<ProductModel> {
+    const product = await this.ormRepository.findOne({
+      where: { id: data.id },
+    });
+    if (product == null) return Promise.reject("Product not found");
+
+    product.name = data.name;
+    product.stock = data.stock;
+    product.isAlwaysInStock = data.isAlwaysInStock;
+    product.price = data.price;
+    product.imgUri = data.imgUri;
+    if (data.categories) {
+      product.categories = data.categories;
+    }
+
+    return this.ormRepository.save(product);
+  }
+
   public async delete(id: number): Promise<void> {
-    await this.ormRepository.softDelete(id);
+    await this.ormRepository.delete(id);
   }
 
   public async deleteAll(): Promise<void> {

@@ -1,10 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { CategoryModel } from "../entities/CategoryModel";
 
-interface ICreateProductCategoryData {
-  name: string;
-}
-
 export class CategoryRepository {
   private ormRepository: Repository<CategoryModel>;
 
@@ -39,9 +35,7 @@ export class CategoryRepository {
     return newCategory;
   }
 
-  public async create({
-    name,
-  }: ICreateProductCategoryData): Promise<CategoryModel> {
+  public async create({ name }: CreateCategoryData): Promise<CategoryModel> {
     const category = this.ormRepository.create({
       name,
     });

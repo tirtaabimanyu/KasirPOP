@@ -14,18 +14,13 @@ import { CategoryModel } from "../data/entities/CategoryModel";
 import { useCallback, useState } from "react";
 import { toNumber, toRupiah } from "../utils/currencyUtils";
 
-type SelectedCategoriesType = { [key: number]: CategoryModel };
 type ErrorsType = { [key in keyof CreateProductData]: string[] };
 
 type ProductFormProps = {
   categories: CategoryModel[];
-  productData: CreateProductData;
-  selectedCategories: SelectedCategoriesType;
+  productData: ProductData;
   errors: ErrorsType;
-  setProductData: React.Dispatch<React.SetStateAction<CreateProductData>>;
-  setSelectedCategories: React.Dispatch<
-    React.SetStateAction<SelectedCategoriesType>
-  >;
+  setProductData: React.Dispatch<React.SetStateAction<ProductData>>;
   setErrors: React.Dispatch<React.SetStateAction<ErrorsType>>;
 };
 
@@ -44,18 +39,32 @@ const ProductForm = (props: ProductFormProps) => {
   const toggleCategory = useCallback(
     (category: CategoryModel) => {
       setIsDirty((state) => ({ ...state, categories: true }));
-      if (category.id in props.selectedCategories) {
-        props.setSelectedCategories((state) => {
-          const { [category.id]: categoryId, ...rest } = state;
-          return rest;
-        });
-      } else {
-        props.setSelectedCategories((state) => {
-          return { ...state, [category.id]: category };
-        });
-      }
+      props.setProductData((state) => {
+        if (
+          props.productData.categories?.some(
+            (selectedCategory) => selectedCategory.id == category.id
+          )
+        ) {
+          const newCategories = state.categories?.filter(
+            (selectedCategory) => selectedCategory.id != category.id
+          );
+          return {
+            ...state,
+            categories: newCategories,
+          };
+        } else {
+          const newCategories = state.categories
+            ? [
+                ...state.categories,
+                { id: category.id, name: category.name },
+              ].sort((a, b) => a.id - b.id)
+            : [{ id: category.id, name: category.name }];
+
+          return { ...state, categories: newCategories };
+        }
+      });
     },
-    [props.selectedCategories, props.setSelectedCategories, setIsDirty]
+    [props.productData, props.setProductData, setIsDirty]
   );
 
   return (
@@ -108,7 +117,9 @@ const ProductForm = (props: ProductFormProps) => {
         </Text>
         <View style={[styles(theme).row, { justifyContent: "flex-start" }]}>
           {props.categories.map((category, idx) => {
-            const isSelected = category.id in props.selectedCategories;
+            const isSelected = props.productData.categories?.some(
+              (selectedCategory) => selectedCategory.id == category.id
+            );
             return (
               <Chip
                 key={`category-${idx}`}

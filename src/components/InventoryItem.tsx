@@ -12,8 +12,8 @@ import { toRupiah } from "../utils/currencyUtils";
 
 interface InventoryItemProps {
   itemData: ProductData;
-  onPressEditStock: () => void;
-  onPressEditDetail: () => void;
+  onPressUpdateStock: () => void;
+  onPressUpdateDetail: () => void;
 }
 
 const InventoryItem = (props: InventoryItemProps) => {
@@ -68,7 +68,11 @@ const InventoryItem = (props: InventoryItemProps) => {
         </View>
 
         <View style={styles(theme).right}>
-          <Button mode="outlined" style={{ marginRight: 8 }}>
+          <Button
+            mode="outlined"
+            style={{ marginRight: 8 }}
+            onPress={props.onPressUpdateDetail}
+          >
             Ubah Produk
           </Button>
           <Button mode="contained-tonal">Ubah Stok</Button>

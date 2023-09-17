@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button, MD3Theme, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -8,27 +8,21 @@ import { CategoryModel } from "../data/entities/CategoryModel";
 import ProductForm from "../components/ProductForm";
 import BaseDialog from "../components/BaseDialog";
 
-const AddProductScreen = ({
+const UpdateProductScreen = ({
   navigation,
-}: NativeStackScreenProps<RootStackParamList, "addProduct">) => {
+  route,
+}: NativeStackScreenProps<RootStackParamList, "updateProduct">) => {
   const theme = useTheme();
   const { productRepository, categoryRepository } = useDatabaseConnection();
 
   const [categories, setCategories] = useState<CategoryModel[]>([]);
 
-  const initialData: ProductData = {
-    id: 0,
-    name: "",
-    stock: 0,
-    isAlwaysInStock: false,
-    price: 0,
-    imgUri: undefined,
-    categories: undefined,
-  };
-  const [productData, setProductData] = useState<ProductData>(initialData);
+  const initialData: ProductData = route.params.productData;
+  const [newProductData, setNewProductData] =
+    useState<ProductData>(initialData);
 
   const hasUnsavedChanges =
-    JSON.stringify(initialData) !== JSON.stringify(productData);
+    JSON.stringify(initialData) !== JSON.stringify(newProductData);
 
   const initialErrors: { [key in keyof CreateProductData]: string[] } = {
     name: [],
@@ -41,32 +35,37 @@ const AddProductScreen = ({
   const [errors, setErrors] = useState(initialErrors);
 
   const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [canNavigate, setCanNavigate] = useState(false);
 
   const fetchCategory = useCallback(async () => {
     const categories = await categoryRepository.getAll();
     setCategories(categories);
   }, [categoryRepository, setCategories]);
 
-  const createItem = useCallback(async () => {
+  const updateItem = useCallback(async () => {
     const selectedCategories: CategoryModel[] = categories.filter((category) =>
-      productData.categories?.some(
+      newProductData.categories?.some(
         (selectedCategory) => selectedCategory.id == category.id
       )
     );
-    const data: CreateProductData = {
-      ...productData,
+    const data: UpdateProductData = {
+      ...newProductData,
       categories: selectedCategories,
     };
-    productRepository.create(data).then(() => {
-      setSubmitSuccess(true);
-      navigation.navigate("home", { screen: "inventory" });
-    });
-  }, [productData, productRepository, navigation]);
+    await productRepository.update(data);
+    setCanNavigate(true);
+    navigation.navigate("home", { screen: "inventory" });
+  }, [newProductData, productRepository, navigation]);
+
+  const deleteItem = useCallback(async () => {
+    await productRepository.delete(route.params.productData.id);
+    setCanNavigate(true);
+    navigation.navigate("home", { screen: "inventory" });
+  }, [productRepository]);
 
   const validation = () => {
     const newErrors = initialErrors;
-    if (productData.name.length == 0) {
+    if (newProductData.name.length == 0) {
       newErrors["name"].push("Nama produk tidak boleh kosong");
     }
     setErrors(newErrors);
@@ -76,15 +75,19 @@ const AddProductScreen = ({
   const showBackAlert = () => setBackAlertVisible(true);
   const hideBackAlert = () => setBackAlertVisible(false);
 
+  const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
+  const showDeleteAlert = () => setDeleteAlertVisible(true);
+  const hideDeleteAlert = () => setDeleteAlertVisible(false);
+
   useEffect(() => {
     fetchCategory();
   }, []);
 
-  useEffect(validation, [productData, hasUnsavedChanges]);
+  useEffect(validation, [newProductData, hasUnsavedChanges]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      if (!hasUnsavedChanges || backAlertVisible || submitSuccess) {
+      if (!hasUnsavedChanges || backAlertVisible || canNavigate) {
         return;
       }
       e.preventDefault();
@@ -96,7 +99,7 @@ const AddProductScreen = ({
     hasUnsavedChanges,
     backAlertVisible,
     showBackAlert,
-    submitSuccess,
+    canNavigate,
   ]);
 
   return (
@@ -128,26 +131,57 @@ const AddProductScreen = ({
           </Button>
         </BaseDialog.Actions>
       </BaseDialog>
+      <BaseDialog visible={deleteAlertVisible} onDismiss={hideDeleteAlert}>
+        <BaseDialog.Title>{`Hapus ${route.params.productData.name}?`}</BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text variant="bodyMedium">
+            {`Apakah Anda yakin untuk menghapus ${route.params.productData.name}? Produk yang telah dihapus akan hilang dari Inventori.`}
+          </Text>
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button onPress={deleteItem} style={{ paddingHorizontal: 16 }}>
+            Hapus Produk
+          </Button>
+          <Button
+            mode="contained"
+            onPress={hideDeleteAlert}
+            style={{ paddingHorizontal: 24 }}
+          >
+            Kembali
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <ProductForm
         categories={categories}
-        productData={productData}
-        setProductData={setProductData}
+        productData={newProductData}
+        setProductData={setNewProductData}
         errors={errors}
         setErrors={setErrors}
       />
-      <Button
-        mode="contained"
-        style={styles(theme).saveButton}
-        onPress={createItem}
-        disabled={canSubmit}
-      >
-        Simpan
-      </Button>
+      <View style={styles(theme).actionButtonContainer}>
+        <Button
+          mode="outlined"
+          icon={"trash-can-outline"}
+          style={styles(theme).saveButton}
+          onPress={showDeleteAlert}
+          disabled={canSubmit}
+        >
+          Hapus Produk
+        </Button>
+        <Button
+          mode="contained"
+          style={styles(theme).saveButton}
+          onPress={updateItem}
+          disabled={canSubmit}
+        >
+          Simpan
+        </Button>
+      </View>
     </ScrollView>
   );
 };
 
-export default AddProductScreen;
+export default UpdateProductScreen;
 
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({
@@ -155,6 +189,10 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
+    },
+    actionButtonContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     saveButton: {
       alignSelf: "flex-end",

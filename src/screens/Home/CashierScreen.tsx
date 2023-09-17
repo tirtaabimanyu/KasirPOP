@@ -98,7 +98,7 @@ const AllFlatList = (
 
         fetchedProducts.forEach((product) =>
           serializedProducts.push({
-            id: product.id.toString(),
+            id: product.id,
             name: product.name,
             stock: product.stock,
             isAlwaysInStock: product.isAlwaysInStock,
@@ -135,7 +135,7 @@ const CategoryFlatList = (
         const serializedProducts: ProductData[] = [];
         fetchedCategory?.products.forEach((product) =>
           serializedProducts.push({
-            id: product.id.toString(),
+            id: product.id,
             name: product.name,
             stock: product.stock,
             isAlwaysInStock: product.isAlwaysInStock,
@@ -158,8 +158,8 @@ const CategoryFlatList = (
 const CashierScreen = ({
   navigation,
 }: CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, "home">,
-  DrawerScreenProps<HomeDrawerParamList, "cashier">
+  DrawerScreenProps<HomeDrawerParamList, "cashier">,
+  NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
   const cartState = useAppSelector((state) => state.cart);
