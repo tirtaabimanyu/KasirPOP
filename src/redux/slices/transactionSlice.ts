@@ -29,9 +29,16 @@ export const createTransaction = createAsyncThunk(
 
 export type TransactionState = {
   transactions: TransactionData[];
+  summary: {
+    cash: number;
+    qris: number;
+  };
 };
 
-const initialState: TransactionState = { transactions: [] };
+const initialState: TransactionState = {
+  transactions: [],
+  summary: { cash: 0, qris: 0 },
+};
 
 export const transactionSlice = createSlice({
   name: "transaction",
