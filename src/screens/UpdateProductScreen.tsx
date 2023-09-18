@@ -9,6 +9,8 @@ import BaseDialog from "../components/BaseDialog";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { deleteProduct, updateProduct } from "../redux/slices/productSlice";
 import { showSnackbar } from "../redux/slices/layoutSlice";
+import { RootStackParamList } from "../types/routes";
+import { CreateProductData, ProductData } from "../types/data";
 
 const UpdateProductScreen = ({
   navigation,

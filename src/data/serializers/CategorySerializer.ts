@@ -1,3 +1,4 @@
+import { CategoryData } from "../../types/data";
 import { CategoryModel } from "../entities/CategoryModel";
 
 const CategorySerializer = class {

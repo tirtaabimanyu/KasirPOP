@@ -1,5 +1,6 @@
 import { DataSource, In, Repository } from "typeorm";
 import { CategoryModel } from "../entities/CategoryModel";
+import { CreateCategoryData } from "../../types/data";
 
 export class CategoryRepository {
   private ormRepository: Repository<CategoryModel>;

@@ -13,6 +13,7 @@ import InputCounter from "./InputCounter";
 import useDialog from "../hooks/useDialog";
 import UpdateStockDialog from "./UpdateStockDialog";
 import { useState } from "react";
+import { ProductData, ProductStockData } from "../types/data";
 
 interface CashierItemProps {
   itemData: ProductData;

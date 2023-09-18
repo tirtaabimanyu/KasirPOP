@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { CategoryRepository } from "../../data/repositories/CategoryRepository";
 import CategorySerializer from "../../data/serializers/CategorySerializer";
+import { CategoryData } from "../../types/data";
 
 export const fetchAllCategories = createAsyncThunk(
   "category/fetchAll",

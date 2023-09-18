@@ -11,6 +11,7 @@ import {
 import { toRupiah } from "../utils/currencyUtils";
 import UpdateStockDialog from "./UpdateStockDialog";
 import useDialog from "../hooks/useDialog";
+import { ProductData, ProductStockData } from "../types/data";
 
 interface InventoryItemProps {
   itemData: ProductData;

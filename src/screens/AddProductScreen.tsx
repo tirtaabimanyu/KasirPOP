@@ -8,6 +8,8 @@ import ProductForm from "../components/ProductForm";
 import BaseDialog from "../components/BaseDialog";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { createProduct } from "../redux/slices/productSlice";
+import { RootStackParamList } from "../types/routes";
+import { CreateProductData, ProductData } from "../types/data";
 
 const AddProductScreen = ({
   navigation,

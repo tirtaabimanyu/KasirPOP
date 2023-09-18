@@ -9,6 +9,7 @@ import InputDatePicker from "../../components/InputDatePicker";
 import TransactionsItem from "../../components/TransactionsItem";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import BaseDialog from "../../components/BaseDialog";
+import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 
 const Tab = createMaterialTopTabNavigator();
 

@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ProductRepository } from "../../data/repositories/ProductRepository";
 import ProductSerializer from "../../data/serializers/ProductSerializer";
 import { resetCart } from "./cartSlice";
+import { CreateProductData, ProductData } from "../../types/data";
+import { DatabaseConnectionContextData } from "../../types/connection";
 
 export const fetchAllProducts = createAsyncThunk(
   "product/fetchAll",
@@ -15,15 +17,15 @@ export const fetchAllProducts = createAsyncThunk(
 export const createProduct = createAsyncThunk(
   "product/create",
   async (payload: {
-    data: CreateProductData;
+    data: ProductData;
     repositories: DatabaseConnectionContextData;
   }): Promise<ProductData> => {
     const { productRepository, categoryRepository } = payload.repositories;
-    const categoryIds =
-      payload.data.categories?.map((category) => category.id) || [];
+    const { id, ...data } = payload.data;
+    const categoryIds = data.categories?.map((category) => category.id) || [];
     const categories = await categoryRepository.getByIds(categoryIds);
     const product = await productRepository.create({
-      ...payload.data,
+      ...data,
       categories,
     });
 
@@ -35,7 +37,7 @@ export const updateProduct = createAsyncThunk(
   "product/update",
   async (
     payload: {
-      data: UpdateProductData;
+      data: ProductData;
       repositories: DatabaseConnectionContextData;
     },
     thunkApi

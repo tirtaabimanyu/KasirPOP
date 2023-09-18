@@ -14,6 +14,9 @@ import { ProductModel } from "../../data/entities/ProductModel";
 import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
 import { updateProduct } from "../../redux/slices/productSlice";
 import { AppDispatch } from "../../redux/store";
+import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
+import { ProductData, ProductStockData } from "../../types/data";
+import { DatabaseConnectionContextData } from "../../types/connection";
 
 type TabFlatListType = {
   products: ProductModel[];

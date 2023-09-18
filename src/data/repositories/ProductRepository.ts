@@ -1,5 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
+import { CreateProductData, UpdateProductData } from "../../types/data";
 
 export class ProductRepository {
   private ormRepository: Repository<ProductModel>;

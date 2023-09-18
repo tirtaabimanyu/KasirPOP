@@ -7,11 +7,14 @@ import {
   CartState,
   addToCart,
   removeFromCart,
+  updateCartAmount,
 } from "../redux/slices/cartSlice";
 import { useEffect } from "react";
 import { toRupiah } from "../utils/currencyUtils";
 import { AppDispatch } from "../redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ProductData } from "../types/data";
+import { RootStackParamList } from "../types/routes";
 
 const RowSeparator = () => <View style={{ height: 12 }} />;
 
@@ -32,6 +35,10 @@ const NormalizedCashierItem = ({
       itemData={itemData}
       onPressDecrease={() => dispatch(removeFromCart(itemData))}
       onPressIncrease={() => dispatch(addToCart(itemData))}
+      onChangeText={(value) =>
+        dispatch(updateCartAmount({ ...itemData, quantity: value }))
+      }
+      onPressSaveUpdateStock={() => null}
       cartQuantity={cartQuantity}
     />
   );

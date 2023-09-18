@@ -10,6 +10,7 @@ import SettingsScreen from "../screens/Home/SettingsScreen";
 import CashierScreen from "../screens/Home/CashierScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
+import { HomeDrawerParamList, RootStackParamList } from "../types/routes";
 
 const Drawer = createDrawerNavigator<HomeDrawerParamList>();
 

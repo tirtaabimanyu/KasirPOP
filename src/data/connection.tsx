@@ -12,6 +12,7 @@ import { AppDataSource } from "./app-data-source";
 import { ProductRepository } from "./repositories/ProductRepository";
 import { CategoryRepository } from "./repositories/CategoryRepository";
 import { StyleSheet, View } from "react-native";
+import { DatabaseConnectionContextData } from "../types/connection";
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData

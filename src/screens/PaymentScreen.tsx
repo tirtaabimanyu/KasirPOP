@@ -16,6 +16,7 @@ import { toRupiah } from "../utils/currencyUtils";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { resetCart } from "../redux/slices/cartSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/routes";
 
 type PaymentType = "cash" | "qris";
 const isPaymentType = (value: string): value is PaymentType =>

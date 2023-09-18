@@ -20,6 +20,8 @@ import {
 import { toRupiah } from "../../utils/currencyUtils";
 import { updateProduct } from "../../redux/slices/productSlice";
 import { useDatabaseConnection } from "../../data/connection";
+import { CategoryData, ProductData } from "../../types/data";
+import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 
 type TabScreenParams = {
   category: CategoryData;

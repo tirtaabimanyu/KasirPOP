@@ -3,6 +3,7 @@ import BaseDialog from "./BaseDialog";
 import { View } from "react-native";
 import { Button, Switch, Text } from "react-native-paper";
 import InputCounter from "./InputCounter";
+import { ProductData, ProductStockData } from "../types/data";
 
 type UpdateStockDialogProp = {
   productData: ProductData;

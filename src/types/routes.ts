@@ -1,4 +1,6 @@
-type RootStackParamList = {
+import { ProductData } from "./data";
+
+export type RootStackParamList = {
   home?: { screen?: keyof HomeDrawerParamList };
   summary: undefined;
   payment: undefined;
@@ -6,7 +8,7 @@ type RootStackParamList = {
   updateProduct: { productData: ProductData };
 };
 
-type HomeDrawerParamList = {
+export type HomeDrawerParamList = {
   cashier: undefined;
   inventory: undefined;
   transactions: undefined;

@@ -13,6 +13,7 @@ import InputImagePicker from "./InputImagePicker";
 import { useCallback, useState } from "react";
 import { toNumber, toRupiah } from "../utils/currencyUtils";
 import InputCounter from "./InputCounter";
+import { CategoryData, CreateProductData, ProductData } from "../types/data";
 
 type ErrorsType = { [key in keyof CreateProductData]: string[] };
 
