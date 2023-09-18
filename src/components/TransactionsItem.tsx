@@ -1,4 +1,4 @@
-import { Card, Divider, List, Text } from "react-native-paper";
+import { Card, Divider, List, Text, useTheme } from "react-native-paper";
 import { TransactionData } from "../types/data";
 import {
   toFormattedDate,
@@ -12,10 +12,16 @@ interface TransactionsItemProps {
 }
 
 const TransactionsItem = ({ itemData }: TransactionsItemProps) => {
+  const theme = useTheme();
   return (
     <Card
       mode="outlined"
-      style={{ flex: 1, marginRight: 12 }}
+      style={{
+        flex: 1,
+        marginRight: 12,
+        backgroundColor: "white",
+        borderColor: theme.colors.outlineVariant,
+      }}
       contentStyle={{
         flex: 1,
         justifyContent: "space-between",
@@ -27,6 +33,7 @@ const TransactionsItem = ({ itemData }: TransactionsItemProps) => {
             {toFormattedDate(new Date(itemData.createdAt), true)}
           </Text>
         }
+        style={{ backgroundColor: "white" }}
       >
         {itemData.transactions.map((transaction) => {
           return (
