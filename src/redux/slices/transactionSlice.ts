@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CreateTransactionData, TransactionData } from "../../types/data";
+import {
+  CreateTransactionData,
+  PaymentType,
+  TransactionData,
+} from "../../types/data";
 import { TransactionService } from "../../data/services/TransactionService";
 import TransactionSerializer from "../../data/serializers/TransactionSerializer";
 import { fetchAllProducts } from "./productSlice";
@@ -11,7 +15,9 @@ export const fetchTransactions = createAsyncThunk(
     dateRange?: { start: Date; end: Date };
     service: TransactionService;
   }) => {
-    const transactions = await payload.service.getAll();
+    const transactions = await payload.service.getAll({
+      dateRange: payload.dateRange,
+    });
 
     return TransactionSerializer.serializeMany(transactions);
   }
@@ -35,6 +41,28 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
+export const fetchTransactionSummary = createAsyncThunk(
+  "transaction/summary",
+  async (payload: { service: TransactionService }) => {
+    const dateRange = {
+      start: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+      end: new Date(),
+    };
+    const transactions = await payload.service.getAll({ dateRange });
+    const cash = transactions.reduce((obj, transaction) => {
+      if (transaction.payment_type == PaymentType.CASH)
+        obj += transaction.total_price;
+      return obj;
+    }, 0);
+    const qris = transactions.reduce((obj, transaction) => {
+      if (transaction.payment_type == PaymentType.QRIS)
+        obj += transaction.total_price;
+      return obj;
+    }, 0);
+    return { cash, qris };
+  }
+);
+
 export type TransactionState = {
   transactions: TransactionData[];
   summary: {
@@ -55,6 +83,10 @@ export const transactionSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchTransactions.fulfilled, (state, action) => {
       state.transactions = action.payload;
+    });
+    builder.addCase(fetchTransactionSummary.fulfilled, (state, action) => {
+      const { cash, qris } = action.payload;
+      state.summary = { cash, qris };
     });
   },
 });

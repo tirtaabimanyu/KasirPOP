@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { ProductSnapshotData } from "../../types/data";
+import { PaymentType, ProductSnapshotData } from "../../types/data";
 
 @Entity("transactions")
 export class TransactionModel {
@@ -11,6 +11,13 @@ export class TransactionModel {
 
   @Column()
   total_price: number;
+
+  @Column({
+    type: "simple-enum",
+    enum: PaymentType,
+    default: PaymentType.CASH,
+  })
+  payment_type: PaymentType;
 
   @Column("simple-json")
   products: ProductSnapshotData[];

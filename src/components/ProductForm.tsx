@@ -11,7 +11,7 @@ import {
 } from "react-native-paper";
 import InputImagePicker from "./InputImagePicker";
 import { useCallback, useState } from "react";
-import { toNumber, toRupiah } from "../utils/currencyUtils";
+import { toNumber, toRupiah } from "../utils/formatUtils";
 import InputCounter from "./InputCounter";
 import { CategoryData, CreateProductData, ProductData } from "../types/data";
 

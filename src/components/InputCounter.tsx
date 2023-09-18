@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { toNumber } from "../utils/currencyUtils";
+import { toNumber } from "../utils/formatUtils";
 
 type CommonProps = {
   value: number;

@@ -17,7 +17,7 @@ import {
   removeFromCart,
   updateCartAmount,
 } from "../../redux/slices/cartSlice";
-import { toRupiah } from "../../utils/currencyUtils";
+import { toRupiah } from "../../utils/formatUtils";
 import { updateProduct } from "../../redux/slices/productSlice";
 import { useDatabaseConnection } from "../../data/connection";
 import { CategoryData, ProductData } from "../../types/data";

@@ -10,7 +10,7 @@ import {
   updateCartAmount,
 } from "../redux/slices/cartSlice";
 import { useEffect } from "react";
-import { toRupiah } from "../utils/currencyUtils";
+import { toRupiah } from "../utils/formatUtils";
 import { AppDispatch } from "../redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ProductData } from "../types/data";

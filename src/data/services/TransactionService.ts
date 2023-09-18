@@ -1,6 +1,10 @@
-import { Between, DataSource, In, Repository } from "typeorm";
+import { Between, DataSource, FindManyOptions, In, Repository } from "typeorm";
 import { TransactionModel } from "../entities/TransactionModel";
-import { CreateTransactionData, ProductSnapshotData } from "../../types/data";
+import {
+  CreateTransactionData,
+  PaymentType,
+  ProductSnapshotData,
+} from "../../types/data";
 import { ProductModel } from "../entities/ProductModel";
 
 export class TransactionService {
@@ -14,14 +18,20 @@ export class TransactionService {
     this.productRepository = connection.getRepository(ProductModel);
   }
 
-  public async getAll(dateRange?: {
-    start: Date;
-    end: Date;
+  public async getAll(options?: {
+    dateRange?: {
+      start: Date;
+      end: Date;
+    };
   }): Promise<TransactionModel[]> {
-    let query = undefined;
-    if (dateRange)
-      query = {
-        where: { created_at: Between(dateRange.start, dateRange.end) },
+    let query: FindManyOptions<TransactionModel> = {
+      order: {
+        id: "DESC",
+      },
+    };
+    if (options?.dateRange)
+      query["where"] = {
+        created_at: Between(options.dateRange.start, options.dateRange.end),
       };
     const transactions = await this.transactionRepository.find(query);
 
@@ -41,6 +51,7 @@ export class TransactionService {
     let transaction = await this.transactionRepository.create({
       products: Object.values(transactionProducts),
       total_price: data.totalPrice,
+      payment_type: data.paymentType,
     });
 
     try {

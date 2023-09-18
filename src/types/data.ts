@@ -40,6 +40,11 @@ export type CreateCategoryData = {
 
 // Transaction
 
+export enum PaymentType {
+  CASH = "cash",
+  QRIS = "qris",
+}
+
 export interface CartItemData extends ProductData {
   quantity: number;
 }
@@ -53,12 +58,14 @@ export type ProductSnapshotData = {
 
 export type TransactionData = {
   id: number;
-  created_at: string;
-  total_price: number;
+  createdAt: string;
+  totalPrice: number;
+  paymentType: PaymentType;
   products: ProductSnapshotData[];
 };
 
 export type CreateTransactionData = {
   totalPrice: number;
+  paymentType: PaymentType;
   products: CartItemData[];
 };

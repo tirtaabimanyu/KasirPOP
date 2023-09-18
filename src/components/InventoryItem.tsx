@@ -8,7 +8,7 @@ import {
   Button,
   Chip,
 } from "react-native-paper";
-import { toRupiah } from "../utils/currencyUtils";
+import { toRupiah } from "../utils/formatUtils";
 import UpdateStockDialog from "./UpdateStockDialog";
 import useDialog from "../hooks/useDialog";
 import { ProductData, ProductStockData } from "../types/data";

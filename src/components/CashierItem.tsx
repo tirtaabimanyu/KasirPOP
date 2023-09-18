@@ -8,7 +8,7 @@ import {
   Text,
   Button,
 } from "react-native-paper";
-import { toRupiah } from "../utils/currencyUtils";
+import { toRupiah } from "../utils/formatUtils";
 import InputCounter from "./InputCounter";
 import useDialog from "../hooks/useDialog";
 import UpdateStockDialog from "./UpdateStockDialog";

@@ -1,12 +1,12 @@
-import { CategoryData, TransactionData } from "../../types/data";
-import { CategoryModel } from "../entities/CategoryModel";
+import { TransactionData } from "../../types/data";
 import { TransactionModel } from "../entities/TransactionModel";
 
 const TransactionSerializer = class {
   static serialize = (transaction: TransactionModel): TransactionData => ({
     id: transaction.id,
-    created_at: transaction.created_at.toDateString(),
-    total_price: transaction.total_price,
+    createdAt: transaction.created_at.toISOString(),
+    totalPrice: transaction.total_price,
+    paymentType: transaction.payment_type,
     products: transaction.products,
   });
 

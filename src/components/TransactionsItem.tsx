@@ -1,10 +1,17 @@
 import { Card, Divider, List, Text } from "react-native-paper";
+import { TransactionData } from "../types/data";
+import {
+  toFormattedDate,
+  toFormattedTime,
+  toRupiah,
+} from "../utils/formatUtils";
+import { View } from "react-native";
 
 interface TransactionsItemProps {
-  itemData: any;
+  itemData: { createdAt: string; transactions: TransactionData[] };
 }
 
-const TransactionsItem = (props: TransactionsItemProps) => {
+const TransactionsItem = ({ itemData }: TransactionsItemProps) => {
   return (
     <Card
       mode="outlined"
@@ -14,29 +21,39 @@ const TransactionsItem = (props: TransactionsItemProps) => {
         justifyContent: "space-between",
       }}
     >
-      <List.Accordion title={<Text variant="titleMedium">Hari Ini</Text>}>
-        <Divider horizontalInset={true} />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #2</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-          style={{ marginLeft: 8 }}
-        />
-        <Divider horizontalInset={true} />
-        <List.Item
-          title={<Text variant="bodyLarge">Order #1</Text>}
-          description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
-          right={(props) => (
-            <Text variant="labelLarge" {...props}>
-              Rp50,000
-            </Text>
-          )}
-          style={{ marginLeft: 8 }}
-        />
+      <List.Accordion
+        title={
+          <Text variant="titleMedium">
+            {toFormattedDate(new Date(itemData.createdAt), true)}
+          </Text>
+        }
+      >
+        {itemData.transactions.map((transaction) => {
+          return (
+            <View key={`divider-transaction-${transaction.id}`}>
+              <Divider horizontalInset={true} />
+              <List.Item
+                title={
+                  <Text variant="bodyLarge">{`Order #${transaction.id}`}</Text>
+                }
+                description={
+                  <Text variant="labelSmall">{`${toFormattedDate(
+                    new Date(transaction.createdAt),
+                    true
+                  )}, ${toFormattedTime(
+                    new Date(transaction.createdAt)
+                  )}`}</Text>
+                }
+                right={(props) => (
+                  <Text variant="labelLarge" {...props}>
+                    {`${toRupiah(transaction.totalPrice)}`}
+                  </Text>
+                )}
+                style={{ marginLeft: 8 }}
+              />
+            </View>
+          );
+        })}
       </List.Accordion>
     </Card>
   );

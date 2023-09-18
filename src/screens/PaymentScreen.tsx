@@ -12,17 +12,14 @@ import {
 } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
 import NumericKeyboard from "../components/NumericKeyboard";
-import { toRupiah } from "../utils/currencyUtils";
+import { toRupiah } from "../utils/formatUtils";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { resetCart } from "../redux/slices/cartSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/routes";
 import { createTransaction } from "../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../data/connection";
-
-type PaymentType = "cash" | "qris";
-const isPaymentType = (value: string): value is PaymentType =>
-  value == "cash" || value == "qris";
+import { PaymentType } from "../types/data";
 
 const PaymentScreen = ({
   navigation,
@@ -36,7 +33,7 @@ const PaymentScreen = ({
     if (cart.totalItem == 0) navigation.navigate("home");
   }, [cart.totalItem]);
 
-  const [paymentType, setPaymentType] = useState<PaymentType>("cash");
+  const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.CASH);
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => {
@@ -64,21 +61,20 @@ const PaymentScreen = ({
   };
 
   const onPressPaymentType = (value: string) => {
-    if (!isPaymentType(value)) {
-      throw "value is not of type PaymentType";
-    }
-
-    if (value == "cash") {
+    if (value == PaymentType.CASH) {
       setMoneyReceived(0);
       setPaymentType(value);
-    } else {
+    } else if (value == PaymentType.QRIS) {
       setMoneyReceived(cart.totalPrice);
       setPaymentType(value);
     }
   };
 
   let showFloatingRecap = false;
-  if (paymentType == "qris" || (paymentType == "cash" && totalChange >= 0)) {
+  if (
+    paymentType == PaymentType.QRIS ||
+    (paymentType == PaymentType.CASH && totalChange >= 0)
+  ) {
     showFloatingRecap = true;
   }
 
@@ -88,6 +84,7 @@ const PaymentScreen = ({
         data: {
           products: Object.values(cart.products),
           totalPrice: cart.totalPrice,
+          paymentType: paymentType,
         },
         services: services,
       })
@@ -130,12 +127,12 @@ const PaymentScreen = ({
             onValueChange={onPressPaymentType}
             buttons={[
               {
-                value: "cash",
+                value: PaymentType.CASH,
                 label: "Uang Tunai",
                 showSelectedCheck: true,
               },
               {
-                value: "qris",
+                value: PaymentType.QRIS,
                 label: "QRIS",
                 showSelectedCheck: true,
               },
@@ -180,7 +177,7 @@ const PaymentScreen = ({
             aspectRatio: 0.709375,
           }}
         >
-          {paymentType == "cash" ? (
+          {paymentType == PaymentType.CASH ? (
             <NumericKeyboard onKeyPress={onPressNumericKeyboard} />
           ) : (
             <View style={{ flex: 1, height: "100%" }}>
@@ -205,7 +202,7 @@ const PaymentScreen = ({
               variant="titleLarge"
               style={{ color: theme.colors.onPrimary }}
             >
-              {paymentType == "cash"
+              {paymentType == PaymentType.CASH
                 ? "Kembalian " + toRupiah(totalChange)
                 : "Pastikan pembayaran sudah dilakukan"}
             </Text>
@@ -215,7 +212,9 @@ const PaymentScreen = ({
               labelStyle={styles(theme).floatingRecapButtonLabel}
               onPress={onCreateTransaction}
             >
-              {paymentType == "cash" ? "Terima Pembayaran" : "Sudah Bayar"}
+              {paymentType == PaymentType.CASH
+                ? "Terima Pembayaran"
+                : "Sudah Bayar"}
             </Button>
           </View>
         </View>
