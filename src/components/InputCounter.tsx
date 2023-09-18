@@ -18,16 +18,18 @@ type CommonProps = {
   setIsEditing?: (state: boolean) => void;
 };
 
-type ConditionalProps =
-  | {
-      editable: true;
-      onChangeText: (value: number) => void;
-    }
-  | { editable: false; onChangeText?: never };
+interface EditableProps extends CommonProps {
+  editable: true;
+  onChangeText: (value: number) => void;
+}
 
-type InputCounterProps = CommonProps & ConditionalProps;
+interface NonEditableProps extends CommonProps {
+  editable?: false;
+}
 
-const InputCounter = (props: InputCounterProps) => {
+type InputCounterProp = EditableProps | NonEditableProps;
+
+const InputCounter = (props: InputCounterProp) => {
   const theme = useTheme();
 
   return (
@@ -57,7 +59,7 @@ const InputCounter = (props: InputCounterProps) => {
       <TextInput
         dense
         disabled={props.disabled}
-        editable={props.editable}
+        editable={props.editable ? true : false}
         keyboardType="numeric"
         style={styles(theme).textInput}
         underlineColor="transparent"

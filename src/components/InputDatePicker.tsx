@@ -2,7 +2,7 @@ import { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Pressable, StyleProp, View, ViewStyle } from "react-native";
+import { Pressable, StyleProp, TextStyle, View, ViewStyle } from "react-native";
 import { TextInput } from "react-native-paper";
 
 type InputDatePickerProps = {
@@ -10,6 +10,7 @@ type InputDatePickerProps = {
   date: Date;
   label?: string;
   style?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   error?: boolean;
 };
 
@@ -40,7 +41,7 @@ const InputDatePicker = (props: InputDatePickerProps) => {
           }
           editable={false}
           error={props.error}
-          style={{ backgroundColor: "transparent" }}
+          style={[{ backgroundColor: "transparent" }, props.inputStyle]}
         />
       </Pressable>
       {show && (

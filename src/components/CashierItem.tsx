@@ -15,15 +15,25 @@ import UpdateStockDialog from "./UpdateStockDialog";
 import { useState } from "react";
 import { ProductData, ProductStockData } from "../types/data";
 
-interface CashierItemProps {
+type CommonProps = {
   itemData: ProductData;
   cartQuantity: number;
   onPressDecrease: () => void;
   onPressIncrease: () => void;
-  onChangeText: (value: number) => void;
-  onPressSaveUpdateStock: (data: ProductStockData) => void;
+  onPressSaveUpdateStock?: (data: ProductStockData) => void;
   style?: StyleProp<ViewStyle>;
+};
+
+interface EditableProps extends CommonProps {
+  editable: true;
+  onChangeText: (value: number) => void;
 }
+
+interface NonEditableProps extends CommonProps {
+  editable?: false;
+}
+
+type CashierItemProps = EditableProps | NonEditableProps;
 
 const CashierItem = (props: CashierItemProps) => {
   const theme = useTheme();
@@ -42,15 +52,15 @@ const CashierItem = (props: CashierItemProps) => {
 
   const onSaveStock = (data: { isAlwaysInStock: boolean; stock: number }) => {
     hideUpdateStockDialog();
-    props.onPressSaveUpdateStock(data);
-  };
-
-  const onChangeText = (value: number) => {
-    if (value > props.itemData.stock) value = props.itemData.stock;
-    props.onChangeText(value);
+    props.onPressSaveUpdateStock && props.onPressSaveUpdateStock(data);
   };
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const onChangeText = (value: number) => {
+    value = Math.min(value, props.itemData.stock);
+    props.editable && props.onChangeText(value);
+  };
 
   const actionButton = isInStock ? (
     props.cartQuantity > 0 || isEditing ? (
@@ -60,9 +70,13 @@ const CashierItem = (props: CashierItemProps) => {
         onPressIncrease={props.onPressIncrease}
         disableDecrement={props.cartQuantity <= 0}
         disableIncrement={increaseDisabled}
-        editable={true}
-        onChangeText={onChangeText}
         setIsEditing={setIsEditing}
+        {...(props.editable
+          ? {
+              editable: props.editable,
+              onChangeText: onChangeText,
+            }
+          : { editable: props.editable })}
       />
     ) : (
       <IconButton

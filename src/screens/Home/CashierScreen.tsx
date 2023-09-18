@@ -53,6 +53,7 @@ const NormalizedCashierItem = ({
       ]}
       onPressDecrease={() => dispatch(removeFromCart(itemData))}
       onPressIncrease={() => dispatch(addToCart(itemData))}
+      editable={true}
       onChangeText={(value) =>
         dispatch(updateCartAmount({ ...itemData, quantity: value }))
       }
@@ -179,7 +180,7 @@ const CashierScreen = ({
           />
         ))}
       </Tab.Navigator>
-      {cartState.totalItem > 0 && (
+      {Object.keys(cartState.products).length > 0 && (
         <View style={styles(theme).floatingRecapContainer}>
           <View style={styles(theme).floatingRecap}>
             <Text

@@ -5,17 +5,16 @@ type CommonProps = {
   children: React.JSX.Element[] | React.JSX.Element;
 };
 
-type ConditionalProps =
-  | {
-      dismissable?: false;
-      onDismiss?: never;
-    }
-  | {
-      dismissable: true;
-      onDismiss: () => void;
-    };
+interface DismissableDialog extends CommonProps {
+  dismissable: true;
+  onDismiss: () => void;
+}
 
-type BaseDialogProps = CommonProps & ConditionalProps;
+interface NonDismissableDialog extends CommonProps {
+  dismissable?: false;
+}
+
+type BaseDialogProps = DismissableDialog | NonDismissableDialog;
 
 const BaseDialog = (props: BaseDialogProps) => {
   return (
@@ -23,7 +22,7 @@ const BaseDialog = (props: BaseDialogProps) => {
       <Dialog
         visible={props.visible}
         dismissable={props.dismissable}
-        onDismiss={props.onDismiss}
+        onDismiss={() => props.dismissable && props.onDismiss}
         style={{
           backgroundColor: "white",
           width: "50%",

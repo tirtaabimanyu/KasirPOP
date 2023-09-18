@@ -35,10 +35,6 @@ const NormalizedCashierItem = ({
       itemData={itemData}
       onPressDecrease={() => dispatch(removeFromCart(itemData))}
       onPressIncrease={() => dispatch(addToCart(itemData))}
-      onChangeText={(value) =>
-        dispatch(updateCartAmount({ ...itemData, quantity: value }))
-      }
-      onPressSaveUpdateStock={() => null}
       cartQuantity={cartQuantity}
     />
   );

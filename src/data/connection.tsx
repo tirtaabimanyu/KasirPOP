@@ -13,6 +13,7 @@ import { ProductRepository } from "./repositories/ProductRepository";
 import { CategoryRepository } from "./repositories/CategoryRepository";
 import { StyleSheet, View } from "react-native";
 import { DatabaseConnectionContextData } from "../types/connection";
+import { TransactionRepository } from "./repositories/TransactionRepository";
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
@@ -54,6 +55,7 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
       value={{
         productRepository: new ProductRepository(connection),
         categoryRepository: new CategoryRepository(connection),
+        transactionRepository: new TransactionRepository(connection),
       }}
     >
       {children}

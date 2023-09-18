@@ -47,10 +47,21 @@ export const cartSlice = createSlice({
     },
     updateCartAmount: (state, action: PayloadAction<CartItemData>) => {
       const { id, quantity, price } = action.payload;
-      const currentQuantity = state.products[id].quantity;
-      state.products[id].quantity = quantity;
-      state.totalItem += quantity - currentQuantity;
-      state.totalPrice += (quantity - currentQuantity) * price;
+
+      if (!(id in state.products)) {
+        state.products[id] = action.payload;
+        state.totalItem += quantity;
+        state.totalPrice += quantity * price;
+      } else {
+        const currentQuantity = state.products[id].quantity;
+        if (quantity > 0) {
+          state.products[id].quantity = quantity;
+        } else {
+          delete state.products[id];
+        }
+        state.totalItem += quantity - currentQuantity;
+        state.totalPrice += (quantity - currentQuantity) * price;
+      }
     },
     resetCart: () => initialState,
   },
