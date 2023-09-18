@@ -37,7 +37,7 @@ interface TabFlatListProps
     >
   > {
   data: ProductData[];
-  repositories: DatabaseConnectionContextData;
+  services: DatabaseConnectionContextData;
   dispatch: AppDispatch;
 }
 const TabFlatList = (props: TabFlatListProps) => {
@@ -46,7 +46,7 @@ const TabFlatList = (props: TabFlatListProps) => {
       props.dispatch(
         updateProduct({
           data: { ...itemData, ...newStockData },
-          repositories: props.repositories,
+          services: props.services,
         })
       );
     };
@@ -80,7 +80,7 @@ const InventoryScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
-  const repositories = useDatabaseConnection();
+  const services = useDatabaseConnection();
   const dispatch = useAppDispatch();
 
   const productState = useAppSelector((state) => state.product);
@@ -129,7 +129,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={productState.products}
-              repositories={repositories}
+              services={services}
               dispatch={dispatch}
             />
           )}
@@ -139,7 +139,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={inStockProducts}
-              repositories={repositories}
+              services={services}
               dispatch={dispatch}
             />
           )}
@@ -152,7 +152,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={outOfStockProducts}
-              repositories={repositories}
+              services={services}
               dispatch={dispatch}
             />
           )}

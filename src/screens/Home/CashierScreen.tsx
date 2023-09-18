@@ -38,7 +38,7 @@ const NormalizedCashierItem = ({
   itemData: ProductData;
   index: number;
 }) => {
-  const repositories = useDatabaseConnection();
+  const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
   const cartQuantity =
@@ -58,9 +58,7 @@ const NormalizedCashierItem = ({
         dispatch(updateCartAmount({ ...itemData, quantity: value }))
       }
       onPressSaveUpdateStock={(data) =>
-        dispatch(
-          updateProduct({ data: { ...itemData, ...data }, repositories })
-        )
+        dispatch(updateProduct({ data: { ...itemData, ...data }, services }))
       }
       cartQuantity={cartQuantity}
     />
