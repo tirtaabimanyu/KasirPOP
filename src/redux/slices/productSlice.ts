@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ProductRepository } from "../../data/repositories/ProductRepository";
+import { ProductService } from "../../data/services/ProductService";
 import ProductSerializer from "../../data/serializers/ProductSerializer";
 import { resetCart } from "./cartSlice";
-import { CreateProductData, ProductData } from "../../types/data";
+import { ProductData } from "../../types/data";
 import { DatabaseConnectionContextData } from "../../types/connection";
 
 export const fetchAllProducts = createAsyncThunk(
   "product/fetchAll",
-  async (repository: ProductRepository): Promise<ProductData[]> => {
-    const products = await repository.getAll();
+  async (service: ProductService): Promise<ProductData[]> => {
+    const products = await service.getAll();
 
     return ProductSerializer.serializeMany(products);
   }
@@ -20,11 +20,11 @@ export const createProduct = createAsyncThunk(
     data: ProductData;
     repositories: DatabaseConnectionContextData;
   }): Promise<ProductData> => {
-    const { productRepository, categoryRepository } = payload.repositories;
+    const { productService, categoryService } = payload.repositories;
     const { id, ...data } = payload.data;
     const categoryIds = data.categories?.map((category) => category.id) || [];
-    const categories = await categoryRepository.getByIds(categoryIds);
-    const product = await productRepository.create({
+    const categories = await categoryService.getByIds(categoryIds);
+    const product = await productService.create({
       ...data,
       categories,
     });
@@ -38,15 +38,15 @@ export const updateProduct = createAsyncThunk(
   async (
     payload: {
       data: ProductData;
-      repositories: DatabaseConnectionContextData;
+      services: DatabaseConnectionContextData;
     },
     thunkApi
   ): Promise<ProductData> => {
-    const { productRepository, categoryRepository } = payload.repositories;
+    const { productService, categoryService } = payload.services;
     const categoryIds =
       payload.data.categories?.map((category) => category.id) || [];
-    const categories = await categoryRepository.getByIds(categoryIds);
-    const product = await productRepository.update({
+    const categories = await categoryService.getByIds(categoryIds);
+    const product = await productService.update({
       ...payload.data,
       categories,
     });
@@ -61,11 +61,11 @@ export const deleteProduct = createAsyncThunk(
   async (
     payload: {
       id: number;
-      repository: ProductRepository;
+      service: ProductService;
     },
     thunkApi
   ): Promise<number> => {
-    await payload.repository.delete(payload.id);
+    await payload.service.delete(payload.id);
 
     thunkApi.dispatch(resetCart());
     return payload.id;

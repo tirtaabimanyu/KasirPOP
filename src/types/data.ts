@@ -40,7 +40,12 @@ export type CreateCategoryData = {
 
 // Transaction
 
+export interface CartItemData extends ProductData {
+  quantity: number;
+}
+
 export type ProductSnapshotData = {
+  id: number;
   name: string;
   price: number;
   quantity: number;
@@ -48,12 +53,12 @@ export type ProductSnapshotData = {
 
 export type TransactionData = {
   id: number;
-  created_at: Date;
+  created_at: string;
   total_price: number;
   products: ProductSnapshotData[];
 };
 
 export type CreateTransactionData = {
-  total_price: number;
-  products: ProductSnapshotData[];
+  totalPrice: number;
+  products: CartItemData[];
 };

@@ -2,7 +2,7 @@ import { DataSource, In, Repository } from "typeorm";
 import { CategoryModel } from "../entities/CategoryModel";
 import { CreateCategoryData } from "../../types/data";
 
-export class CategoryRepository {
+export class CategoryService {
   private ormRepository: Repository<CategoryModel>;
 
   constructor(connection: DataSource) {

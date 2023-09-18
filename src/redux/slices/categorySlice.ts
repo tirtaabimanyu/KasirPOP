@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CategoryRepository } from "../../data/repositories/CategoryRepository";
+import { CategoryService } from "../../data/services/CategoryService";
 import CategorySerializer from "../../data/serializers/CategorySerializer";
 import { CategoryData } from "../../types/data";
 
 export const fetchAllCategories = createAsyncThunk(
   "category/fetchAll",
-  async (repository: CategoryRepository) => {
-    const categories = await repository.getAll();
+  async (service: CategoryService) => {
+    const categories = await service.getAll();
 
     return CategorySerializer.serializeMany(categories);
   }

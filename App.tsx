@@ -21,11 +21,11 @@ const DataInit = ({
   children: React.JSX.Element | React.JSX.Element[];
 }) => {
   const dispatch = useAppDispatch();
-  const { productRepository, categoryRepository } = useDatabaseConnection();
+  const { productService, categoryService } = useDatabaseConnection();
 
   useEffect(() => {
-    dispatch(fetchAllProducts(productRepository));
-    dispatch(fetchAllCategories(categoryRepository));
+    dispatch(fetchAllProducts(productService));
+    dispatch(fetchAllCategories(categoryService));
   }, []);
   return <>{children}</>;
 };

@@ -17,6 +17,8 @@ import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { resetCart } from "../redux/slices/cartSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/routes";
+import { createTransaction } from "../redux/slices/transactionSlice";
+import { useDatabaseConnection } from "../data/connection";
 
 type PaymentType = "cash" | "qris";
 const isPaymentType = (value: string): value is PaymentType =>
@@ -26,6 +28,7 @@ const PaymentScreen = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "payment">) => {
   const theme = useTheme();
+  const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
 
@@ -78,6 +81,19 @@ const PaymentScreen = ({
   if (paymentType == "qris" || (paymentType == "cash" && totalChange >= 0)) {
     showFloatingRecap = true;
   }
+
+  const onCreateTransaction = () => {
+    dispatch(
+      createTransaction({
+        data: {
+          products: Object.values(cart.products),
+          totalPrice: cart.totalPrice,
+        },
+        services: services,
+      })
+    );
+    showDialog();
+  };
 
   return (
     <View style={styles(theme).container}>
@@ -176,9 +192,6 @@ const PaymentScreen = ({
                 }}
                 resizeMode="contain"
                 source={require("../helpers/QR_Static.png")}
-                // placeholder={blurhash}
-                // contentFit="cover"
-                // transition={1000}
               />
             </View>
           )}
@@ -200,7 +213,7 @@ const PaymentScreen = ({
               mode="elevated"
               contentStyle={styles(theme).floatingRecapButton}
               labelStyle={styles(theme).floatingRecapButtonLabel}
-              onPress={showDialog}
+              onPress={onCreateTransaction}
             >
               {paymentType == "cash" ? "Terima Pembayaran" : "Sudah Bayar"}
             </Button>

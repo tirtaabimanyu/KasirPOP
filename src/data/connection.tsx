@@ -9,11 +9,11 @@ import { ActivityIndicator } from "react-native-paper";
 import { DataSource } from "typeorm";
 
 import { AppDataSource } from "./app-data-source";
-import { ProductRepository } from "./repositories/ProductRepository";
-import { CategoryRepository } from "./repositories/CategoryRepository";
+import { ProductService } from "./services/ProductService";
+import { CategoryService } from "./services/CategoryService";
 import { StyleSheet, View } from "react-native";
 import { DatabaseConnectionContextData } from "../types/connection";
-import { TransactionRepository } from "./repositories/TransactionRepository";
+import { TransactionService } from "./services/TransactionService";
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
@@ -53,9 +53,9 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
   return (
     <DatabaseConnectionContext.Provider
       value={{
-        productRepository: new ProductRepository(connection),
-        categoryRepository: new CategoryRepository(connection),
-        transactionRepository: new TransactionRepository(connection),
+        productService: new ProductService(connection),
+        categoryService: new CategoryService(connection),
+        transactionService: new TransactionService(connection),
       }}
     >
       {children}

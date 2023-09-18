@@ -1,9 +1,9 @@
-import { CategoryRepository } from "../data/repositories/CategoryRepository";
-import { ProductRepository } from "../data/repositories/ProductRepository";
-import { TransactionRepository } from "../data/repositories/TransactionRepository";
+import { CategoryService } from "../data/services/CategoryService";
+import { ProductService } from "../data/services/ProductService";
+import { TransactionService } from "../data/services/TransactionService";
 
 export type DatabaseConnectionContextData = {
-  productRepository: ProductRepository;
-  categoryRepository: CategoryRepository;
-  transactionRepository: TransactionRepository;
+  productService: ProductService;
+  categoryService: CategoryService;
+  transactionService: TransactionService;
 };

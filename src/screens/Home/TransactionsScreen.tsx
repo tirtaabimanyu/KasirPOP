@@ -111,7 +111,7 @@ const TransactionsScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
-  const { transactionRepository } = useDatabaseConnection();
+  const { transactionService } = useDatabaseConnection();
   const { summary, transactions } = useAppSelector(
     (state) => state.transaction
   );
@@ -132,10 +132,10 @@ const TransactionsScreen = ({
       dispatch(
         fetchTransactions({
           dateRange: transactionsDateRange,
-          repository: transactionRepository,
+          service: transactionService,
         })
       );
-    }, [dispatch])
+    }, [])
   );
 
   return (

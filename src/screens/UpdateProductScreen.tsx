@@ -17,7 +17,7 @@ const UpdateProductScreen = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, "updateProduct">) => {
   const theme = useTheme();
-  const repositories = useDatabaseConnection();
+  const services = useDatabaseConnection();
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector((state) => state.category);
 
@@ -45,19 +45,19 @@ const UpdateProductScreen = ({
     dispatch(
       updateProduct({
         data: newProductData,
-        repositories,
+        services,
       })
     ).then(() => {
       setCanNavigate(true);
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [newProductData, repositories, navigation]);
+  }, [newProductData, services, navigation]);
 
   const deleteItem = useCallback(async () => {
     dispatch(
       deleteProduct({
         id: route.params.productData.id,
-        repository: repositories.productRepository,
+        service: services.productService,
       })
     ).then(() => {
       setCanNavigate(true);
@@ -68,7 +68,7 @@ const UpdateProductScreen = ({
       );
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [repositories]);
+  }, [services]);
 
   const validation = () => {
     const newErrors = initialErrors;
