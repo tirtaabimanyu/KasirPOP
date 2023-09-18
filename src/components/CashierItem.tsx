@@ -6,15 +6,21 @@ import {
   IconButton,
   MD3Theme,
   Text,
+  Button,
 } from "react-native-paper";
 import { toRupiah } from "../utils/currencyUtils";
 import InputCounter from "./InputCounter";
+import useDialog from "../hooks/useDialog";
+import UpdateStockDialog from "./UpdateStockDialog";
+import { useState } from "react";
 
 interface CashierItemProps {
   itemData: ProductData;
   cartQuantity: number;
   onPressDecrease: () => void;
   onPressIncrease: () => void;
+  onChangeText: (value: number) => void;
+  onPressSaveUpdateStock: (data: ProductStockData) => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -29,6 +35,51 @@ const CashierItem = (props: CashierItemProps) => {
   const increaseDisabled =
     !props.itemData.isAlwaysInStock &&
     props.cartQuantity == props.itemData.stock;
+
+  const [updateStockDialog, showUpdateStockDialog, hideUpdateStockDialog] =
+    useDialog();
+
+  const onSaveStock = (data: { isAlwaysInStock: boolean; stock: number }) => {
+    hideUpdateStockDialog();
+    props.onPressSaveUpdateStock(data);
+  };
+
+  const onChangeText = (value: number) => {
+    if (value > props.itemData.stock) value = props.itemData.stock;
+    props.onChangeText(value);
+  };
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const actionButton = isInStock ? (
+    props.cartQuantity > 0 || isEditing ? (
+      <InputCounter
+        value={props.cartQuantity}
+        onPressDecrease={props.onPressDecrease}
+        onPressIncrease={props.onPressIncrease}
+        disableDecrement={props.cartQuantity <= 0}
+        disableIncrement={increaseDisabled}
+        editable={true}
+        onChangeText={onChangeText}
+        setIsEditing={setIsEditing}
+      />
+    ) : (
+      <IconButton
+        mode="contained"
+        icon={"plus"}
+        size={24}
+        onPress={props.onPressIncrease}
+        style={{ margin: 0 }}
+        containerColor={theme.colors.primary}
+        iconColor="white"
+        disabled={!isInStock}
+      />
+    )
+  ) : (
+    <Button mode={"contained-tonal"} onPress={showUpdateStockDialog}>
+      Ubah Stok
+    </Button>
+  );
   return (
     <Card
       mode="outlined"
@@ -40,6 +91,12 @@ const CashierItem = (props: CashierItemProps) => {
         props.style,
       ]}
     >
+      <UpdateStockDialog
+        productData={props.itemData}
+        visible={updateStockDialog}
+        onSave={onSaveStock}
+        onCancel={hideUpdateStockDialog}
+      />
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
           {props.itemData.imgUri ? (
@@ -49,35 +106,20 @@ const CashierItem = (props: CashierItemProps) => {
           )}
         </View>
         <View style={styles(theme).content}>
-          <Text variant="titleMedium" style={{ marginBottom: 4 }}>
+          <Text
+            variant="titleMedium"
+            style={[{ marginBottom: 4 }, !isInStock && styles(theme).disabled]}
+          >
             {props.itemData.name}
           </Text>
-          <Text variant="bodyMedium">
-            {stockDisplay + " • " + toRupiah(props.itemData.price)}
+          <Text
+            variant="bodyMedium"
+            style={[!isInStock && styles(theme).disabled]}
+          >
+            {`${stockDisplay} • ${toRupiah(props.itemData.price)}`}
           </Text>
         </View>
-        <View style={styles(theme).right}>
-          {props.cartQuantity > 0 ? (
-            <InputCounter
-              value={props.cartQuantity}
-              onPressDecrease={props.onPressDecrease}
-              onPressIncrease={props.onPressIncrease}
-              disableDecrement={props.cartQuantity == 0}
-              disableIncrement={props.cartQuantity == props.itemData.stock}
-            />
-          ) : (
-            <IconButton
-              mode="contained"
-              icon={"plus"}
-              size={24}
-              onPress={props.onPressIncrease}
-              style={{ margin: 0 }}
-              containerColor={theme.colors.primary}
-              iconColor="white"
-              disabled={!isInStock}
-            />
-          )}
-        </View>
+        <View style={styles(theme).right}>{actionButton}</View>
       </View>
     </Card>
   );
@@ -106,5 +148,8 @@ const styles = (theme: MD3Theme) =>
       flexDirection: "row",
       justifyContent: "flex-end",
       alignItems: "center",
+    },
+    disabled: {
+      color: theme.colors.onSurfaceDisabled,
     },
   });

@@ -16,7 +16,7 @@ const GlobalSnackbar = () => {
         onDismiss={dismiss}
         wrapperStyle={{ width: "30%", alignSelf: "flex-end" }}
         duration={duration}
-        action={{ label: "Tutup", onPress: dismiss }}
+        onIconPress={dismiss}
       >
         {message}
       </Snackbar>

@@ -15,7 +15,7 @@ const TransactionsItem = (props: TransactionsItemProps) => {
       }}
     >
       <List.Accordion title={<Text variant="titleMedium">Hari Ini</Text>}>
-        <Divider />
+        <Divider horizontalInset={true} />
         <List.Item
           title={<Text variant="bodyLarge">Order #2</Text>}
           description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
@@ -24,8 +24,9 @@ const TransactionsItem = (props: TransactionsItemProps) => {
               Rp50,000
             </Text>
           )}
+          style={{ marginLeft: 8 }}
         />
-        <Divider />
+        <Divider horizontalInset={true} />
         <List.Item
           title={<Text variant="bodyLarge">Order #1</Text>}
           description={<Text variant="labelSmall">Hari ini, 16:00 WIB</Text>}
@@ -34,6 +35,7 @@ const TransactionsItem = (props: TransactionsItemProps) => {
               Rp50,000
             </Text>
           )}
+          style={{ marginLeft: 8 }}
         />
       </List.Accordion>
     </Card>

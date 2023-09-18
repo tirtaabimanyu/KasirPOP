@@ -44,11 +44,19 @@ export const cartSlice = createSlice({
       state.totalItem -= 1;
       state.totalPrice -= action.payload.price;
     },
+    updateCartAmount: (state, action: PayloadAction<CartItemData>) => {
+      const { id, quantity, price } = action.payload;
+      const currentQuantity = state.products[id].quantity;
+      state.products[id].quantity = quantity;
+      state.totalItem += quantity - currentQuantity;
+      state.totalPrice += (quantity - currentQuantity) * price;
+    },
     resetCart: () => initialState,
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addToCart, removeFromCart, resetCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateCartAmount, resetCart } =
+  cartSlice.actions;
 
 export default cartSlice.reducer;

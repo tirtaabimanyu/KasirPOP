@@ -7,81 +7,10 @@ import {
   Text,
   Button,
   Chip,
-  Switch,
 } from "react-native-paper";
 import { toRupiah } from "../utils/currencyUtils";
-import { useState } from "react";
-import BaseDialog from "./BaseDialog";
-import InputCounter from "./InputCounter";
-
-type UpdateStockDialogProp = {
-  productData: ProductData;
-  visible: boolean;
-  onSave: (data: ProductStockData) => void;
-  onCancel: () => void;
-};
-
-const UpdateStockDialog = ({
-  productData,
-  visible,
-  onSave,
-  onCancel,
-}: UpdateStockDialogProp) => {
-  const [isAlwaysInStock, setIsAlwaysInStock] = useState(
-    productData.isAlwaysInStock
-  );
-  const [stock, setStock] = useState(productData.stock);
-  return (
-    <BaseDialog visible={visible}>
-      <BaseDialog.Title>{`Ubah Stok ${productData.name}`}</BaseDialog.Title>
-      <BaseDialog.Content>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text>Stok Selalu Ada</Text>
-          <Switch
-            value={isAlwaysInStock}
-            onValueChange={() => setIsAlwaysInStock((state) => !state)}
-          />
-        </View>
-        {!isAlwaysInStock && (
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text>Jumlah Stok</Text>
-            <InputCounter
-              value={stock}
-              onPressDecrease={() => setStock((state) => state - 1)}
-              onPressIncrease={() => setStock((state) => state + 1)}
-              editable={true}
-              onChangeText={setStock}
-            />
-          </View>
-        )}
-      </BaseDialog.Content>
-      <BaseDialog.Actions>
-        <Button style={{ marginRight: 8 }} onPress={onCancel}>
-          Batal
-        </Button>
-        <Button
-          mode="contained"
-          contentStyle={{ paddingHorizontal: 24 }}
-          onPress={() => onSave({ isAlwaysInStock, stock })}
-        >
-          Simpan
-        </Button>
-      </BaseDialog.Actions>
-    </BaseDialog>
-  );
-};
+import UpdateStockDialog from "./UpdateStockDialog";
+import useDialog from "../hooks/useDialog";
 
 interface InventoryItemProps {
   itemData: ProductData;
@@ -97,23 +26,27 @@ const InventoryItem = (props: InventoryItemProps) => {
   let stockDisplay = props.itemData.stock.toString();
   stockDisplay = props.itemData.isAlwaysInStock ? "Selalu Ada" : stockDisplay;
 
-  const [updateStockDialogVisible, setUpdateStockDialogVisible] =
-    useState(false);
-  const showDialog = () => setUpdateStockDialogVisible(true);
-  const hideDialog = () => setUpdateStockDialogVisible(false);
+  const [updateStockDialog, showUpdateStockDialog, hideUpdateStockDialog] =
+    useDialog();
 
   const onSaveStock = (data: { isAlwaysInStock: boolean; stock: number }) => {
-    hideDialog();
+    hideUpdateStockDialog();
     props.onPressSaveUpdateStock(data);
   };
 
   return (
-    <Card mode="outlined">
+    <Card
+      mode="outlined"
+      style={{
+        borderColor: theme.colors.outlineVariant,
+        backgroundColor: theme.colors.onPrimary,
+      }}
+    >
       <UpdateStockDialog
         productData={props.itemData}
-        visible={updateStockDialogVisible}
+        visible={updateStockDialog}
         onSave={onSaveStock}
-        onCancel={hideDialog}
+        onCancel={hideUpdateStockDialog}
       />
       <View style={styles(theme).container}>
         <View style={styles(theme).left}>
@@ -164,7 +97,7 @@ const InventoryItem = (props: InventoryItemProps) => {
           >
             Ubah Produk
           </Button>
-          <Button mode="contained-tonal" onPress={showDialog}>
+          <Button mode="contained-tonal" onPress={showUpdateStockDialog}>
             Ubah Stok
           </Button>
         </View>

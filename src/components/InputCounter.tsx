@@ -15,6 +15,7 @@ type CommonProps = {
   disableDecrement?: boolean;
   disableIncrement?: boolean;
   disabled?: boolean;
+  setIsEditing?: (state: boolean) => void;
 };
 
 type ConditionalProps =
@@ -22,7 +23,7 @@ type ConditionalProps =
       editable: true;
       onChangeText: (value: number) => void;
     }
-  | { editable?: false };
+  | { editable: false; onChangeText?: never };
 
 type InputCounterProps = CommonProps & ConditionalProps;
 
@@ -64,6 +65,8 @@ const InputCounter = (props: InputCounterProps) => {
         onChangeText={(value) =>
           props.editable && props.onChangeText(toNumber(value))
         }
+        onFocus={() => props.setIsEditing && props.setIsEditing(true)}
+        onBlur={() => props.setIsEditing && props.setIsEditing(false)}
       />
       <TouchableRipple
         borderless

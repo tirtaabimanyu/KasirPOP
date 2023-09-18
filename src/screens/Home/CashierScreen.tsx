@@ -12,8 +12,14 @@ import { FlatList } from "react-native-gesture-handler";
 
 import CashierItem from "../../components/CashierItem";
 import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
-import { addToCart, removeFromCart } from "../../redux/slices/cartSlice";
+import {
+  addToCart,
+  removeFromCart,
+  updateCartAmount,
+} from "../../redux/slices/cartSlice";
 import { toRupiah } from "../../utils/currencyUtils";
+import { updateProduct } from "../../redux/slices/productSlice";
+import { useDatabaseConnection } from "../../data/connection";
 
 type TabScreenParams = {
   category: CategoryData;
@@ -30,6 +36,7 @@ const NormalizedCashierItem = ({
   itemData: ProductData;
   index: number;
 }) => {
+  const repositories = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
   const cartQuantity =
@@ -44,6 +51,14 @@ const NormalizedCashierItem = ({
       ]}
       onPressDecrease={() => dispatch(removeFromCart(itemData))}
       onPressIncrease={() => dispatch(addToCart(itemData))}
+      onChangeText={(value) =>
+        dispatch(updateCartAmount({ ...itemData, quantity: value }))
+      }
+      onPressSaveUpdateStock={(data) =>
+        dispatch(
+          updateProduct({ data: { ...itemData, ...data }, repositories })
+        )
+      }
       cartQuantity={cartQuantity}
     />
   );

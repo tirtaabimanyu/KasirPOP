@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ProductRepository } from "../../data/repositories/ProductRepository";
-import { CategoryModel } from "../../data/entities/CategoryModel";
 import ProductSerializer from "../../data/serializers/ProductSerializer";
+import { resetCart } from "./cartSlice";
 
 export const fetchAllProducts = createAsyncThunk(
   "product/fetchAll",
@@ -33,10 +33,13 @@ export const createProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
   "product/update",
-  async (payload: {
-    data: UpdateProductData;
-    repositories: DatabaseConnectionContextData;
-  }): Promise<ProductData> => {
+  async (
+    payload: {
+      data: UpdateProductData;
+      repositories: DatabaseConnectionContextData;
+    },
+    thunkApi
+  ): Promise<ProductData> => {
     const { productRepository, categoryRepository } = payload.repositories;
     const categoryIds =
       payload.data.categories?.map((category) => category.id) || [];
@@ -46,18 +49,23 @@ export const updateProduct = createAsyncThunk(
       categories,
     });
 
+    thunkApi.dispatch(resetCart());
     return ProductSerializer.serialize(product);
   }
 );
 
 export const deleteProduct = createAsyncThunk(
   "product/delete",
-  async (payload: {
-    id: number;
-    repository: ProductRepository;
-  }): Promise<number> => {
+  async (
+    payload: {
+      id: number;
+      repository: ProductRepository;
+    },
+    thunkApi
+  ): Promise<number> => {
     await payload.repository.delete(payload.id);
 
+    thunkApi.dispatch(resetCart());
     return payload.id;
   }
 );

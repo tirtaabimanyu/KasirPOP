@@ -50,18 +50,11 @@ const Header = ({ theme, options, navigation, back }: HeaderProps) => {
   );
 };
 
-const Router = (props: NavigationContainerProps) => {
+const Router = () => {
   const theme = useTheme();
-  const dispatch = useAppDispatch();
-  const { productRepository, categoryRepository } = useDatabaseConnection();
-
-  useEffect(() => {
-    dispatch(fetchAllProducts(productRepository));
-    dispatch(fetchAllCategories(categoryRepository));
-  }, []);
 
   return (
-    <NavigationContainer {...props}>
+    <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           contentStyle: styles(theme).card,

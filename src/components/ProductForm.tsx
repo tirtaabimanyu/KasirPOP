@@ -186,6 +186,7 @@ const ProductForm = (props: ProductFormProps) => {
             onChangeText={(value) =>
               props.setProductData((state) => ({ ...state, stock: value }))
             }
+            disableDecrement={props.productData.stock == 0}
           />
         </View>
       </View>
