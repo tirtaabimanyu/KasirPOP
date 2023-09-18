@@ -40,6 +40,7 @@ const InputDatePicker = (props: InputDatePickerProps) => {
           }
           editable={false}
           error={props.error}
+          style={{ backgroundColor: "transparent" }}
         />
       </Pressable>
       {show && (

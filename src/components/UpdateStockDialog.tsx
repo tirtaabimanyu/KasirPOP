@@ -33,7 +33,7 @@ const UpdateStockDialog = ({
   }, [productData]);
 
   return (
-    <BaseDialog visible={visible} dismissable={false}>
+    <BaseDialog visible={visible} dismissable={true} onDismiss={onCancel}>
       <BaseDialog.Title>{`Ubah Stok ${productData.name}`}</BaseDialog.Title>
       <BaseDialog.Content>
         <View
