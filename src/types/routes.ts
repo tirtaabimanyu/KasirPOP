@@ -6,6 +6,8 @@ export type RootStackParamList = {
   payment: undefined;
   addProduct: undefined;
   updateProduct: { productData: ProductData };
+  category: undefined;
+  paymentType: undefined;
 };
 
 export type HomeDrawerParamList = {

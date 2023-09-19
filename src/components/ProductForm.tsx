@@ -23,6 +23,7 @@ type ProductFormProps = {
   errors: ErrorsType;
   setProductData: React.Dispatch<React.SetStateAction<CreateProductData>>;
   setErrors: React.Dispatch<React.SetStateAction<ErrorsType>>;
+  onPressAddCategory: () => void;
 };
 
 const ProductForm = (props: ProductFormProps) => {
@@ -145,7 +146,7 @@ const ProductForm = (props: ProductFormProps) => {
             icon={"plus"}
             mode="outlined"
             style={styles(theme).transparent}
-            onPress={() => null}
+            onPress={props.onPressAddCategory}
           >
             Tambah Etalase
           </Chip>

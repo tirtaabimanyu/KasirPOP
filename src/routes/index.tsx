@@ -16,11 +16,9 @@ import { ParamListBase, Route } from "@react-navigation/native";
 import HomeDrawer from "./HomeDrawer";
 import AddProductScreen from "../screens/AddProductScreen";
 import UpdateProductScreen from "../screens/UpdateProductScreen";
-import { useAppDispatch } from "../hooks/typedStore";
-import { useEffect } from "react";
-import { fetchAllProducts } from "../redux/slices/productSlice";
-import { useDatabaseConnection } from "../data/connection";
-import { fetchAllCategories } from "../redux/slices/categorySlice";
+import { RootStackParamList } from "../types/routes";
+import CategoryScreen from "../screens/CategoryScreen";
+import PaymentTypeScreen from "../screens/PaymentTypeScreen";
 
 enableScreens();
 enableFreeze();
@@ -86,6 +84,16 @@ const Router = () => {
           name="updateProduct"
           component={UpdateProductScreen}
           options={{ title: "Ubah Produk" }}
+        />
+        <Stack.Screen
+          name="category"
+          component={CategoryScreen}
+          options={{ title: "Etalase" }}
+        />
+        <Stack.Screen
+          name="paymentType"
+          component={PaymentTypeScreen}
+          options={{ title: "Metode Pembayaran" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

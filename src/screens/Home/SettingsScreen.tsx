@@ -1,236 +1,93 @@
-import React from "react";
+import { DrawerScreenProps } from "@react-navigation/drawer";
+import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
+import { StyleSheet, View } from "react-native";
 import {
-  View,
+  Card,
+  Divider,
+  List,
+  MD3Theme,
   Text,
-  Button,
-  TextInput,
-  PermissionsAndroid,
-  Platform,
-} from "react-native";
+  useTheme,
+} from "react-native-paper";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { Picker } from "@react-native-picker/picker";
-
-import {
-  InterfaceType,
-  StarConnectionSettings,
-  StarXpandCommand,
-  StarPrinter,
-} from "kasirbodoh-star-io10";
-
-interface AppProps {}
-
-interface AppState {
-  interfaceType: InterfaceType;
-  identifier: string;
-  imageBase64: string;
-}
-
-class SettingsScreen extends React.Component<AppProps, AppState> {
-  private _onPressPrintButton = async () => {
-    var settings = new StarConnectionSettings();
-    settings.interfaceType = this.state.interfaceType;
-    settings.identifier = this.state.identifier;
-    // settings.autoSwitchInterface = true;
-
-    // If you are using Android 12 and targetSdkVersion is 31 or later,
-    // you have to request Bluetooth permission (Nearby devices permission) to use the Bluetooth printer.
-    // https://developer.android.com/about/versions/12/features/bluetooth-permissions
-    if (Platform.OS == "android" && 31 <= Platform.Version) {
-      if (
-        this.state.interfaceType == InterfaceType.Bluetooth ||
-        settings.autoSwitchInterface == true
-      ) {
-        var hasPermission = await this._confirmBluetoothPermission();
-
-        if (!hasPermission) {
-          console.log(
-            `PERMISSION ERROR: You have to allow Nearby devices to use the Bluetooth printer`
-          );
-          return;
-        }
-      }
-    }
-
-    var printer = new StarPrinter(settings);
-
-    try {
-      var builder = new StarXpandCommand.StarXpandCommandBuilder();
-      builder.addDocument(
-        new StarXpandCommand.DocumentBuilder()
-          .addDrawer(
-            new StarXpandCommand.DrawerBuilder().actionOpen(
-              new StarXpandCommand.Drawer.OpenParameter().setChannel(
-                StarXpandCommand.Drawer.Channel.No1
-              )
-            )
-          )
-          .addPrinter(
-            new StarXpandCommand.PrinterBuilder()
-              .styleInternationalCharacter(
-                StarXpandCommand.Printer.InternationalCharacterType.Usa
-              )
-              .styleCharacterSpace(0)
-              .styleAlignment(StarXpandCommand.Printer.Alignment.Center)
-              .actionPrintText(
-                "Star Clothing Boutique\n" +
-                  "123 Star Road\n" +
-                  "City, State 12345\n" +
-                  "\n"
-              )
-              .styleAlignment(StarXpandCommand.Printer.Alignment.Left)
-              .actionPrintText(
-                "Date:MM/DD/YYYY    Time:HH:MM PM\n" +
-                  "--------------------------------\n" +
-                  "\n"
-              )
-              .actionPrintText(
-                "SKU         Description    Total\n" +
-                  "300678566   PLAIN T-SHIRT  10.99\n" +
-                  "300692003   BLACK DENIM    29.99\n" +
-                  "300651148   BLUE DENIM     29.99\n" +
-                  "300642980   STRIPED DRESS  49.99\n" +
-                  "300638471   BLACK BOOTS    35.99\n" +
-                  "\n" +
-                  "Subtotal                  156.95\n" +
-                  "Tax                         0.00\n" +
-                  "--------------------------------\n"
-              )
-              .actionPrintText("Total     ")
-              .add(
-                new StarXpandCommand.PrinterBuilder()
-                  .styleMagnification(
-                    new StarXpandCommand.MagnificationParameter(2, 2)
-                  )
-                  .actionPrintText("   $156.95\n")
-              )
-              .actionPrintText(
-                "--------------------------------\n" +
-                  "\n" +
-                  "Charge\n" +
-                  "156.95\n" +
-                  "Visa XXXX-XXXX-XXXX-0123\n" +
-                  "\n"
-              )
-              .add(
-                new StarXpandCommand.PrinterBuilder()
-                  .styleInvert(true)
-                  .actionPrintText("Refunds and Exchanges\n")
-              )
-              .actionPrintText("Within ")
-              .add(
-                new StarXpandCommand.PrinterBuilder()
-                  .styleUnderLine(true)
-                  .actionPrintText("30 days")
-              )
-              .actionPrintText(" with receipt\n")
-              .actionPrintText("And tags attached\n" + "\n")
-              .styleAlignment(StarXpandCommand.Printer.Alignment.Center)
-              .actionPrintBarcode(
-                new StarXpandCommand.Printer.BarcodeParameter(
-                  "0123456",
-                  StarXpandCommand.Printer.BarcodeSymbology.Jan8
-                )
-                  .setBarDots(3)
-                  .setBarRatioLevel(
-                    StarXpandCommand.Printer.BarcodeBarRatioLevel.Level0
-                  )
-                  .setHeight(5)
-                  .setPrintHri(true)
-              )
-              .actionFeedLine(1)
-              .actionPrintQRCode(
-                new StarXpandCommand.Printer.QRCodeParameter("Hello World.\n")
-                  .setModel(StarXpandCommand.Printer.QRCodeModel.Model2)
-                  .setLevel(StarXpandCommand.Printer.QRCodeLevel.L)
-                  .setCellSize(8)
-              )
-              .actionCut(StarXpandCommand.Printer.CutType.Partial)
-          )
-      );
-
-      var commands = await builder.getCommands();
-
-      await printer.open();
-      await printer.print(commands);
-
-      console.log("Success");
-    } catch (error) {
-      console.log(`Error: ${String(error)}`);
-    } finally {
-      await printer.close();
-      await printer.dispose();
-    }
-  };
-
-  private async _confirmBluetoothPermission(): Promise<boolean> {
-    var hasPermission = false;
-
-    try {
-      hasPermission = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
-      );
-
-      if (!hasPermission) {
-        const status = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
-        );
-
-        hasPermission = status == PermissionsAndroid.RESULTS.GRANTED;
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-
-    return hasPermission;
-  }
-
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      interfaceType: InterfaceType.Lan,
-      identifier: "00:12:F3:2D:0F:8F",
-      imageBase64: "",
-    };
-  }
-
-  render() {
-    return (
-      <View style={{ margin: 50 }}>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={{ width: 100 }}>Interface</Text>
-          <Picker
-            style={{ width: 200, marginLeft: 20, justifyContent: "center" }}
-            selectedValue={this.state.interfaceType}
-            onValueChange={(value) => {
-              this.setState({ interfaceType: value });
-            }}
-          >
-            <Picker.Item label="LAN" value={InterfaceType.Lan} />
-            <Picker.Item label="Bluetooth" value={InterfaceType.Bluetooth} />
-            <Picker.Item
-              label="Bluetooth LE"
-              value={InterfaceType.BluetoothLE}
-            />
-            <Picker.Item label="USB" value={InterfaceType.Usb} />
-          </Picker>
-        </View>
-        <View style={{ flexDirection: "row", marginTop: 30 }}>
-          <Text style={{ width: 100 }}>Identifier</Text>
-          <TextInput
-            style={{ width: 200, marginLeft: 20 }}
-            value={this.state.identifier}
-            onChangeText={(value) => {
-              this.setState({ identifier: value });
-            }}
-          />
-        </View>
-        <View style={{ width: 100, marginTop: 20 }}>
-          <Button title="Print" onPress={this._onPressPrintButton} />
-        </View>
-      </View>
-    );
-  }
-}
+const SettingsScreen = ({
+  navigation,
+}: CompositeScreenProps<
+  DrawerScreenProps<HomeDrawerParamList, "settings">,
+  NativeStackScreenProps<RootStackParamList>
+>) => {
+  const theme = useTheme();
+  return (
+    <View style={styles(theme).container}>
+      <Card.Title
+        title="Pengaturan"
+        titleVariant="headlineLarge"
+        style={styles(theme).title}
+      />
+      <Card
+        mode="outlined"
+        style={[styles(theme).cardContainer, { marginBottom: 24 }]}
+        contentStyle={styles(theme).cardContent}
+      >
+        <Text variant="titleMedium" style={styles(theme).sectionTitle}>
+          Kasir
+        </Text>
+        <List.Item
+          title="Etalase"
+          left={(props) => <List.Icon {...props} icon={"shape-outline"} />}
+          right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+          onPress={() => navigation.navigate("category")}
+        />
+        <Divider />
+        <List.Item
+          title="Metode Pembayaran"
+          left={(props) => <List.Icon {...props} icon={"cash"} />}
+          right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+          onPress={() => navigation.navigate("paymentType")}
+        />
+        <Divider />
+        <List.Item
+          title="Struk & Printer"
+          left={(props) => <List.Icon {...props} icon={"printer-pos"} />}
+          right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+        />
+      </Card>
+      <Card
+        mode="outlined"
+        style={styles(theme).cardContainer}
+        contentStyle={styles(theme).cardContent}
+      >
+        <Text variant="titleMedium" style={styles(theme).sectionTitle}>
+          Lainnya
+        </Text>
+        <List.Item
+          title="Informasi Toko"
+          left={(props) => <List.Icon {...props} icon={"store-edit-outline"} />}
+          right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+        />
+      </Card>
+    </View>
+  );
+};
 
 export default SettingsScreen;
+
+const styles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: 32,
+      paddingTop: 16,
+    },
+    title: { paddingLeft: 0, minHeight: 0, marginBottom: 24 },
+    sectionTitle: { color: theme.colors.outline },
+    cardContainer: {
+      backgroundColor: "white",
+      borderColor: theme.colors.outlineVariant,
+    },
+    cardContent: {
+      padding: 16,
+    },
+  });

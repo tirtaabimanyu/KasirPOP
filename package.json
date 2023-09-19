@@ -9,6 +9,7 @@
     "typeorm": "ts-node -r ./tsconfig.json ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
+    "@react-native-community/checkbox": "^0.5.16",
     "@react-native-community/datetimepicker": "6.2.0",
     "@react-native-picker/picker": "2.4.2",
     "@react-navigation/drawer": "^6.6.3",

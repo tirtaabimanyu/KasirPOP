@@ -167,6 +167,7 @@ const UpdateProductScreen = ({
         setProductData={setNewProductData}
         errors={errors}
         setErrors={setErrors}
+        onPressAddCategory={() => navigation.navigate("category")}
       />
       <View style={styles(theme).actionButtonContainer}>
         <Button

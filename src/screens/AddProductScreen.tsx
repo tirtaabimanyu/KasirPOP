@@ -129,6 +129,7 @@ const AddProductScreen = ({
         setProductData={setProductData}
         errors={errors}
         setErrors={setErrors}
+        onPressAddCategory={() => navigation.navigate("category")}
       />
       <Button
         mode="contained"
