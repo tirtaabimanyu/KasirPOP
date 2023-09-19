@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Card,
-  Dialog,
   MD3Theme,
-  Portal,
   SegmentedButtons,
   Text,
   useTheme,
@@ -21,6 +19,8 @@ import { createTransaction } from "../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { PaymentType } from "../types/data";
 import FloatingRecap from "../components/FloatingRecap";
+import BaseDialog from "../components/BaseDialog";
+import useDialog from "../hooks/useDialog";
 
 const PaymentScreen = ({
   navigation,
@@ -35,11 +35,11 @@ const PaymentScreen = ({
   }, [cart.totalItem]);
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.CASH);
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => {
+  const [successDialogVisible, showSuccessDialog, hideSuccessDialog] =
+    useDialog();
+  const onPressCloseDialog = () => {
     dispatch(resetCart());
-    setVisible(false);
+    hideSuccessDialog();
     navigation.navigate("home");
   };
 
@@ -89,36 +89,36 @@ const PaymentScreen = ({
         },
         services: services,
       })
-    );
-    showDialog();
+    ).then(showSuccessDialog);
   };
 
   return (
     <View style={styles(theme).container}>
-      <Portal>
-        <Dialog visible={visible} dismissable={false}>
-          <Dialog.Icon
-            icon={"check-circle"}
-            size={24}
-            color={theme.colors.primary}
-          />
-          <Dialog.Title style={{ textAlign: "center" }}>
-            Transaksi Sudah Selesai
-          </Dialog.Title>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} style={{ paddingHorizontal: 16 }}>
-              Cetak Struk Dapur
-            </Button>
-            <Button
-              mode="contained"
-              onPress={hideDialog}
-              style={{ paddingHorizontal: 24 }}
-            >
-              Tutup
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <BaseDialog visible={successDialogVisible}>
+        <BaseDialog.Icon
+          icon={"check-circle"}
+          size={24}
+          color={theme.colors.primary}
+        />
+        <BaseDialog.Title style={{ textAlign: "center" }}>
+          Transaksi Sudah Selesai
+        </BaseDialog.Title>
+        <BaseDialog.Actions>
+          <Button
+            onPress={onPressCloseDialog}
+            style={{ paddingHorizontal: 16 }}
+          >
+            Cetak Struk Dapur
+          </Button>
+          <Button
+            mode="contained"
+            onPress={onPressCloseDialog}
+            style={{ paddingHorizontal: 24 }}
+          >
+            Tutup
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 200, flexDirection: "row" }}
       >
@@ -175,7 +175,7 @@ const PaymentScreen = ({
         <View
           style={{
             flex: 0.5,
-            aspectRatio: 0.709375,
+            aspectRatio: 0.7,
           }}
         >
           {paymentType == PaymentType.CASH ? (
