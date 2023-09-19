@@ -43,12 +43,13 @@ export const createTransaction = createAsyncThunk(
 
 export const fetchTransactionSummary = createAsyncThunk(
   "transaction/summary",
-  async (payload: { service: TransactionService }) => {
-    const dateRange = {
-      start: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-      end: new Date(),
-    };
-    const transactions = await payload.service.getAll({ dateRange });
+  async (payload: {
+    dateRange: { start: Date; end: Date };
+    service: TransactionService;
+  }) => {
+    const transactions = await payload.service.getAll({
+      dateRange: payload.dateRange,
+    });
     const cash = transactions.reduce((obj, transaction) => {
       if (transaction.payment_type == PaymentType.CASH)
         obj += transaction.total_price;

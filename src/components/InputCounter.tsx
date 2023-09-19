@@ -25,6 +25,7 @@ interface EditableProps extends CommonProps {
 
 interface NonEditableProps extends CommonProps {
   editable?: false;
+  onChangeText?: never;
 }
 
 type InputCounterProp = EditableProps | NonEditableProps;
@@ -59,16 +60,18 @@ const InputCounter = (props: InputCounterProp) => {
       <TextInput
         dense
         disabled={props.disabled}
-        editable={props.editable ? true : false}
         keyboardType="numeric"
         style={styles(theme).textInput}
         underlineColor="transparent"
         value={props.value.toString()}
-        onChangeText={(value) =>
-          props.editable && props.onChangeText(toNumber(value))
-        }
         onFocus={() => props.setIsEditing && props.setIsEditing(true)}
         onBlur={() => props.setIsEditing && props.setIsEditing(false)}
+        {...(props.editable
+          ? {
+              editable: props.editable,
+              onChangeText: (value) => props.onChangeText(toNumber(value)),
+            }
+          : { editable: props.editable || false })}
       />
       <TouchableRipple
         borderless

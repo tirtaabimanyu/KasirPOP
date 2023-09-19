@@ -1,6 +1,5 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
@@ -28,19 +27,12 @@ import { useDatabaseConnection } from "../../data/connection";
 import { PaymentType, TransactionData } from "../../types/data";
 import useDateRange from "../../hooks/useDateRange";
 
-type DateRange = {
-  start: Date;
-  end: Date;
-};
-
 type TransactionPaymentType = PaymentType | "all";
 const paymentTypeChip: { value: TransactionPaymentType; label: string }[] = [
   { value: "all", label: "Semua" },
   { value: PaymentType.CASH, label: "Uang Tunai" },
   { value: PaymentType.QRIS, label: "QRIS" },
 ];
-
-const Tab = createMaterialTopTabNavigator();
 
 const RowSeparator = () => <View style={{ height: 24 }} />;
 
@@ -49,11 +41,17 @@ const DownloadDialog = (props: {
   onDismiss: () => void;
   onDownload: (dateRange: { start: Date; end: Date }) => void;
 }) => {
+  const todayDate = new Date().toDateString();
   const [downloadDateRange, setDownloadDateStart, setDownloadDateEnd] =
-    useDateRange({
-      start: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-      end: new Date(),
-    });
+    useDateRange();
+
+  useEffect(() => {
+    // Set report range to 1 week ago - today
+    setDownloadDateStart(
+      new Date(Number(new Date(todayDate)) - 1000 * 60 * 60 * 24 * 7)
+    );
+    setDownloadDateEnd(new Date(todayDate));
+  }, [todayDate]);
 
   return (
     <BaseDialog
@@ -117,15 +115,15 @@ const TransactionsScreen = ({
   );
 
   const [downloadDialog, showDownloadDialog, hideDownloadDialog] = useDialog();
+  const todayDate = new Date().toDateString();
   const [
     transactionsDateRange,
     setTransactionsDateStart,
     setTransactionsDateEnd,
-  ] = useDateRange({
-    start: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-    end: new Date(),
-  });
-  console.log(transactionsDateRange);
+  ] = useDateRange();
+  const [summaryDateRange, setSummaryDateStart, setSummaryDateEnd] =
+    useDateRange();
+
   const [selectedPaymentType, setSelectedPaymentType] =
     useState<TransactionPaymentType>("all");
 
@@ -149,16 +147,33 @@ const TransactionsScreen = ({
     return obj;
   }, {} as { [key: string]: { createdAt: string; transactions: TransactionData[] } });
 
+  useEffect(() => {
+    // Set summary to today
+    setSummaryDateStart(new Date(todayDate));
+    setSummaryDateEnd(new Date(todayDate));
+
+    // Set transactions to 1 week ago - today
+    setTransactionsDateStart(
+      new Date(Number(new Date(todayDate)) - 1000 * 60 * 60 * 24 * 7)
+    );
+    setTransactionsDateEnd(new Date(todayDate));
+  }, [todayDate]);
+
   useFocusEffect(
     useCallback(() => {
-      dispatch(fetchTransactionSummary({ service: transactionService }));
+      dispatch(
+        fetchTransactionSummary({
+          dateRange: summaryDateRange,
+          service: transactionService,
+        })
+      );
       dispatch(
         fetchTransactions({
           dateRange: transactionsDateRange,
           service: transactionService,
         })
       );
-    }, [transactionsDateRange])
+    }, [transactionsDateRange, summaryDateRange])
   );
 
   return (

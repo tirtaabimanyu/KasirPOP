@@ -12,6 +12,7 @@ interface DismissableDialog extends CommonProps {
 
 interface NonDismissableDialog extends CommonProps {
   dismissable?: false;
+  onDismiss?: never;
 }
 
 type BaseDialogProps = DismissableDialog | NonDismissableDialog;
@@ -21,13 +22,17 @@ const BaseDialog = (props: BaseDialogProps) => {
     <Portal>
       <Dialog
         visible={props.visible}
-        dismissable={props.dismissable}
-        onDismiss={() => props.dismissable && props.onDismiss}
         style={{
           backgroundColor: "white",
           width: "50%",
           alignSelf: "center",
         }}
+        {...(props.dismissable
+          ? {
+              dismissable: props.dismissable,
+              onDismiss: props.onDismiss,
+            }
+          : { dismissable: props.dismissable || false })}
       >
         {props.children}
       </Dialog>

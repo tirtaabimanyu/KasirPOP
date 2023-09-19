@@ -7,7 +7,6 @@ import {
   CartState,
   addToCart,
   removeFromCart,
-  updateCartAmount,
 } from "../redux/slices/cartSlice";
 import { useEffect } from "react";
 import { toRupiah } from "../utils/formatUtils";

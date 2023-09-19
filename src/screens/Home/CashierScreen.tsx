@@ -83,6 +83,7 @@ const TabFlatList = (props: TabFlatListProps) => (
     data={props.data}
     numColumns={2}
     showsVerticalScrollIndicator={false}
+    automaticallyAdjustKeyboardInsets
   />
 );
 
