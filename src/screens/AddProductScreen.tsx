@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { createProduct } from "../redux/slices/productSlice";
 import { RootStackParamList } from "../types/routes";
 import { CreateProductData } from "../types/data";
+import { showSnackbar } from "../redux/slices/layoutSlice";
 
 const AddProductScreen = ({
   navigation,
@@ -54,6 +55,9 @@ const AddProductScreen = ({
         service: productService,
       })
     ).then(() => {
+      dispatch(
+        showSnackbar({ message: `${productData.name} telah ditambahkan.` })
+      );
       setSubmitSuccess(true);
       navigation.navigate("home", { screen: "inventory" });
     });

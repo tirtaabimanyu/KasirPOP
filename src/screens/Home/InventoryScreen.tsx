@@ -17,6 +17,7 @@ import { AppDispatch } from "../../redux/store";
 import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 import { ProductData, ProductStockData } from "../../types/data";
 import { ProductService } from "../../data/services/ProductService";
+import { showSnackbar } from "../../redux/slices/layoutSlice";
 
 type TabFlatListType = {
   products: ProductModel[];
@@ -41,15 +42,19 @@ interface TabFlatListProps
   dispatch: AppDispatch;
 }
 const TabFlatList = (props: TabFlatListProps) => {
+  const { dispatch } = props;
   const updateStock =
-    (itemData: ProductData) => (newStockData: ProductStockData) => {
-      props.dispatch(
+    (itemData: ProductData) => (newStockData: ProductStockData) =>
+      dispatch(
         updateProduct({
           data: { ...itemData, ...newStockData },
           service: props.service,
         })
+      ).then(() =>
+        dispatch(
+          showSnackbar({ message: `Stok ${itemData.name} telah diperbarui.` })
+        )
       );
-    };
 
   return (
     <FlatList

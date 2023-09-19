@@ -23,6 +23,7 @@ import { useDatabaseConnection } from "../../data/connection";
 import { CategoryData, ProductData } from "../../types/data";
 import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 import FloatingRecap from "../../components/FloatingRecap";
+import { showSnackbar } from "../../redux/slices/layoutSlice";
 
 type TabScreenParams = {
   category: CategoryData;
@@ -64,6 +65,10 @@ const NormalizedCashierItem = ({
             data: { ...itemData, ...data },
             service: productService,
           })
+        ).then(() =>
+          dispatch(
+            showSnackbar({ message: `Stok ${itemData.name} telah diperbarui.` })
+          )
         )
       }
       cartQuantity={cartQuantity}

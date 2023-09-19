@@ -48,6 +48,9 @@ const UpdateProductScreen = ({
         service: productService,
       })
     ).then(() => {
+      dispatch(
+        showSnackbar({ message: `${newProductData.name} telah diperbarui.` })
+      );
       setCanNavigate(true);
       navigation.navigate("home", { screen: "inventory" });
     });
