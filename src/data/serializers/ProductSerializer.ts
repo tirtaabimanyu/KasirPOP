@@ -4,8 +4,8 @@ import CategorySerializer from "./CategorySerializer";
 
 const ProductSerializer = class {
   static serialize = (product: ProductModel): ProductData => {
-    const serializedCategories = product.categories.map((category) =>
-      CategorySerializer.serialize(category)
+    const serializedCategories = CategorySerializer.serializeMany(
+      product.categories
     );
 
     return {
@@ -19,11 +19,13 @@ const ProductSerializer = class {
     };
   };
 
-  static serializeMany = (products: ProductModel[]): ProductData[] => {
-    const serializedProducts: ProductData[] = [];
-    products.forEach((product) => {
-      serializedProducts.push(this.serialize(product));
-    });
+  static serializeMany = (
+    products?: ProductModel[]
+  ): ProductData[] | undefined => {
+    const serializedProducts = products?.reduce((obj, product) => {
+      obj.push(this.serialize(product));
+      return obj;
+    }, [] as ProductData[]);
 
     return serializedProducts;
   };

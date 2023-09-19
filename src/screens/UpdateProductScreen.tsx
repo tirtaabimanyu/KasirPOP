@@ -17,13 +17,13 @@ const UpdateProductScreen = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, "updateProduct">) => {
   const theme = useTheme();
-  const services = useDatabaseConnection();
+  const { productService } = useDatabaseConnection();
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector((state) => state.category);
 
   const initialData: ProductData = route.params.productData;
   const [newProductData, setNewProductData] =
-    useState<ProductData>(initialData);
+    useState<CreateProductData>(initialData);
 
   const hasUnsavedChanges =
     JSON.stringify(initialData) !== JSON.stringify(newProductData);
@@ -44,20 +44,20 @@ const UpdateProductScreen = ({
   const updateItem = useCallback(async () => {
     dispatch(
       updateProduct({
-        data: newProductData,
-        services,
+        data: { id: route.params.productData.id, ...newProductData },
+        service: productService,
       })
     ).then(() => {
       setCanNavigate(true);
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [newProductData, services, navigation]);
+  }, [newProductData, productService, navigation]);
 
   const deleteItem = useCallback(async () => {
     dispatch(
       deleteProduct({
         id: route.params.productData.id,
-        service: services.productService,
+        service: productService,
       })
     ).then(() => {
       setCanNavigate(true);
@@ -68,7 +68,7 @@ const UpdateProductScreen = ({
       );
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [services]);
+  }, [productService]);
 
   const validation = () => {
     const newErrors = initialErrors;

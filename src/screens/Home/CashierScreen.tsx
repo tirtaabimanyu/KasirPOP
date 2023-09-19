@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme, MD3Theme, Card } from "react-native-paper";
 import {
@@ -6,7 +6,7 @@ import {
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList } from "react-native-gesture-handler";
 
@@ -39,7 +39,7 @@ const NormalizedCashierItem = ({
   itemData: ProductData;
   index: number;
 }) => {
-  const services = useDatabaseConnection();
+  const { productService } = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
   const cartQuantity =
@@ -59,7 +59,12 @@ const NormalizedCashierItem = ({
         dispatch(updateCartAmount({ ...itemData, quantity: value }))
       }
       onPressSaveUpdateStock={(data) =>
-        dispatch(updateProduct({ data: { ...itemData, ...data }, services }))
+        dispatch(
+          updateProduct({
+            data: { ...itemData, ...data },
+            service: productService,
+          })
+        )
       }
       cartQuantity={cartQuantity}
     />

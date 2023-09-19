@@ -1,12 +1,15 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, In, Repository } from "typeorm";
 import { ProductModel } from "../entities/ProductModel";
 import { CreateProductData, UpdateProductData } from "../../types/data";
+import { CategoryModel } from "../entities/CategoryModel";
 
 export class ProductService {
   private ormRepository: Repository<ProductModel>;
+  private categoryRepository: Repository<CategoryModel>;
 
   constructor(connection: DataSource) {
     this.ormRepository = connection.getRepository(ProductModel);
+    this.categoryRepository = connection.getRepository(CategoryModel);
   }
 
   public async getAll(): Promise<ProductModel[]> {
@@ -19,44 +22,41 @@ export class ProductService {
     return products;
   }
 
-  public async create({
-    name,
-    stock,
-    isAlwaysInStock,
-    price,
-    imgUri,
-    categories,
-  }: CreateProductData): Promise<ProductModel> {
-    const product = this.ormRepository.create({
-      name,
-      stock,
-      isAlwaysInStock,
-      price,
-      imgUri,
-    });
-    if (categories != undefined) {
-      product.categories = categories;
+  public async create(data: CreateProductData): Promise<ProductModel> {
+    const { categories, ...rest } = data;
+
+    let categoryEntities: CategoryModel[] = [];
+    if (categories) {
+      categoryEntities = await this.categoryRepository.find({
+        where: { id: In(categories.map((category) => category.id)) },
+      });
     }
-    await this.ormRepository.save(product);
-    return product;
+
+    const product = this.ormRepository.create({
+      ...rest,
+      ...(categories ? { category: categoryEntities } : {}),
+    });
+
+    return await this.ormRepository.save(product);
   }
 
   public async update(data: UpdateProductData): Promise<ProductModel> {
-    const product = await this.ormRepository.findOne({
-      where: { id: data.id },
-    });
-    if (product == null) return Promise.reject("Product not found");
+    const { id, categories, ...rest } = data;
 
-    product.name = data.name;
-    product.stock = data.stock;
-    product.isAlwaysInStock = data.isAlwaysInStock;
-    product.price = data.price;
-    product.imgUri = data.imgUri;
-    if (data.categories) {
-      product.categories = data.categories;
+    let categoryEntities: CategoryModel[] = [];
+    if (categories) {
+      categoryEntities = await this.categoryRepository.find({
+        where: { id: In(categories.map((category) => category.id)) },
+      });
     }
 
-    return this.ormRepository.save(product);
+    const product = await this.ormRepository.save({
+      id: data.id,
+      ...(categories ? { category: categoryEntities } : {}),
+      ...rest,
+    });
+
+    return product;
   }
 
   public async delete(id: number): Promise<void> {

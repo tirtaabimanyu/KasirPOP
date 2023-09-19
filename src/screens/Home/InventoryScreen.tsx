@@ -16,7 +16,7 @@ import { updateProduct } from "../../redux/slices/productSlice";
 import { AppDispatch } from "../../redux/store";
 import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 import { ProductData, ProductStockData } from "../../types/data";
-import { DatabaseConnectionContextData } from "../../types/connection";
+import { ProductService } from "../../data/services/ProductService";
 
 type TabFlatListType = {
   products: ProductModel[];
@@ -37,7 +37,7 @@ interface TabFlatListProps
     >
   > {
   data: ProductData[];
-  services: DatabaseConnectionContextData;
+  service: ProductService;
   dispatch: AppDispatch;
 }
 const TabFlatList = (props: TabFlatListProps) => {
@@ -46,7 +46,7 @@ const TabFlatList = (props: TabFlatListProps) => {
       props.dispatch(
         updateProduct({
           data: { ...itemData, ...newStockData },
-          services: props.services,
+          service: props.service,
         })
       );
     };
@@ -80,7 +80,7 @@ const InventoryScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
-  const services = useDatabaseConnection();
+  const { productService } = useDatabaseConnection();
   const dispatch = useAppDispatch();
 
   const productState = useAppSelector((state) => state.product);
@@ -129,7 +129,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={productState.products}
-              services={services}
+              service={productService}
               dispatch={dispatch}
             />
           )}
@@ -139,7 +139,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={inStockProducts}
-              services={services}
+              service={productService}
               dispatch={dispatch}
             />
           )}
@@ -152,7 +152,7 @@ const InventoryScreen = ({
             <TabFlatList
               {...tabProps}
               data={outOfStockProducts}
-              services={services}
+              service={productService}
               dispatch={dispatch}
             />
           )}

@@ -7,11 +7,13 @@ const CategorySerializer = class {
     name: category.name,
   });
 
-  static serializeMany = (categories: CategoryModel[]): CategoryData[] => {
-    const serializedCategories: CategoryData[] = [];
-    categories.forEach((category) => {
-      serializedCategories.push(CategorySerializer.serialize(category));
-    });
+  static serializeMany = (
+    categories?: CategoryModel[]
+  ): CategoryData[] | undefined => {
+    const serializedCategories = categories?.reduce((obj, category) => {
+      obj.push(this.serialize(category));
+      return obj;
+    }, [] as CategoryData[]);
 
     return serializedCategories;
   };

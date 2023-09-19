@@ -83,7 +83,7 @@ export const transactionSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchTransactions.fulfilled, (state, action) => {
-      state.transactions = action.payload;
+      state.transactions = action.payload || [];
     });
     builder.addCase(fetchTransactionSummary.fulfilled, (state, action) => {
       const { cash, qris } = action.payload;

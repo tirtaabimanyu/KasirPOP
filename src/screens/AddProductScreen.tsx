@@ -9,19 +9,18 @@ import BaseDialog from "../components/BaseDialog";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { createProduct } from "../redux/slices/productSlice";
 import { RootStackParamList } from "../types/routes";
-import { CreateProductData, ProductData } from "../types/data";
+import { CreateProductData } from "../types/data";
 
 const AddProductScreen = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "addProduct">) => {
   const theme = useTheme();
-  const repositories = useDatabaseConnection();
+  const { productService } = useDatabaseConnection();
   const dispatch = useAppDispatch();
 
   const { categories } = useAppSelector((state) => state.category);
 
-  const initialData: ProductData = {
-    id: 0,
+  const initialData: CreateProductData = {
     name: "",
     stock: 0,
     isAlwaysInStock: false,
@@ -29,7 +28,8 @@ const AddProductScreen = ({
     imgUri: undefined,
     categories: undefined,
   };
-  const [productData, setProductData] = useState<ProductData>(initialData);
+  const [productData, setProductData] =
+    useState<CreateProductData>(initialData);
 
   const hasUnsavedChanges =
     JSON.stringify(initialData) !== JSON.stringify(productData);
@@ -51,13 +51,13 @@ const AddProductScreen = ({
     dispatch(
       createProduct({
         data: productData,
-        repositories,
+        service: productService,
       })
     ).then(() => {
       setSubmitSuccess(true);
       navigation.navigate("home", { screen: "inventory" });
     });
-  }, [productData, repositories, navigation]);
+  }, [productData, productService, navigation]);
 
   const validation = () => {
     const newErrors = initialErrors;

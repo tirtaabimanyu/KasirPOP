@@ -13,15 +13,15 @@ import InputImagePicker from "./InputImagePicker";
 import { useCallback, useState } from "react";
 import { toNumber, toRupiah } from "../utils/formatUtils";
 import InputCounter from "./InputCounter";
-import { CategoryData, CreateProductData, ProductData } from "../types/data";
+import { CategoryData, CreateProductData } from "../types/data";
 
 type ErrorsType = { [key in keyof CreateProductData]: string[] };
 
 type ProductFormProps = {
   categories: CategoryData[];
-  productData: ProductData;
+  productData: CreateProductData;
   errors: ErrorsType;
-  setProductData: React.Dispatch<React.SetStateAction<ProductData>>;
+  setProductData: React.Dispatch<React.SetStateAction<CreateProductData>>;
   setErrors: React.Dispatch<React.SetStateAction<ErrorsType>>;
 };
 

@@ -11,12 +11,12 @@ const TransactionSerializer = class {
   });
 
   static serializeMany = (
-    transactions: TransactionModel[]
-  ): TransactionData[] => {
-    const serializedTransactions: TransactionData[] = [];
-    transactions.forEach((transaction) => {
-      serializedTransactions.push(TransactionSerializer.serialize(transaction));
-    });
+    transactions?: TransactionModel[]
+  ): TransactionData[] | undefined => {
+    const serializedTransactions = transactions?.reduce((obj, transaction) => {
+      obj.push(this.serialize(transaction));
+      return obj;
+    }, [] as TransactionData[]);
 
     return serializedTransactions;
   };

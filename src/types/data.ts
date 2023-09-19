@@ -1,7 +1,5 @@
 // Product
 
-import { CategoryModel } from "../data/entities/CategoryModel";
-
 export type ProductData = {
   id: number;
   name: string;
@@ -20,11 +18,17 @@ export type CreateProductData = {
   isAlwaysInStock: boolean;
   price: number;
   imgUri?: string;
-  categories?: CategoryModel[];
+  categories?: CategoryData[];
 };
 
-export type UpdateProductData = CreateProductData & {
+export type UpdateProductData = {
   id: number;
+  name?: string;
+  stock?: number;
+  isAlwaysInStock?: boolean;
+  price?: number;
+  imgUri?: string;
+  categories?: CategoryData[];
 };
 
 // Category
