@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useTheme, MD3Theme, Text, Button, Card } from "react-native-paper";
+import { useTheme, MD3Theme, Card } from "react-native-paper";
 import {
   MaterialTopTabScreenProps,
   createMaterialTopTabNavigator,
@@ -22,6 +22,7 @@ import { updateProduct } from "../../redux/slices/productSlice";
 import { useDatabaseConnection } from "../../data/connection";
 import { CategoryData, ProductData } from "../../types/data";
 import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
+import FloatingRecap from "../../components/FloatingRecap";
 
 type TabScreenParams = {
   category: CategoryData;
@@ -132,22 +133,20 @@ const CashierScreen = ({
     }[]
   >([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setTabScreens([]);
-      categoryState.categories.forEach(async (category) => {
-        const component = CategoryFlatList;
-        const tabScreen = {
-          name: category.name,
-          component: component,
-          initialParams: {
-            category: category,
-          },
-        };
-        setTabScreens((state) => [...state, tabScreen]);
-      });
-    }, [categoryState])
-  );
+  useEffect(() => {
+    setTabScreens([]);
+    categoryState.categories.forEach(async (category) => {
+      const component = CategoryFlatList;
+      const tabScreen = {
+        name: category.name,
+        component: component,
+        initialParams: {
+          category: category,
+        },
+      };
+      setTabScreens((state) => [...state, tabScreen]);
+    });
+  }, [categoryState]);
 
   return (
     <View style={styles(theme).container}>
@@ -179,27 +178,14 @@ const CashierScreen = ({
           />
         ))}
       </Tab.Navigator>
-      {Object.keys(cartState.products).length > 0 && (
-        <View style={styles(theme).floatingRecapContainer}>
-          <View style={styles(theme).floatingRecap}>
-            <Text
-              variant="titleLarge"
-              style={{ color: theme.colors.onPrimary }}
-            >
-              {`${cartState.totalItem} Produk • ${toRupiah(
-                cartState.totalPrice
-              )}`}
-            </Text>
-            <Button
-              mode="elevated"
-              contentStyle={styles(theme).floatingRecapButton}
-              labelStyle={styles(theme).floatingRecapButtonLabel}
-              onPress={() => navigation.navigate("summary")}
-            >
-              Lihat Pesanan
-            </Button>
-          </View>
-        </View>
+      {cartState.totalItem > 0 && (
+        <FloatingRecap
+          contentText={`${cartState.totalItem} Produk • ${toRupiah(
+            cartState.totalPrice
+          )}`}
+          buttonText="Lihat Pesanan"
+          onPressButton={() => navigation.navigate("summary")}
+        />
       )}
     </View>
   );
@@ -215,29 +201,6 @@ const styles = (theme: MD3Theme) =>
       paddingHorizontal: 32,
       paddingTop: 15,
       width: "100%",
-    },
-    floatingRecapContainer: {
-      position: "absolute",
-      alignSelf: "center",
-      width: "100%",
-      bottom: 0,
-      paddingVertical: 28,
-    },
-    floatingRecap: {
-      backgroundColor: theme.colors.primary,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      borderRadius: 16,
-      paddingHorizontal: 24,
-      paddingVertical: 22,
-      height: 72,
-    },
-    floatingRecapButton: {
-      height: 40,
-    },
-    floatingRecapButtonLabel: {
-      ...theme.fonts.labelLarge,
     },
     cashierItem: {
       flex: 0.5,

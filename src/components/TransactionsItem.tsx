@@ -6,9 +6,15 @@ import {
   toRupiah,
 } from "../utils/formatUtils";
 import { View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Row from "./Row";
 
 interface TransactionsItemProps {
-  itemData: { createdAt: string; transactions: TransactionData[] };
+  itemData: {
+    createdAt: string;
+    totalPrice: number;
+    transactions: TransactionData[];
+  };
 }
 
 const TransactionsItem = ({ itemData }: TransactionsItemProps) => {
@@ -30,9 +36,20 @@ const TransactionsItem = ({ itemData }: TransactionsItemProps) => {
       <List.Accordion
         title={
           <Text variant="titleMedium">
-            {toFormattedDate(new Date(itemData.createdAt), true)}
+            {`${toFormattedDate(new Date(itemData.createdAt), true)}`}
           </Text>
         }
+        right={({ isExpanded }) => (
+          <Row>
+            <Text variant="labelLarge" style={{ marginRight: 8 }}>
+              {toRupiah(itemData.totalPrice)}
+            </Text>
+            <MaterialCommunityIcons
+              name={isExpanded ? "chevron-up" : "chevron-down"}
+              size={24}
+            />
+          </Row>
+        )}
         style={{ backgroundColor: "white" }}
       >
         {itemData.transactions.map((transaction) => {

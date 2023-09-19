@@ -20,6 +20,7 @@ import { RootStackParamList } from "../types/routes";
 import { createTransaction } from "../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { PaymentType } from "../types/data";
+import FloatingRecap from "../components/FloatingRecap";
 
 const PaymentScreen = ({
   navigation,
@@ -196,28 +197,19 @@ const PaymentScreen = ({
       </ScrollView>
 
       {showFloatingRecap && (
-        <View style={styles(theme).floatingRecapContainer}>
-          <View style={styles(theme).floatingRecap}>
-            <Text
-              variant="titleLarge"
-              style={{ color: theme.colors.onPrimary }}
-            >
-              {paymentType == PaymentType.CASH
-                ? "Kembalian " + toRupiah(totalChange)
-                : "Pastikan pembayaran sudah dilakukan"}
-            </Text>
-            <Button
-              mode="elevated"
-              contentStyle={styles(theme).floatingRecapButton}
-              labelStyle={styles(theme).floatingRecapButtonLabel}
-              onPress={onCreateTransaction}
-            >
-              {paymentType == PaymentType.CASH
-                ? "Terima Pembayaran"
-                : "Sudah Bayar"}
-            </Button>
-          </View>
-        </View>
+        <FloatingRecap
+          contentText={
+            paymentType == PaymentType.CASH
+              ? "Kembalian " + toRupiah(totalChange)
+              : "Pastikan pembayaran sudah dilakukan"
+          }
+          buttonText={
+            paymentType == PaymentType.CASH
+              ? "Terima Pembayaran"
+              : "Sudah Bayar"
+          }
+          onPressButton={onCreateTransaction}
+        />
       )}
     </View>
   );

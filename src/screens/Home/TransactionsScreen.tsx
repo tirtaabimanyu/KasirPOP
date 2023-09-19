@@ -1,6 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { CompositeScreenProps, useIsFocused } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import {
@@ -102,6 +102,7 @@ const TransactionsScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
+  const isScreenFocused = useIsFocused();
   const { transactionService } = useDatabaseConnection();
   const dispatch = useAppDispatch();
   const { summary, transactions } = useAppSelector(
@@ -135,17 +136,19 @@ const TransactionsScreen = ({
       : qrisTransactions;
 
   const groupedFlatListData = flatListData.reduce((obj, data) => {
-    const date = data.createdAt.split("T")[0];
+    const date = new Date(data.createdAt).toDateString();
     if (Object.keys(obj).includes(date)) {
-      obj[date]["transactions"].push(data);
+      obj[date].transactions.push(data);
+      obj[date].totalPrice += data.totalPrice;
     } else {
       obj[date] = {
         createdAt: date,
+        totalPrice: data.totalPrice,
         transactions: [data],
       };
     }
     return obj;
-  }, {} as { [key: string]: { createdAt: string; transactions: TransactionData[] } });
+  }, {} as { [key: string]: { createdAt: string; totalPrice: number; transactions: TransactionData[] } });
 
   useEffect(() => {
     // Set summary to today
@@ -159,22 +162,20 @@ const TransactionsScreen = ({
     setTransactionsDateEnd(new Date(todayDate));
   }, [todayDate]);
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(
-        fetchTransactionSummary({
-          dateRange: summaryDateRange,
-          service: transactionService,
-        })
-      );
-      dispatch(
-        fetchTransactions({
-          dateRange: transactionsDateRange,
-          service: transactionService,
-        })
-      );
-    }, [transactionsDateRange, summaryDateRange])
-  );
+  useEffect(() => {
+    dispatch(
+      fetchTransactionSummary({
+        dateRange: summaryDateRange,
+        service: transactionService,
+      })
+    );
+    dispatch(
+      fetchTransactions({
+        dateRange: transactionsDateRange,
+        service: transactionService,
+      })
+    );
+  }, [isScreenFocused, summaryDateRange, transactionsDateRange]);
 
   return (
     <View style={styles(theme).container}>

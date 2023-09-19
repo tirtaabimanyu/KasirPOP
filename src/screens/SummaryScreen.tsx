@@ -14,6 +14,7 @@ import { AppDispatch } from "../redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ProductData } from "../types/data";
 import { RootStackParamList } from "../types/routes";
+import FloatingRecap from "../components/FloatingRecap";
 
 const RowSeparator = () => <View style={{ height: 12 }} />;
 
@@ -43,12 +44,12 @@ const SummaryScreen = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "summary">) => {
   const theme = useTheme();
-  const cart = useAppSelector((state) => state.cart);
+  const cartState = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (cart.totalItem == 0) navigation.navigate("home");
-  }, [cart.totalItem]);
+    if (cartState.totalItem == 0) navigation.navigate("home");
+  }, [cartState.totalItem]);
 
   return (
     <View style={styles(theme).container}>
@@ -57,29 +58,21 @@ const SummaryScreen = ({
         renderItem={({ item }) => (
           <NormalizedCashierItem
             itemData={item}
-            cart={cart}
+            cart={cartState}
             dispatch={dispatch}
           />
         )}
-        data={Object.values(cart.products)}
+        data={Object.values(cartState.products)}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={RowSeparator}
       />
-      <View style={styles(theme).floatingRecapContainer}>
-        <View style={styles(theme).floatingRecap}>
-          <Text variant="titleLarge" style={{ color: theme.colors.onPrimary }}>
-            {`Total ${toRupiah(cart.totalPrice)}`}
-          </Text>
-          <Button
-            mode="elevated"
-            contentStyle={styles(theme).floatingRecapButton}
-            labelStyle={styles(theme).floatingRecapButtonLabel}
-            onPress={() => navigation.navigate("payment")}
-          >
-            Bayar
-          </Button>
-        </View>
-      </View>
+      <FloatingRecap
+        contentText={`${cartState.totalItem} Produk • ${toRupiah(
+          cartState.totalPrice
+        )}`}
+        buttonText="Bayar"
+        onPressButton={() => navigation.navigate("payment")}
+      />
     </View>
   );
 };
@@ -93,28 +86,5 @@ const styles = (theme: MD3Theme) =>
       position: "relative",
       paddingHorizontal: 32,
       width: "100%",
-    },
-    floatingRecapContainer: {
-      position: "absolute",
-      alignSelf: "center",
-      width: "100%",
-      bottom: 0,
-      paddingVertical: 28,
-    },
-    floatingRecap: {
-      backgroundColor: theme.colors.primary,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      borderRadius: 16,
-      paddingHorizontal: 24,
-      paddingVertical: 22,
-      height: 72,
-    },
-    floatingRecapButton: {
-      height: 40,
-    },
-    floatingRecapButtonLabel: {
-      ...theme.fonts.labelLarge,
     },
   });
