@@ -142,10 +142,10 @@ const UpdateProductScreen = ({
         dismissable={true}
         onDismiss={hideDeleteAlert}
       >
-        <BaseDialog.Title>{`Hapus ${route.params.productData.name}?`}</BaseDialog.Title>
+        <BaseDialog.Title>{`Apakah Anda yakin menghapus ${route.params.productData.name}?`}</BaseDialog.Title>
         <BaseDialog.Content>
           <Text variant="bodyMedium">
-            {`Apakah Anda yakin untuk menghapus ${route.params.productData.name}? Produk yang telah dihapus akan hilang dari Inventori.`}
+            {`Produk yang telah dihapus akan hilang dari Inventori.`}
           </Text>
         </BaseDialog.Content>
         <BaseDialog.Actions>
