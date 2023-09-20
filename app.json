@@ -17,9 +17,11 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "userInterfaceStyle": "light"
     },
     "android": {
+      "userInterfaceStyle": "light",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -54,7 +56,8 @@
         {
           "photosPermission": "The app accesses your photos to let you choose suitable picture for your products."
         }
-      ]
+      ],
+      ["./plugins/withDisableForcedDarkModeAndroid.js", {}]
     ]
   }
 }

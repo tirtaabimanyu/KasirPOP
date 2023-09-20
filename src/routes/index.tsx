@@ -1,9 +1,12 @@
-import {
-  NavigationContainer,
-  NavigationContainerProps,
-} from "@react-navigation/native";
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
-import { MD3Theme, useTheme, IconButton, Text } from "react-native-paper";
+import {
+  MD3Theme,
+  useTheme,
+  IconButton,
+  Text,
+  MD3LightTheme,
+} from "react-native-paper";
 import { enableFreeze, enableScreens } from "react-native-screens";
 import SummaryScreen from "../screens/SummaryScreen";
 import PaymentScreen from "../screens/PaymentScreen";
@@ -50,9 +53,17 @@ const Header = ({ theme, options, navigation, back }: HeaderProps) => {
 
 const Router = () => {
   const theme = useTheme();
+  const CombinedTheme = {
+    ...MD3LightTheme,
+    ...DefaultTheme,
+    colors: {
+      ...MD3LightTheme.colors,
+      ...DefaultTheme.colors,
+    },
+  };
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={CombinedTheme}>
       <Stack.Navigator
         screenOptions={{
           contentStyle: styles(theme).card,

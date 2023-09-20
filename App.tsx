@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { PaperProvider } from "react-native-paper";
+import { PaperProvider, MD3LightTheme, useTheme } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 
@@ -27,7 +27,11 @@ const DataInit = ({
     dispatch(fetchAllProducts(productService));
     dispatch(fetchAllCategories(categoryService));
   }, []);
-  return <>{children}</>;
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      {children}
+    </SafeAreaView>
+  );
 };
 
 const App = () => {
@@ -35,13 +39,11 @@ const App = () => {
     <DatabaseConnectionProvider>
       <ReduxProvider store={store}>
         <SafeAreaProvider>
-          <PaperProvider>
+          <PaperProvider theme={MD3LightTheme}>
             <DataInit>
-              <SafeAreaView style={{ flex: 1 }}>
-                <StatusBar style="auto" />
-                <GlobalSnackbar />
-                <Router />
-              </SafeAreaView>
+              <StatusBar style="auto" />
+              <GlobalSnackbar />
+              <Router />
             </DataInit>
           </PaperProvider>
         </SafeAreaProvider>

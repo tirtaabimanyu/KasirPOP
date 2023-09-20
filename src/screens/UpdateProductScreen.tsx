@@ -111,6 +111,7 @@ const UpdateProductScreen = ({
   return (
     <ScrollView
       style={styles(theme).container}
+      contentContainerStyle={{ paddingBottom: 24 }}
       automaticallyAdjustKeyboardInsets
     >
       <BaseDialog

@@ -11,6 +11,7 @@ import {
 } from "react-native-paper";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ScrollView } from "react-native-gesture-handler";
 
 const SettingsScreen = ({
   navigation,
@@ -20,7 +21,10 @@ const SettingsScreen = ({
 >) => {
   const theme = useTheme();
   return (
-    <View style={styles(theme).container}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={styles(theme).container}
+    >
       <Card.Title
         title="Pengaturan"
         titleVariant="headlineLarge"
@@ -68,7 +72,7 @@ const SettingsScreen = ({
           right={(props) => <List.Icon {...props} icon={"menu-right"} />}
         />
       </Card>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -77,9 +81,9 @@ export default SettingsScreen;
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
       paddingHorizontal: 32,
       paddingTop: 16,
+      paddingBottom: 24,
     },
     title: { paddingLeft: 0, minHeight: 0, marginBottom: 24 },
     sectionTitle: { color: theme.colors.outline },

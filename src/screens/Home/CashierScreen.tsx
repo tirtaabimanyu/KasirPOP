@@ -209,7 +209,7 @@ const styles = (theme: MD3Theme) =>
       flex: 1,
       position: "relative",
       paddingHorizontal: 32,
-      paddingTop: 15,
+      paddingTop: 16,
       width: "100%",
     },
     cashierItem: {
