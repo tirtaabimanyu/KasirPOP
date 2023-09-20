@@ -214,7 +214,6 @@ const TransactionsScreen = ({
             borderColor: theme.colors.outlineVariant,
           }}
           contentStyle={{
-            flex: 1,
             padding: 16,
             justifyContent: "space-between",
           }}

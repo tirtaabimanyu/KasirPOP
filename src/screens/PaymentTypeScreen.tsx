@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
@@ -27,6 +27,9 @@ const PaymentTypeScreen = ({
   const [qrisDialog, showQrisDialog, hideQrisDialog] = useDialog();
   const [qrisImage, showQrisImage, hideQrisImage] = useDialog();
 
+  const qrisImageHeight = Dimensions.get("window").height * 0.7;
+  const qrisImageWidth = qrisImageHeight * 0.7;
+
   return (
     <View style={styles(theme).container}>
       <BaseDialog visible={qrisDialog} dismissable onDismiss={hideQrisDialog}>
@@ -35,6 +38,7 @@ const PaymentTypeScreen = ({
           <InputImagePicker
             onSelectImage={(value) => console.log(value)}
             onRemoveImage={() => null}
+            resize={{ height: 600, width: 420 }}
           />
         </BaseDialog.Content>
         <BaseDialog.Actions>
@@ -50,22 +54,29 @@ const PaymentTypeScreen = ({
           </Button>
         </BaseDialog.Actions>
       </BaseDialog>
-      <Portal>
-        <Modal
-          visible={qrisImage}
-          contentContainerStyle={{
-            alignItems: "center",
+      <BaseDialog visible={qrisImage} dismissable onDismiss={hideQrisImage}>
+        <BaseDialog.Title>Lihat QRIS</BaseDialog.Title>
+        <Image
+          source={require("../helpers/QR_Static.png")}
+          style={{
+            width: qrisImageWidth,
+            height: qrisImageHeight,
+            alignSelf: "center",
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: theme.colors.outlineVariant,
           }}
-          onDismiss={hideQrisImage}
-        >
-          <Pressable onPress={hideQrisImage}>
-            <Image
-              source={require("../helpers/QR_Static.png")}
-              resizeMode="center"
-            />
-          </Pressable>
-        </Modal>
-      </Portal>
+        />
+        <BaseDialog.Actions style={{ padding: 24 }}>
+          <Button
+            mode="contained"
+            style={{ paddingHorizontal: 24 }}
+            onPress={hideQrisImage}
+          >
+            Tutup
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <Card
         mode="outlined"
         style={[styles(theme).cardContainer, { marginBottom: 24 }]}

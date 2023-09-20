@@ -15,10 +15,13 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "bundleIdentifier": "com.tirtaabimanyu.kasirbodoh"
     },
     "android": {
       "userInterfaceStyle": "light",
@@ -57,7 +60,10 @@
           "photosPermission": "The app accesses your photos to let you choose suitable picture for your products."
         }
       ],
-      ["./plugins/withDisableForcedDarkModeAndroid.js", {}]
+      [
+        "./plugins/withDisableForcedDarkModeAndroid.js",
+        {}
+      ]
     ]
   }
 }

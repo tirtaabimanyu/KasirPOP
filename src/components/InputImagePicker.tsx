@@ -2,6 +2,7 @@ import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { useCallback } from "react";
+import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 
 const placeholderImage = require("../../assets/image-placeholder.png");
 
@@ -9,6 +10,7 @@ type InputImagePickerProp = {
   imgUri?: string;
   onRemoveImage: () => void;
   onSelectImage: (uri: string) => void;
+  resize: { width: number; height: number };
   base64?: boolean;
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
@@ -17,6 +19,7 @@ const InputImagePicker = ({
   imgUri,
   onRemoveImage,
   onSelectImage,
+  resize,
   base64 = false,
   style,
   contentStyle,
@@ -28,15 +31,19 @@ const InputImagePicker = ({
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-      base64: true,
+      aspect: [resize.width, resize.height],
     });
 
     if (!result.cancelled) {
+      const processedImg = await manipulateAsync(result.uri, [{ resize }], {
+        base64: base64,
+        format: SaveFormat.JPEG,
+      });
+
       const uri = base64
-        ? `data:image/jpeg;base64,${result.base64}`
-        : result.uri;
+        ? `data:image/jpeg;base64,${processedImg.base64}`
+        : processedImg.uri;
+
       onSelectImage(uri);
     }
   }, [onSelectImage]);

@@ -60,7 +60,8 @@ export class TransactionService {
       });
 
       products.forEach((product) => {
-        product.stock -= transactionProducts[product.id].quantity;
+        if (!product.isAlwaysInStock)
+          product.stock -= transactionProducts[product.id].quantity;
       });
 
       await this.productRepository.save(products);
