@@ -113,7 +113,7 @@ const CategoryFlatList = (
   const { category } = props.route.params;
   const filteredProducts = productState.products.filter(
     (product: ProductData) => {
-      return product.categoryIds.includes(category.id);
+      return product.categoryIds?.includes(category.id);
     }
   );
 

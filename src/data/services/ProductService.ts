@@ -33,7 +33,7 @@ export class ProductService {
     }
 
     const product = this.ormRepository.create({
-      ...(categoryIds ? { categoryIds: categoryEntities } : {}),
+      ...(categoryIds ? { categories: categoryEntities } : {}),
       ...rest,
     });
 
