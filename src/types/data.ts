@@ -81,3 +81,25 @@ export type CreateTransactionData = {
   paymentType: PaymentType;
   products: CartItemData[];
 };
+
+// Payment Settings
+
+export type PaymentSettingsData = {
+  cash: boolean;
+  qris: boolean;
+  qrisImgUri?: string;
+};
+
+export type UpdatePaymentSettingsData = {
+  cash?: boolean;
+  qris?: boolean;
+  qrisImgUri?: string;
+};
+
+export type CombinedSettingsData = {
+  paymentSettings: PaymentSettingsData;
+};
+
+export type UpdateCombinedSettingsData = {
+  paymentSettings?: UpdatePaymentSettingsData;
+};

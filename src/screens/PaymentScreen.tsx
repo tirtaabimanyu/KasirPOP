@@ -28,6 +28,7 @@ const PaymentScreen = ({
   const theme = useTheme();
   const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
+  const { paymentSettings } = useAppSelector((state) => state.settings);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -35,6 +36,23 @@ const PaymentScreen = ({
   }, [cart.totalItem]);
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.CASH);
+  const availablePaymentTypes = [
+    {
+      value: PaymentType.CASH,
+      label: "Uang Tunai",
+      showSelectedCheck: true,
+    },
+    ...(paymentSettings?.qris
+      ? [
+          {
+            value: PaymentType.QRIS,
+            label: "QRIS",
+            showSelectedCheck: true,
+          },
+        ]
+      : []),
+  ];
+
   const [successDialogVisible, showSuccessDialog, hideSuccessDialog] =
     useDialog();
   const onPressCloseDialog = () => {
@@ -123,23 +141,26 @@ const PaymentScreen = ({
         contentContainerStyle={{ paddingBottom: 200, flexDirection: "row" }}
       >
         <View style={{ flex: 0.5, marginRight: 40 }}>
-          <SegmentedButtons
-            value={paymentType}
-            onValueChange={onPressPaymentType}
-            buttons={[
-              {
-                value: PaymentType.CASH,
-                label: "Uang Tunai",
-                showSelectedCheck: true,
-              },
-              {
-                value: PaymentType.QRIS,
-                label: "QRIS",
-                showSelectedCheck: true,
-              },
-            ]}
-            style={{ marginBottom: 16 }}
-          />
+          {availablePaymentTypes.length > 1 ? (
+            <SegmentedButtons
+              value={paymentType}
+              onValueChange={onPressPaymentType}
+              buttons={availablePaymentTypes}
+              style={{ marginBottom: 16 }}
+            />
+          ) : (
+            <Button
+              mode="outlined"
+              icon={"check"}
+              style={{
+                backgroundColor: theme.colors.secondaryContainer,
+                marginBottom: 16,
+              }}
+              textColor={theme.colors.onSecondaryContainer}
+            >
+              Uang Tunai
+            </Button>
+          )}
           <Card
             mode="outlined"
             contentStyle={{
@@ -181,7 +202,16 @@ const PaymentScreen = ({
           {paymentType == PaymentType.CASH ? (
             <NumericKeyboard onKeyPress={onPressNumericKeyboard} />
           ) : (
-            <View style={{ flex: 1, height: "100%" }}>
+            <View
+              style={{
+                flex: 1,
+                height: "100%",
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: theme.colors.outlineVariant,
+                overflow: "hidden",
+              }}
+            >
               <Image
                 style={{
                   flex: 1,
@@ -189,7 +219,7 @@ const PaymentScreen = ({
                   height: "100%",
                 }}
                 resizeMode="contain"
-                source={require("../helpers/QR_Static.png")}
+                source={{ uri: paymentSettings?.qrisImgUri }}
               />
             </View>
           )}

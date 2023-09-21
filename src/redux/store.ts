@@ -4,6 +4,7 @@ import { default as categoryReducer } from "./slices/categorySlice";
 import { default as productReducer } from "./slices/productSlice";
 import { default as layoutReducer } from "./slices/layoutSlice";
 import { default as transactionReducer } from "./slices/transactionSlice";
+import { default as settingsReducer } from "./slices/settingsSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     category: categoryReducer,
     layout: layoutReducer,
     transaction: transactionReducer,
+    settings: settingsReducer,
   },
 });
 

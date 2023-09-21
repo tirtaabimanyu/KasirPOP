@@ -1,6 +1,5 @@
 import { ProductData } from "../../types/data";
 import { ProductModel } from "../entities/ProductModel";
-import CategorySerializer from "./CategorySerializer";
 
 const ProductSerializer = class {
   static serialize = (product: ProductModel): ProductData => {

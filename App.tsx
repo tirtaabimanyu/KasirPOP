@@ -14,6 +14,7 @@ import { useAppDispatch } from "./src/hooks/typedStore";
 import { useEffect } from "react";
 import { fetchAllProducts } from "./src/redux/slices/productSlice";
 import { fetchAllCategories } from "./src/redux/slices/categorySlice";
+import { fetchSettings } from "./src/redux/slices/settingsSlice";
 
 const DataInit = ({
   children,
@@ -21,11 +22,13 @@ const DataInit = ({
   children: React.JSX.Element | React.JSX.Element[];
 }) => {
   const dispatch = useAppDispatch();
-  const { productService, categoryService } = useDatabaseConnection();
+  const { productService, categoryService, settingsService } =
+    useDatabaseConnection();
 
   useEffect(() => {
     dispatch(fetchAllProducts(productService));
     dispatch(fetchAllCategories(categoryService));
+    dispatch(fetchSettings(settingsService));
   }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>

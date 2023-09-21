@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { CategoryService } from "../../data/services/CategoryService";
 import CategorySerializer from "../../data/serializers/CategorySerializer";
 import { CategoryData, UpdateCategoryData } from "../../types/data";
-import { fetchAllProducts } from "./productSlice";
 import { DatabaseConnectionContextData } from "../../types/connection";
 
 export const fetchAllCategories = createAsyncThunk(

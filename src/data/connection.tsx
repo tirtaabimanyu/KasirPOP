@@ -14,6 +14,7 @@ import { CategoryService } from "./services/CategoryService";
 import { StyleSheet, View } from "react-native";
 import { DatabaseConnectionContextData } from "../types/connection";
 import { TransactionService } from "./services/TransactionService";
+import { SettingsService } from "./services/SettingsService";
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
@@ -56,6 +57,7 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
         productService: new ProductService(connection),
         categoryService: new CategoryService(connection),
         transactionService: new TransactionService(connection),
+        settingsService: new SettingsService(connection),
       }}
     >
       {children}
