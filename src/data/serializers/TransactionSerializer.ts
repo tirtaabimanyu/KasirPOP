@@ -4,9 +4,9 @@ import { TransactionModel } from "../entities/TransactionModel";
 const TransactionSerializer = class {
   static serialize = (transaction: TransactionModel): TransactionData => ({
     id: transaction.id,
-    createdAt: transaction.created_at.toISOString(),
-    totalPrice: transaction.total_price,
-    paymentType: transaction.payment_type,
+    createdAt: transaction.createdAt.toISOString(),
+    totalPrice: transaction.totalPrice,
+    paymentType: transaction.paymentType,
     products: transaction.products,
   });
 

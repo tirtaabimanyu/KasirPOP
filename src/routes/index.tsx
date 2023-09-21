@@ -46,7 +46,11 @@ const Header = ({ theme, options, navigation, back }: HeaderProps) => {
           onPress={navigation.goBack}
         />
       )}
-      <Text variant="headlineLarge">{options.title}</Text>
+      <Text variant="headlineLarge" style={{ flex: 1 }}>
+        {options.title}
+      </Text>
+      {options.headerRight &&
+        options.headerRight({ canGoBack: back != undefined })}
     </View>
   );
 };
@@ -124,6 +128,7 @@ const styles = (theme: MD3Theme) =>
       flexDirection: "row",
       alignItems: "center",
       backgroundColor: theme.colors.surface,
+      justifyContent: "space-between",
     },
     headerBackButton: {
       width: "auto",

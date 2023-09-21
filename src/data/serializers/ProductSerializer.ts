@@ -4,10 +4,6 @@ import CategorySerializer from "./CategorySerializer";
 
 const ProductSerializer = class {
   static serialize = (product: ProductModel): ProductData => {
-    const serializedCategories = CategorySerializer.serializeMany(
-      product.categories
-    );
-
     return {
       id: product.id,
       name: product.name,
@@ -15,7 +11,7 @@ const ProductSerializer = class {
       isAlwaysInStock: product.isAlwaysInStock,
       price: product.price,
       imgUri: product.imgUri,
-      categories: serializedCategories,
+      categoryIds: product.categories?.map((category) => category.id),
     };
   };
 

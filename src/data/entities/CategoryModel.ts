@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Generated,
   ManyToMany,
   PrimaryGeneratedColumn,
   Relation,
@@ -14,6 +15,9 @@ export class CategoryModel {
 
   @Column()
   name: string;
+
+  @Column()
+  displayOrder: number;
 
   @ManyToMany("ProductModel", "categories")
   products: Relation<ProductModel[]>;

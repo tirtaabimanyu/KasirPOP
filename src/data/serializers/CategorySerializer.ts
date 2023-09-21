@@ -5,6 +5,7 @@ const CategorySerializer = class {
   static serialize = (category: CategoryModel): CategoryData => ({
     id: category.id,
     name: category.name,
+    displayOrder: category.displayOrder,
   });
 
   static serializeMany = (

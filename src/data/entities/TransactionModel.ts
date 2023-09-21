@@ -7,17 +7,17 @@ export class TransactionModel {
   id: number;
 
   @Column("datetime", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
-  created_at: Date;
+  createdAt: Date;
 
   @Column()
-  total_price: number;
+  totalPrice: number;
 
   @Column({
     type: "simple-enum",
     enum: PaymentType,
     default: PaymentType.CASH,
   })
-  payment_type: PaymentType;
+  paymentType: PaymentType;
 
   @Column("simple-json")
   products: ProductSnapshotData[];

@@ -34,7 +34,7 @@ const UpdateProductScreen = ({
     isAlwaysInStock: [],
     price: [],
     imgUri: [],
-    categories: [],
+    categoryIds: [],
   };
   const [errors, setErrors] = useState(initialErrors);
 

@@ -1,10 +1,6 @@
 import { Between, DataSource, FindManyOptions, In, Repository } from "typeorm";
 import { TransactionModel } from "../entities/TransactionModel";
-import {
-  CreateTransactionData,
-  PaymentType,
-  ProductSnapshotData,
-} from "../../types/data";
+import { CreateTransactionData, ProductSnapshotData } from "../../types/data";
 import { ProductModel } from "../entities/ProductModel";
 
 export class TransactionService {
@@ -31,7 +27,7 @@ export class TransactionService {
     };
     if (options?.dateRange)
       query["where"] = {
-        created_at: Between(options.dateRange.start, options.dateRange.end),
+        createdAt: Between(options.dateRange.start, options.dateRange.end),
       };
     const transactions = await this.transactionRepository.find(query);
 
@@ -42,7 +38,9 @@ export class TransactionService {
     const queryRunner = await this.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
-    const transactionProducts = data.products.reduce((obj, product) => {
+    const { products, ...rest } = data;
+
+    const transactionProducts = products.reduce((obj, product) => {
       const { id, name, price, quantity } = product;
       obj[product.id] = { id, name, price, quantity };
       return obj;
@@ -50,8 +48,7 @@ export class TransactionService {
 
     let transaction = await this.transactionRepository.create({
       products: Object.values(transactionProducts),
-      total_price: data.totalPrice,
-      payment_type: data.paymentType,
+      ...rest,
     });
 
     try {

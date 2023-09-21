@@ -23,36 +23,36 @@ export class ProductService {
   }
 
   public async create(data: CreateProductData): Promise<ProductModel> {
-    const { categories, ...rest } = data;
+    const { categoryIds, ...rest } = data;
 
     let categoryEntities: CategoryModel[] = [];
-    if (categories) {
+    if (categoryIds) {
       categoryEntities = await this.categoryRepository.find({
-        where: { id: In(categories.map((category) => category.id)) },
+        where: { id: In(categoryIds) },
       });
     }
 
     const product = this.ormRepository.create({
+      ...(categoryIds ? { categoryIds: categoryEntities } : {}),
       ...rest,
-      ...(categories ? { category: categoryEntities } : {}),
     });
 
     return await this.ormRepository.save(product);
   }
 
   public async update(data: UpdateProductData): Promise<ProductModel> {
-    const { id, categories, ...rest } = data;
+    const { id, categoryIds, ...rest } = data;
 
     let categoryEntities: CategoryModel[] = [];
-    if (categories) {
+    if (categoryIds) {
       categoryEntities = await this.categoryRepository.find({
-        where: { id: In(categories.map((category) => category.id)) },
+        where: { id: In(categoryIds) },
       });
     }
 
     const product = await this.ormRepository.save({
-      id: data.id,
-      ...(categories ? { category: categoryEntities } : {}),
+      id,
+      ...(categoryIds ? { categories: categoryEntities } : {}),
       ...rest,
     });
 

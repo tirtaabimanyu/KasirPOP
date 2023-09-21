@@ -51,13 +51,13 @@ export const fetchTransactionSummary = createAsyncThunk(
       dateRange: payload.dateRange,
     });
     const cash = transactions.reduce((obj, transaction) => {
-      if (transaction.payment_type == PaymentType.CASH)
-        obj += transaction.total_price;
+      if (transaction.paymentType == PaymentType.CASH)
+        obj += transaction.totalPrice;
       return obj;
     }, 0);
     const qris = transactions.reduce((obj, transaction) => {
-      if (transaction.payment_type == PaymentType.QRIS)
-        obj += transaction.total_price;
+      if (transaction.paymentType == PaymentType.QRIS)
+        obj += transaction.totalPrice;
       return obj;
     }, 0);
     return { cash, qris };

@@ -102,7 +102,6 @@ const TransactionsScreen = ({
   NativeStackScreenProps<RootStackParamList, "home">
 >) => {
   const theme = useTheme();
-  const isScreenFocused = useIsFocused();
   const { transactionService } = useDatabaseConnection();
   const dispatch = useAppDispatch();
   const { summary, transactions } = useAppSelector(
@@ -162,7 +161,9 @@ const TransactionsScreen = ({
     setTransactionsDateEnd(new Date(todayDate));
   }, [todayDate]);
 
+  const isFocused = useIsFocused();
   useEffect(() => {
+    if (!isFocused) return;
     dispatch(
       fetchTransactionSummary({
         dateRange: summaryDateRange,
@@ -175,7 +176,7 @@ const TransactionsScreen = ({
         service: transactionService,
       })
     );
-  }, [isScreenFocused, summaryDateRange, transactionsDateRange]);
+  }, [isFocused, summaryDateRange, transactionsDateRange]);
 
   return (
     <View style={styles(theme).container}>

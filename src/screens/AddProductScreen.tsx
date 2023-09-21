@@ -27,7 +27,7 @@ const AddProductScreen = ({
     isAlwaysInStock: false,
     price: 0,
     imgUri: undefined,
-    categories: undefined,
+    categoryIds: undefined,
   };
   const [productData, setProductData] =
     useState<CreateProductData>(initialData);
@@ -41,7 +41,7 @@ const AddProductScreen = ({
     isAlwaysInStock: [],
     price: [],
     imgUri: [],
-    categories: [],
+    categoryIds: [],
   };
   const [errors, setErrors] = useState(initialErrors);
 

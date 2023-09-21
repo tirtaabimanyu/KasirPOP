@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitDatabase1695040925767 implements MigrationInterface {
-    name = 'InitDatabase1695040925767'
+export class InitDatabase1695274534011 implements MigrationInterface {
+    name = 'InitDatabase1695274534011'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "products" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "stock" integer NOT NULL, "isAlwaysInStock" boolean NOT NULL, "price" integer NOT NULL, "imgUri" varchar)`);
-        await queryRunner.query(`CREATE TABLE "categories" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL)`);
-        await queryRunner.query(`CREATE TABLE "transactions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime NOT NULL DEFAULT (CURRENT_TIMESTAMP), "total_price" integer NOT NULL, "payment_type" varchar CHECK( "payment_type" IN ('cash','qris') ) NOT NULL DEFAULT ('cash'), "products" text NOT NULL)`);
+        await queryRunner.query(`CREATE TABLE "categories" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "displayOrder" integer NOT NULL)`);
+        await queryRunner.query(`CREATE TABLE "transactions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "createdAt" datetime NOT NULL DEFAULT (CURRENT_TIMESTAMP), "totalPrice" integer NOT NULL, "paymentType" varchar CHECK( "paymentType" IN ('cash','qris') ) NOT NULL DEFAULT ('cash'), "products" text NOT NULL)`);
         await queryRunner.query(`CREATE TABLE "products_categories_categories" ("productsId" integer NOT NULL, "categoriesId" integer NOT NULL, PRIMARY KEY ("productsId", "categoriesId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_40e7da0284a5389344605de8da" ON "products_categories_categories" ("productsId") `);
         await queryRunner.query(`CREATE INDEX "IDX_e1d833224b5be535323207473f" ON "products_categories_categories" ("categoriesId") `);

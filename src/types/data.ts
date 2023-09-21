@@ -7,7 +7,7 @@ export type ProductData = {
   isAlwaysInStock: boolean;
   price: number;
   imgUri?: string;
-  categories?: CategoryData[];
+  categoryIds: number[];
 };
 
 export type ProductStockData = { isAlwaysInStock: boolean; stock: number };
@@ -18,7 +18,7 @@ export type CreateProductData = {
   isAlwaysInStock: boolean;
   price: number;
   imgUri?: string;
-  categories?: CategoryData[];
+  categoryIds?: number[];
 };
 
 export type UpdateProductData = {
@@ -28,7 +28,7 @@ export type UpdateProductData = {
   isAlwaysInStock?: boolean;
   price?: number;
   imgUri?: string;
-  categories?: CategoryData[];
+  categoryIds?: number[];
 };
 
 // Category
@@ -36,10 +36,18 @@ export type UpdateProductData = {
 export type CategoryData = {
   id: number;
   name: string;
+  displayOrder: number;
 };
 
 export type CreateCategoryData = {
   name: string;
+  displayOrder: number;
+};
+
+export type UpdateCategoryData = {
+  id: number;
+  name?: string;
+  displayOrder?: number;
 };
 
 // Transaction

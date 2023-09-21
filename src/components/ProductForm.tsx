@@ -34,35 +34,28 @@ const ProductForm = (props: ProductFormProps) => {
     isAlwaysInStock: false,
     price: false,
     imgUri: false,
-    categories: false,
+    categoryIds: false,
   };
   const [isDirty, setIsDirty] = useState(initialIsDirty);
 
   const toggleCategory = useCallback(
     (category: CategoryData) => {
-      setIsDirty((state) => ({ ...state, categories: true }));
+      setIsDirty((state) => ({ ...state, categoryIds: true }));
       props.setProductData((state) => {
-        if (
-          props.productData.categories?.some(
-            (selectedCategory) => selectedCategory.id == category.id
-          )
-        ) {
-          const newCategories = state.categories?.filter(
-            (selectedCategory) => selectedCategory.id != category.id
+        if (props.productData.categoryIds?.includes(category.id)) {
+          const newCategoryIds = state.categoryIds?.filter(
+            (selectedCategoryId) => selectedCategoryId != category.id
           );
           return {
             ...state,
-            categories: newCategories,
+            categoryIds: newCategoryIds,
           };
         } else {
-          const newCategories = state.categories
-            ? [
-                ...state.categories,
-                { id: category.id, name: category.name },
-              ].sort((a, b) => a.id - b.id)
-            : [{ id: category.id, name: category.name }];
+          const newCategoryIds = state.categoryIds
+            ? [...state.categoryIds, category.id].sort()
+            : [category.id];
 
-          return { ...state, categories: newCategories };
+          return { ...state, categoryIds: newCategoryIds };
         }
       });
     },
@@ -120,8 +113,8 @@ const ProductForm = (props: ProductFormProps) => {
         </Text>
         <View style={[styles(theme).row, { justifyContent: "flex-start" }]}>
           {props.categories.map((category, idx) => {
-            const isSelected = props.productData.categories?.some(
-              (selectedCategory) => selectedCategory.id == category.id
+            const isSelected = props.productData.categoryIds?.includes(
+              category.id
             );
             return (
               <Chip
