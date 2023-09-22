@@ -5,16 +5,15 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { ActivityIndicator } from "react-native-paper";
 import { DataSource } from "typeorm";
 
 import { AppDataSource } from "./app-data-source";
 import { ProductService } from "./services/ProductService";
 import { CategoryService } from "./services/CategoryService";
-import { StyleSheet, View } from "react-native";
 import { DatabaseConnectionContextData } from "../types/connection";
 import { TransactionService } from "./services/TransactionService";
 import { SettingsService } from "./services/SettingsService";
+import FullscreenSpinner from "../components/FullscreenSpinner";
 
 const DatabaseConnectionContext = createContext<DatabaseConnectionContextData>(
   {} as DatabaseConnectionContextData
@@ -38,17 +37,7 @@ export const DatabaseConnectionProvider: React.FC<PropsWithChildren> = ({
   }, [AppDataSource]);
 
   if (!connection) {
-    return (
-      <View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-    );
+    return <FullscreenSpinner />;
   }
 
   return (

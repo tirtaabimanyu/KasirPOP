@@ -7,6 +7,7 @@ export type RootStackParamList = {
   addProduct: undefined;
   updateProduct: { productData: ProductData };
   category: undefined;
+  storeSettings: undefined;
   paymentType: undefined;
 };
 

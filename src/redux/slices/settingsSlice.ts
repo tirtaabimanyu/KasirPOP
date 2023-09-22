@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { SettingsService } from "../../data/services/SettingsService";
 import SettingsSerializer from "../../data/serializers/SettingsSerializer";
 import {
-  CombinedSettingsData,
   PaymentSettingsData,
+  StoreSettingsData,
   UpdateCombinedSettingsData,
 } from "../../types/data";
 
@@ -29,6 +29,7 @@ export const updateSettings = createAsyncThunk(
 );
 
 export type SettingsState = {
+  storeSettings?: StoreSettingsData;
   paymentSettings?: PaymentSettingsData;
 };
 

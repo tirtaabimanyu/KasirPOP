@@ -70,6 +70,7 @@ const SettingsScreen = ({
           title="Informasi Toko"
           left={(props) => <List.Icon {...props} icon={"store-edit-outline"} />}
           right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+          onPress={() => navigation.navigate("storeSettings")}
         />
       </Card>
     </ScrollView>

@@ -22,6 +22,8 @@ import UpdateProductScreen from "../screens/UpdateProductScreen";
 import { RootStackParamList } from "../types/routes";
 import CategoryScreen from "../screens/CategoryScreen";
 import PaymentTypeScreen from "../screens/PaymentTypeScreen";
+import StoreSettingsScreen from "../screens/StoreSettingsScreen";
+import { useAppSelector } from "../hooks/typedStore";
 
 enableScreens();
 enableFreeze();
@@ -65,6 +67,7 @@ const Router = () => {
       ...DefaultTheme.colors,
     },
   };
+  const { storeSettings } = useAppSelector((state) => state.settings);
 
   return (
     <NavigationContainer theme={CombinedTheme}>
@@ -73,7 +76,7 @@ const Router = () => {
           contentStyle: styles(theme).card,
           header: (props) => <Header {...props} theme={theme} />,
         }}
-        initialRouteName="home"
+        initialRouteName={storeSettings == undefined ? "storeSettings" : "home"}
       >
         <Stack.Screen
           name="home"
@@ -104,6 +107,11 @@ const Router = () => {
           name="category"
           component={CategoryScreen}
           options={{ title: "Etalase" }}
+        />
+        <Stack.Screen
+          name="storeSettings"
+          component={StoreSettingsScreen}
+          options={{ title: "Informasi Toko" }}
         />
         <Stack.Screen
           name="paymentType"

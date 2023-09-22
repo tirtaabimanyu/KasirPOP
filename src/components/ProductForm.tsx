@@ -81,7 +81,7 @@ const ProductForm = (props: ProductFormProps) => {
             setIsDirty((state) => ({ ...state, imgUri: true }));
             props.setProductData((state) => ({ ...state, imgUri: uri }));
           }}
-          resize={{ width: 50, height: 50 }}
+          resize={{ width: 40, height: 40 }}
           base64
         />
       </View>

@@ -45,8 +45,8 @@ const AddProductScreen = ({
   };
   const [errors, setErrors] = useState(initialErrors);
 
-  const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const canSubmit = JSON.stringify(initialErrors) == JSON.stringify(errors);
+  const [canNavigate, setCanNavigate] = useState(false);
 
   const createItem = useCallback(async () => {
     dispatch(
@@ -58,8 +58,8 @@ const AddProductScreen = ({
       dispatch(
         showSnackbar({ message: `${productData.name} telah ditambahkan.` })
       );
-      setSubmitSuccess(true);
-      navigation.navigate("home", { screen: "inventory" });
+      setCanNavigate(true);
+      navigation.goBack();
     });
   }, [productData, productService, navigation]);
 
@@ -79,7 +79,7 @@ const AddProductScreen = ({
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      if (!hasUnsavedChanges || backAlertVisible || submitSuccess) {
+      if (!hasUnsavedChanges || backAlertVisible || canNavigate) {
         return;
       }
       e.preventDefault();
@@ -91,7 +91,7 @@ const AddProductScreen = ({
     hasUnsavedChanges,
     backAlertVisible,
     showBackAlert,
-    submitSuccess,
+    canNavigate,
   ]);
 
   return (
@@ -136,7 +136,7 @@ const AddProductScreen = ({
         mode="contained"
         style={styles(theme).saveButton}
         onPress={createItem}
-        disabled={canSubmit}
+        disabled={!canSubmit}
       >
         Simpan
       </Button>

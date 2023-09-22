@@ -82,7 +82,7 @@ export type CreateTransactionData = {
   products: CartItemData[];
 };
 
-// Payment Settings
+// Settings
 
 export type PaymentSettingsData = {
   cash: boolean;
@@ -96,10 +96,19 @@ export type UpdatePaymentSettingsData = {
   qrisImgUri?: string;
 };
 
+export type StoreSettingsData = {
+  name: string;
+  logoImgUri?: string;
+  address?: string;
+  phoneNumber?: string;
+};
+
 export type CombinedSettingsData = {
+  storeSettings: StoreSettingsData;
   paymentSettings: PaymentSettingsData;
 };
 
 export type UpdateCombinedSettingsData = {
+  storeSettings?: StoreSettingsData;
   paymentSettings?: UpdatePaymentSettingsData;
 };

@@ -38,7 +38,7 @@ const UpdateProductScreen = ({
   };
   const [errors, setErrors] = useState(initialErrors);
 
-  const canSubmit = JSON.stringify(initialErrors) !== JSON.stringify(errors);
+  const canSubmit = JSON.stringify(initialErrors) == JSON.stringify(errors);
   const [canNavigate, setCanNavigate] = useState(false);
 
   const updateItem = useCallback(async () => {
@@ -69,7 +69,7 @@ const UpdateProductScreen = ({
           message: `${route.params.productData.name} telah dihapus`,
         })
       );
-      navigation.navigate("home", { screen: "inventory" });
+      navigation.goBack();
     });
   }, [productService]);
 
@@ -183,7 +183,7 @@ const UpdateProductScreen = ({
           mode="contained"
           style={styles(theme).saveButton}
           onPress={updateItem}
-          disabled={canSubmit}
+          disabled={!canSubmit}
         >
           Simpan
         </Button>

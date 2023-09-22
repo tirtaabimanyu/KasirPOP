@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { PaperProvider, MD3LightTheme, useTheme } from "react-native-paper";
+import { PaperProvider, MD3LightTheme } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 
@@ -11,29 +11,38 @@ import {
 } from "./src/data/connection";
 import GlobalSnackbar from "./src/components/GlobalSnackbar";
 import { useAppDispatch } from "./src/hooks/typedStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchAllProducts } from "./src/redux/slices/productSlice";
 import { fetchAllCategories } from "./src/redux/slices/categorySlice";
 import { fetchSettings } from "./src/redux/slices/settingsSlice";
+import FullscreenSpinner from "./src/components/FullscreenSpinner";
 
 const DataInit = ({
   children,
 }: {
   children: React.JSX.Element | React.JSX.Element[];
 }) => {
+  const [isReady, setIsReady] = useState(false);
   const dispatch = useAppDispatch();
   const { productService, categoryService, settingsService } =
     useDatabaseConnection();
 
   useEffect(() => {
-    dispatch(fetchAllProducts(productService));
-    dispatch(fetchAllCategories(categoryService));
-    dispatch(fetchSettings(settingsService));
+    const fetch = async () => {
+      await dispatch(fetchAllProducts(productService));
+      await dispatch(fetchAllCategories(categoryService));
+      await dispatch(fetchSettings(settingsService));
+      setIsReady(true);
+    };
+
+    fetch();
   }, []);
-  return (
+  return isReady ? (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       {children}
     </SafeAreaView>
+  ) : (
+    <FullscreenSpinner />
   );
 };
 
