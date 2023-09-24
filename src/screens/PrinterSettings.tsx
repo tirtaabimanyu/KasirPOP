@@ -11,10 +11,14 @@ import {
   TextProps,
   useTheme,
 } from "react-native-paper";
-import { useAppSelector } from "../hooks/typedStore";
+import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import Row from "../components/Row";
 import { ScrollView } from "react-native-gesture-handler";
 import { useState } from "react";
+import { updateSettings } from "../redux/slices/settingsSlice";
+import { useDatabaseConnection } from "../data/connection";
+import { showSnackbar } from "../redux/slices/layoutSlice";
+import { PaperSize } from "../types/data";
 
 const lineBreak = (
   charactersPerLine: number,
@@ -107,18 +111,28 @@ const FixedWidthText = (props: FixedWidthTextProps) => {
 
 const PrinterSettings = () => {
   const theme = useTheme();
-  const { storeSettings } = useAppSelector((state) => state.settings);
+  const dispatch = useAppDispatch();
+  const { settingsService } = useDatabaseConnection();
+  const { storeSettings, printerSettings } = useAppSelector(
+    (state) => state.settings
+  );
 
-  const paperSize = [57, 58, 80];
-  const [receiptSettings, setReceiptSettings] = useState({
-    showLogo: storeSettings?.logoImgUri ? true : false,
-    paperSize: 57,
-    additionalFooter: "",
+  const [newPrinterSettings, setNewPrinterSettings] = useState({
+    showLogo: printerSettings.showLogo,
+    paperSize: printerSettings.paperSize,
+    receiptFooter: printerSettings.receiptFooter,
   });
+
+  const paperSize = [
+    PaperSize.FIFTY_SEVEN,
+    PaperSize.FIFTY_EIGHT,
+    PaperSize.EIGHTY,
+  ];
+
   const charactersPerLine =
-    receiptSettings.paperSize == 57
+    newPrinterSettings.paperSize == PaperSize.FIFTY_SEVEN
       ? 30
-      : receiptSettings.paperSize == 58
+      : newPrinterSettings.paperSize == PaperSize.FIFTY_EIGHT
       ? 32
       : 48;
 
@@ -160,20 +174,34 @@ const PrinterSettings = () => {
       charactersPerLine,
       "right"
     ),
-    ...(receiptSettings.additionalFooter.length > 0
+    ...(newPrinterSettings.receiptFooter.length > 0
       ? [
           lineBreak(charactersPerLine, "-"),
-          breakWord(receiptSettings.additionalFooter, charactersPerLine),
+          breakWord(newPrinterSettings.receiptFooter, charactersPerLine),
         ]
       : []),
   ];
 
+  const saveSettings = () => {
+    dispatch(
+      updateSettings({
+        data: { printerSettings: newPrinterSettings },
+        service: settingsService,
+      })
+    ).then(() => {
+      dispatch(showSnackbar({ message: "Pengaturan struk telah diperbarui" }));
+    });
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles(theme).container}>
+    <ScrollView
+      contentContainerStyle={styles(theme).container}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles(theme).leftContainer}>
         <View style={styles(theme).receiptPreview}>
           <View style={{ alignItems: "center" }}>
-            {receiptSettings.showLogo && (
+            {newPrinterSettings.showLogo && (
               <>
                 <Image
                   source={{ uri: storeSettings?.logoImgUri }}
@@ -188,7 +216,6 @@ const PrinterSettings = () => {
                 </FixedWidthText>
               </>
             )}
-
             {content.map((text, idx) => (
               <FixedWidthText
                 key={`receiptContent-${idx}`}
@@ -227,9 +254,9 @@ const PrinterSettings = () => {
           <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
             <Text variant="bodyMedium">Tampilkan Logo Toko</Text>
             <Switch
-              value={receiptSettings.showLogo}
+              value={newPrinterSettings.showLogo}
               onValueChange={() =>
-                setReceiptSettings((state) => ({
+                setNewPrinterSettings((state) => ({
                   ...state,
                   showLogo: !state.showLogo,
                 }))
@@ -243,7 +270,7 @@ const PrinterSettings = () => {
             </Text>
             <Row>
               {paperSize.map((size) => {
-                const isSelected = receiptSettings.paperSize == size;
+                const isSelected = newPrinterSettings.paperSize == size;
                 return (
                   <Chip
                     key={`papersize-${size}`}
@@ -257,7 +284,7 @@ const PrinterSettings = () => {
                       },
                     ]}
                     onPress={() =>
-                      setReceiptSettings((state) => ({
+                      setNewPrinterSettings((state) => ({
                         ...state,
                         paperSize: size,
                       }))
@@ -276,15 +303,19 @@ const PrinterSettings = () => {
             mode="outlined"
             label={"Informasi Footer (Opsional)"}
             style={{ marginBottom: 16 }}
-            value={receiptSettings.additionalFooter}
+            value={newPrinterSettings.receiptFooter}
             onChangeText={(text) =>
-              setReceiptSettings((state) => ({
+              setNewPrinterSettings((state) => ({
                 ...state,
-                additionalFooter: text,
+                receiptFooter: text,
               }))
             }
           />
-          <Button mode="contained" style={{ alignSelf: "center" }}>
+          <Button
+            mode="contained"
+            style={{ alignSelf: "center" }}
+            onPress={saveSettings}
+          >
             Simpan
           </Button>
         </Card>
@@ -331,7 +362,6 @@ const styles = (theme: MD3Theme) =>
       flexDirection: "row",
     },
     leftContainer: {
-      //   maxWidth: 300,
       marginRight: 32,
     },
     rightContainer: {
@@ -342,7 +372,6 @@ const styles = (theme: MD3Theme) =>
       padding: 16,
       fontFamily: "monospace",
       alignSelf: "center",
-      //   maxWidth: 300,
       borderWidth: 1,
       borderColor: theme.colors.outlineVariant,
       marginBottom: 24,

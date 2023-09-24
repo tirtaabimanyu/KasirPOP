@@ -43,7 +43,7 @@ const PaymentScreen = ({
       label: "Uang Tunai",
       showSelectedCheck: true,
     },
-    ...(paymentSettings?.qris
+    ...(paymentSettings.qris
       ? [
           {
             value: PaymentType.QRIS,
@@ -223,7 +223,7 @@ const PaymentScreen = ({
                   height: "100%",
                 }}
                 resizeMode="contain"
-                source={{ uri: paymentSettings?.qrisImgUri }}
+                source={{ uri: paymentSettings.qrisImgUri }}
               />
             </View>
           )}

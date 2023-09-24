@@ -1,28 +1,26 @@
-import { DataSource, In, Repository } from "typeorm";
-import { CategoryModel } from "../entities/CategoryModel";
-import {
-  CategoryData,
-  CombinedSettingsData,
-  CreateCategoryData,
-  UpdateCategoryData,
-  UpdateCombinedSettingsData,
-} from "../../types/data";
+import { DataSource, Repository } from "typeorm";
+import { UpdateCombinedSettingsData } from "../../types/data";
 import { PaymentSettingsModel } from "../entities/PaymentSettingsModel";
 import { StoreSettingsModel } from "../entities/StoreSettingsModel";
+import { PrinterSettingsModel } from "../entities/PrinterSettingsModel";
 
 export type CombinedSettingsModel = {
   storeSettings?: StoreSettingsModel;
   paymentSettings: PaymentSettingsModel;
+  printerSettings: PrinterSettingsModel;
 };
 
 export class SettingsService {
   private storeSettingsRepository: Repository<StoreSettingsModel>;
   private paymentSettingsRepository: Repository<PaymentSettingsModel>;
+  private printerSettingsRepository: Repository<PrinterSettingsModel>;
 
   constructor(connection: DataSource) {
     this.storeSettingsRepository = connection.getRepository(StoreSettingsModel);
     this.paymentSettingsRepository =
       connection.getRepository(PaymentSettingsModel);
+    this.printerSettingsRepository =
+      connection.getRepository(PrinterSettingsModel);
   }
 
   private async getSettings(): Promise<CombinedSettingsModel> {
@@ -36,7 +34,15 @@ export class SettingsService {
       );
     }
 
-    return { storeSettings, paymentSettings };
+    let printerSettings = (await this.printerSettingsRepository.find())[0];
+    if (printerSettings == undefined) {
+      printerSettings = this.printerSettingsRepository.create();
+      printerSettings = await this.printerSettingsRepository.save(
+        printerSettings
+      );
+    }
+
+    return { storeSettings, paymentSettings, printerSettings };
   }
 
   public async get(): Promise<CombinedSettingsModel> {
@@ -64,6 +70,13 @@ export class SettingsService {
         })
       : settings.paymentSettings;
 
-    return { storeSettings, paymentSettings };
+    const printerSettings = data.printerSettings
+      ? await this.printerSettingsRepository.save({
+          id: settings.printerSettings.id,
+          ...data.printerSettings,
+        })
+      : settings.printerSettings;
+
+    return { storeSettings, paymentSettings, printerSettings };
   }
 }

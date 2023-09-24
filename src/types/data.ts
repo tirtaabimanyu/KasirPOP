@@ -90,6 +90,12 @@ export type CreateTransactionData = {
 
 // Settings
 
+export enum PaperSize {
+  FIFTY_SEVEN = 57,
+  FIFTY_EIGHT = 58,
+  EIGHTY = 80,
+}
+
 export type PaymentSettingsData = {
   cash: boolean;
   qris: boolean;
@@ -109,12 +115,39 @@ export type StoreSettingsData = {
   phoneNumber?: string;
 };
 
+export type UpdateStoreSettingsData = {
+  name?: string;
+  logoImgUri?: string;
+  address?: string;
+  phoneNumber?: string;
+};
+
+export type PrinterSettingsData = {
+  printerName?: string;
+  printerIdentifier?: string;
+  receiptFooter: string;
+  paperSize: number;
+  showLogo: boolean;
+  showQueueNumber: boolean;
+};
+
+export type UpdatePrinterSettingsData = {
+  printerName?: string;
+  printerIdentifier?: string;
+  receiptFooter?: string;
+  paperSize?: number;
+  showLogo?: boolean;
+  showQueueNumber?: boolean;
+};
+
 export type CombinedSettingsData = {
   storeSettings?: StoreSettingsData;
   paymentSettings: PaymentSettingsData;
+  printerSettings: PrinterSettingsData;
 };
 
 export type UpdateCombinedSettingsData = {
-  storeSettings?: StoreSettingsData;
+  storeSettings?: UpdateStoreSettingsData;
   paymentSettings?: UpdatePaymentSettingsData;
+  printerSettings?: UpdatePrinterSettingsData;
 };

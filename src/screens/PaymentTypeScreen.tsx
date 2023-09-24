@@ -124,7 +124,7 @@ const PaymentTypeScreen = ({
   const [qrisImage, showQrisImage, hideQrisImage] = useDialog();
 
   const toggleQris = () => {
-    const qrisChecked = settingsState.paymentSettings?.qris;
+    const qrisChecked = settingsState.paymentSettings.qris;
     const newState: UpdateCombinedSettingsData = {
       ...settingsState,
       paymentSettings: {
@@ -163,12 +163,12 @@ const PaymentTypeScreen = ({
         visible={uploadQrisDialog}
         onDismiss={hideUploadQrisDialog}
         onSave={uploadQrisImg}
-        imgUri={settingsState.paymentSettings?.qrisImgUri}
+        imgUri={settingsState.paymentSettings.qrisImgUri}
       />
       <ShowQrisImageDialog
         visible={qrisImage}
         onDismiss={hideQrisImage}
-        uri={settingsState.paymentSettings?.qrisImgUri}
+        uri={settingsState.paymentSettings.qrisImgUri}
         theme={theme}
       />
       <Card
@@ -186,7 +186,7 @@ const PaymentTypeScreen = ({
               <Checkbox
                 {...props}
                 status={
-                  settingsState.paymentSettings?.cash ? "checked" : "unchecked"
+                  settingsState.paymentSettings.cash ? "checked" : "unchecked"
                 }
                 disabled
               />
@@ -209,16 +209,16 @@ const PaymentTypeScreen = ({
               <Checkbox
                 {...props}
                 status={
-                  settingsState.paymentSettings?.qris ? "checked" : "unchecked"
+                  settingsState.paymentSettings.qris ? "checked" : "unchecked"
                 }
                 color={theme.colors.primary}
                 onPress={toggleQris}
-                disabled={!settingsState.paymentSettings?.qrisImgUri}
+                disabled={!settingsState.paymentSettings.qrisImgUri}
               />
             </View>
           )}
           right={(props) =>
-            settingsState.paymentSettings?.qrisImgUri ? (
+            settingsState.paymentSettings.qrisImgUri ? (
               <Row>
                 <Button mode="text" {...props} onPress={showQrisImage}>
                   Lihat QRIS

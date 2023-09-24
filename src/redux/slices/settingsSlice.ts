@@ -3,6 +3,7 @@ import { SettingsService } from "../../data/services/SettingsService";
 import SettingsSerializer from "../../data/serializers/SettingsSerializer";
 import {
   PaymentSettingsData,
+  PrinterSettingsData,
   StoreSettingsData,
   UpdateCombinedSettingsData,
 } from "../../types/data";
@@ -30,10 +31,19 @@ export const updateSettings = createAsyncThunk(
 
 export type SettingsState = {
   storeSettings?: StoreSettingsData;
-  paymentSettings?: PaymentSettingsData;
+  paymentSettings: PaymentSettingsData;
+  printerSettings: PrinterSettingsData;
 };
 
-const initialState: SettingsState = {};
+const initialState: SettingsState = {
+  paymentSettings: { cash: false, qris: false },
+  printerSettings: {
+    receiptFooter: "",
+    paperSize: 58,
+    showLogo: false,
+    showQueueNumber: false,
+  },
+};
 
 export const settingsSlice = createSlice({
   name: "category",

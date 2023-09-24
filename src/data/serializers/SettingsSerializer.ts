@@ -18,6 +18,14 @@ const SettingsSerializer = class {
       qris: data.paymentSettings.qris,
       qrisImgUri: data.paymentSettings.qrisImgUri,
     },
+    printerSettings: {
+      printerName: data.printerSettings.printerName,
+      printerIdentifier: data.printerSettings.printerIdentifier,
+      receiptFooter: data.printerSettings.receiptFooter,
+      paperSize: data.printerSettings.paperSize,
+      showLogo: data.printerSettings.showLogo,
+      showQueueNumber: data.printerSettings.showQueueNumber,
+    },
   });
 
   static serializeMany = (
