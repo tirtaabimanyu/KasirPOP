@@ -56,6 +56,7 @@ const SettingsScreen = ({
           title="Struk & Printer"
           left={(props) => <List.Icon {...props} icon={"printer-pos"} />}
           right={(props) => <List.Icon {...props} icon={"menu-right"} />}
+          onPress={() => navigation.navigate("printerSettings")}
         />
       </Card>
       <Card

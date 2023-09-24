@@ -96,7 +96,7 @@ const UploadQrisDialog = ({
           imgUri={newImgUri}
           onSelectImage={setNewImgUri}
           onRemoveImage={() => setNewImgUri(undefined)}
-          resize={{ height: 600, width: 420 }}
+          resize={{ height: 1000, width: 700 }}
         />
       </BaseDialog.Content>
       <BaseDialog.Actions>

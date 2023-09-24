@@ -14,6 +14,7 @@ type InputImagePickerProp = {
   base64?: boolean;
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
+  saveFormat?: SaveFormat.JPEG | SaveFormat.PNG;
 };
 const InputImagePicker = ({
   imgUri,
@@ -23,6 +24,7 @@ const InputImagePicker = ({
   base64 = false,
   style,
   contentStyle,
+  saveFormat = SaveFormat.JPEG,
 }: InputImagePickerProp) => {
   const theme = useTheme();
   const displayedImage = imgUri ? { uri: imgUri } : placeholderImage;
@@ -37,7 +39,7 @@ const InputImagePicker = ({
     if (!result.cancelled) {
       const processedImg = await manipulateAsync(result.uri, [{ resize }], {
         base64: base64,
-        format: SaveFormat.JPEG,
+        format: saveFormat,
       });
 
       const uri = base64

@@ -19,6 +19,7 @@ import { showSnackbar } from "../redux/slices/layoutSlice";
 import { StoreSettingsData } from "../types/data";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
+import { SaveFormat } from "expo-image-manipulator";
 
 const StoreSettingsScreen = (
   props: NativeStackScreenProps<RootStackParamList, "storeSettings">
@@ -144,8 +145,9 @@ const StoreSettingsScreen = (
               setIsDirty((state) => ({ ...state, logoImgUri: true }));
               setNewStoreSettings((state) => ({ ...state, logoImgUri: uri }));
             }}
-            resize={{ width: 50, height: 50 }}
+            resize={{ width: 100, height: 100 }}
             base64
+            saveFormat={SaveFormat.PNG}
           />
         </View>
         <View style={styles(theme).formItem}>
