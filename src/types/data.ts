@@ -72,14 +72,20 @@ export type TransactionData = {
   id: number;
   createdAt: string;
   totalPrice: number;
+  moneyReceived: number;
+  change: number;
   paymentType: PaymentType;
   products: ProductSnapshotData[];
+  queueNumber: number;
 };
 
 export type CreateTransactionData = {
   totalPrice: number;
+  moneyReceived: number;
+  change: number;
   paymentType: PaymentType;
   products: CartItemData[];
+  queueNumber: number;
 };
 
 // Settings
@@ -104,7 +110,7 @@ export type StoreSettingsData = {
 };
 
 export type CombinedSettingsData = {
-  storeSettings: StoreSettingsData;
+  storeSettings?: StoreSettingsData;
   paymentSettings: PaymentSettingsData;
 };
 

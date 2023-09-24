@@ -1,13 +1,10 @@
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
   Checkbox,
-  Divider,
   List,
   MD3Theme,
-  Modal,
-  Portal,
   Text,
   useTheme,
 } from "react-native-paper";
@@ -21,10 +18,7 @@ import Row from "../components/Row";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { useDatabaseConnection } from "../data/connection";
 import { updateSettings } from "../redux/slices/settingsSlice";
-import {
-  CombinedSettingsData,
-  UpdateCombinedSettingsData,
-} from "../types/data";
+import { UpdateCombinedSettingsData } from "../types/data";
 import { showSnackbar } from "../redux/slices/layoutSlice";
 
 const ShowQrisImageDialog = ({

@@ -14,6 +14,14 @@ export class TransactionService {
     this.productRepository = connection.getRepository(ProductModel);
   }
 
+  public async countByDate(dateRange: { start: Date; end: Date }) {
+    return await this.transactionRepository.count({
+      where: {
+        createdAt: Between(dateRange.start, dateRange.end),
+      },
+    });
+  }
+
   public async getAll(options?: {
     dateRange?: {
       start: Date;

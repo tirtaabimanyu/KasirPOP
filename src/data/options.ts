@@ -7,6 +7,7 @@ import { StoreSettingsModel } from "./entities/StoreSettingsModel";
 import { InitDatabase1695274534011 } from "./migrations/1695274534011-init-database";
 import { AddPaymentSettings1695283462638 } from "./migrations/1695283462638-add-payment-settings";
 import { AddStoreSettings1695372133911 } from "./migrations/1695372133911-add-store-settings";
+import { AddReceiptDetailsToTransactions1695539034773 } from "./migrations/1695539034773-add-receipt-details-to-transactions";
 
 export const CommonDataSourceOptions = {
   entities: [
@@ -20,5 +21,6 @@ export const CommonDataSourceOptions = {
     InitDatabase1695274534011,
     AddPaymentSettings1695283462638,
     AddStoreSettings1695372133911,
+    AddReceiptDetailsToTransactions1695539034773,
   ],
 };

@@ -28,6 +28,7 @@ const StoreSettingsScreen = (
   const dispatch = useAppDispatch();
   const { settingsService } = useDatabaseConnection();
   const { storeSettings } = useAppSelector((state) => state.settings);
+
   const [newStoreSettings, setNewStoreSettings] = useState(storeSettings);
 
   const hasUnsavedChanges =

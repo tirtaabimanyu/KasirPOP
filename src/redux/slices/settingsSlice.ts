@@ -41,10 +41,10 @@ export const settingsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchSettings.fulfilled, (state, action) => {
-      return action.payload;
+      return { ...state, ...action.payload };
     });
     builder.addCase(updateSettings.fulfilled, (state, action) => {
-      return action.payload;
+      return { ...state, ...action.payload };
     });
   },
 });

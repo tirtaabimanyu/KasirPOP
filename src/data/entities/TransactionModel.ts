@@ -12,6 +12,12 @@ export class TransactionModel {
   @Column()
   totalPrice: number;
 
+  @Column()
+  moneyReceived: number;
+
+  @Column()
+  change: number;
+
   @Column({
     type: "simple-enum",
     enum: PaymentType,
@@ -21,4 +27,7 @@ export class TransactionModel {
 
   @Column("simple-json")
   products: ProductSnapshotData[];
+
+  @Column()
+  queueNumber: number;
 }

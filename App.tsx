@@ -16,6 +16,7 @@ import { fetchAllProducts } from "./src/redux/slices/productSlice";
 import { fetchAllCategories } from "./src/redux/slices/categorySlice";
 import { fetchSettings } from "./src/redux/slices/settingsSlice";
 import FullscreenSpinner from "./src/components/FullscreenSpinner";
+import { fetchQueueNumber } from "./src/redux/slices/transactionSlice";
 
 const DataInit = ({
   children,
@@ -24,14 +25,21 @@ const DataInit = ({
 }) => {
   const [isReady, setIsReady] = useState(false);
   const dispatch = useAppDispatch();
-  const { productService, categoryService, settingsService } =
-    useDatabaseConnection();
+  const {
+    productService,
+    categoryService,
+    settingsService,
+    transactionService,
+  } = useDatabaseConnection();
 
   useEffect(() => {
     const fetch = async () => {
       await dispatch(fetchAllProducts(productService));
       await dispatch(fetchAllCategories(categoryService));
       await dispatch(fetchSettings(settingsService));
+      await dispatch(
+        fetchQueueNumber({ date: new Date(), service: transactionService })
+      );
       setIsReady(true);
     };
 

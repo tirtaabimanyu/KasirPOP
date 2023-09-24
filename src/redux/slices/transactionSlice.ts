@@ -64,17 +64,32 @@ export const fetchTransactionSummary = createAsyncThunk(
   }
 );
 
+export const fetchQueueNumber = createAsyncThunk(
+  "transaction/fetchQueueNumber",
+  async (payload: { date: Date; service: TransactionService }) => {
+    const dateRange = {
+      start: new Date(payload.date.setHours(0, 0, 0, 0)),
+      end: new Date(payload.date.setHours(23, 59, 59, 999)),
+    };
+    const result = await payload.service.countByDate(dateRange);
+
+    return result + 1;
+  }
+);
+
 export type TransactionState = {
   transactions: TransactionData[];
   summary: {
     cash: number;
     qris: number;
   };
+  nextQueue: number;
 };
 
 const initialState: TransactionState = {
   transactions: [],
   summary: { cash: 0, qris: 0 },
+  nextQueue: 0,
 };
 
 export const transactionSlice = createSlice({
@@ -88,6 +103,12 @@ export const transactionSlice = createSlice({
     builder.addCase(fetchTransactionSummary.fulfilled, (state, action) => {
       const { cash, qris } = action.payload;
       state.summary = { cash, qris };
+    });
+    builder.addCase(createTransaction.fulfilled, (state, action) => {
+      state.nextQueue = action.payload.queueNumber + 1;
+    });
+    builder.addCase(fetchQueueNumber.fulfilled, (state, action) => {
+      state.nextQueue = action.payload;
     });
   },
 });

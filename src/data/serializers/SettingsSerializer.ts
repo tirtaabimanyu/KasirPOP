@@ -3,12 +3,16 @@ import { CombinedSettingsModel } from "../services/SettingsService";
 
 const SettingsSerializer = class {
   static serialize = (data: CombinedSettingsModel): CombinedSettingsData => ({
-    storeSettings: {
-      name: data.storeSettings.name,
-      logoImgUri: data.storeSettings.logoImgUri,
-      address: data.storeSettings.address,
-      phoneNumber: data.storeSettings.phoneNumber,
-    },
+    ...(data.storeSettings
+      ? {
+          storeSettings: {
+            name: data.storeSettings.name,
+            logoImgUri: data.storeSettings.logoImgUri,
+            address: data.storeSettings.address,
+            phoneNumber: data.storeSettings.phoneNumber,
+          },
+        }
+      : {}),
     paymentSettings: {
       cash: data.paymentSettings.cash,
       qris: data.paymentSettings.qris,

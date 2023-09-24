@@ -122,13 +122,19 @@ const PrinterSettings = () => {
       ? 32
       : 48;
 
+  const header = [
+    ...(storeSettings?.name
+      ? [breakWord(storeSettings.name, charactersPerLine)]
+      : []),
+    ...(storeSettings?.address
+      ? [breakWord(storeSettings.address, charactersPerLine)]
+      : []),
+    ...(storeSettings?.phoneNumber
+      ? [breakWord(storeSettings.phoneNumber, charactersPerLine)]
+      : []),
+  ];
   const content = [
-    breakWord("Meetbowl", charactersPerLine),
-    breakWord(
-      "Jl. Terusan H. Nawi Malik, Depok, Jawa Barat",
-      charactersPerLine
-    ),
-    breakWord("082123456789", charactersPerLine),
+    ...header,
     lineBreak(charactersPerLine, "-"),
     spaceBetween("12/10/23", "14:30 WIB", charactersPerLine),
     lineBreak(charactersPerLine, "-"),

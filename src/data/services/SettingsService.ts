@@ -11,7 +11,7 @@ import { PaymentSettingsModel } from "../entities/PaymentSettingsModel";
 import { StoreSettingsModel } from "../entities/StoreSettingsModel";
 
 export type CombinedSettingsModel = {
-  storeSettings: StoreSettingsModel;
+  storeSettings?: StoreSettingsModel;
   paymentSettings: PaymentSettingsModel;
 };
 
@@ -50,15 +50,19 @@ export class SettingsService {
   ): Promise<CombinedSettingsModel> {
     const settings = await this.getSettings();
 
-    const storeSettings = await this.storeSettingsRepository.save({
-      id: settings.storeSettings?.id,
-      ...data.storeSettings,
-    });
+    const storeSettings = data.storeSettings
+      ? await this.storeSettingsRepository.save({
+          id: settings.storeSettings?.id,
+          ...data.storeSettings,
+        })
+      : settings.storeSettings;
 
-    const paymentSettings = await this.paymentSettingsRepository.save({
-      id: settings.paymentSettings.id,
-      ...data.paymentSettings,
-    });
+    const paymentSettings = data.paymentSettings
+      ? await this.paymentSettingsRepository.save({
+          id: settings.paymentSettings.id,
+          ...data.paymentSettings,
+        })
+      : settings.paymentSettings;
 
     return { storeSettings, paymentSettings };
   }

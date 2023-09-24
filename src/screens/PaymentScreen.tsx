@@ -28,6 +28,7 @@ const PaymentScreen = ({
   const theme = useTheme();
   const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
+  const queueNumber = useAppSelector((state) => state.transaction.nextQueue);
   const { paymentSettings } = useAppSelector((state) => state.settings);
   const dispatch = useAppDispatch();
 
@@ -103,7 +104,10 @@ const PaymentScreen = ({
         data: {
           products: Object.values(cart.products),
           totalPrice: cart.totalPrice,
+          moneyReceived: moneyReceived,
+          change: totalChange,
           paymentType: paymentType,
+          queueNumber: queueNumber,
         },
         services: services,
       })

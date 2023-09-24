@@ -6,8 +6,11 @@ const TransactionSerializer = class {
     id: transaction.id,
     createdAt: transaction.createdAt.toISOString(),
     totalPrice: transaction.totalPrice,
+    moneyReceived: transaction.moneyReceived,
+    change: transaction.change,
     paymentType: transaction.paymentType,
     products: transaction.products,
+    queueNumber: transaction.queueNumber,
   });
 
   static serializeMany = (
