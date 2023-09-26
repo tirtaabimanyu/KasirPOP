@@ -7,13 +7,13 @@ export class PrinterSettingsModel {
   id: number;
 
   @Column({ nullable: true })
-  printerName?: string;
+  printerName?: string | null;
 
   @Column({ nullable: true })
-  printerIdentifier?: string;
+  printerIdentifier?: string | null;
 
   @Column({ nullable: true })
-  printerInterfaceType?: string;
+  printerInterfaceType?: string | null;
 
   @Column({ default: "" })
   receiptFooter: string;

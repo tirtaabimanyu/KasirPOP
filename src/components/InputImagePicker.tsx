@@ -7,7 +7,7 @@ import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 const placeholderImage = require("../../assets/image-placeholder.png");
 
 type InputImagePickerProp = {
-  imgUri?: string;
+  imgUri?: string | null;
   onRemoveImage: () => void;
   onSelectImage: (uri: string) => void;
   resize: { width: number; height: number };

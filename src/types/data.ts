@@ -17,7 +17,7 @@ export type CreateProductData = {
   stock: number;
   isAlwaysInStock: boolean;
   price: number;
-  imgUri?: string;
+  imgUri?: string | null;
   categoryIds?: number[];
 };
 
@@ -27,7 +27,7 @@ export type UpdateProductData = {
   stock?: number;
   isAlwaysInStock?: boolean;
   price?: number;
-  imgUri?: string;
+  imgUri?: string | null;
   categoryIds?: number[];
 };
 

@@ -75,7 +75,7 @@ const ProductForm = (props: ProductFormProps) => {
         <InputImagePicker
           imgUri={props.productData.imgUri}
           onRemoveImage={() => {
-            props.setProductData((state) => ({ ...state, imgUri: undefined }));
+            props.setProductData((state) => ({ ...state, imgUri: null }));
           }}
           onSelectImage={(uri) => {
             setIsDirty((state) => ({ ...state, imgUri: true }));

@@ -26,7 +26,7 @@ export class ProductModel {
   price: number;
 
   @Column({ nullable: true })
-  imgUri?: string;
+  imgUri?: string | null;
 
   @ManyToMany("CategoryModel", "products", {
     cascade: true,
