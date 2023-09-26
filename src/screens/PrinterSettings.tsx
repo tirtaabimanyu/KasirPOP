@@ -26,7 +26,7 @@ import { useState } from "react";
 import { updateSettings } from "../redux/slices/settingsSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { showSnackbar } from "../redux/slices/layoutSlice";
-import { PaperSize } from "../types/data";
+import { PaperSize, PaymentType } from "../types/data";
 import {
   PrinterData,
   StarPrinterService,
@@ -34,87 +34,10 @@ import {
 import BluetoothStateManager from "react-native-bluetooth-state-manager";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
+import { ReceiptFormatter, ReceiptRowType } from "../services/ReceiptFormatter";
 
-const lineBreak = (
-  charactersPerLine: number,
-  paddingCharacter: string = " "
-) => {
-  return `${paddingCharacter.repeat(charactersPerLine)}`;
-};
-
-const alignLeft = (
-  str: string,
-  charactersPerLine: number,
-  paddingCharacter: string = " "
-) => {
-  const paddingLength = charactersPerLine - str.length;
-  return `${str}${paddingCharacter.repeat(paddingLength)}`;
-};
-
-const alignRight = (
-  str: string,
-  charactersPerLine: number,
-  paddingCharacter: string = " "
-) => {
-  const paddingLength = charactersPerLine - str.length;
-  return `${paddingCharacter.repeat(paddingLength)}${str}`;
-};
-
-const breakWord = (
-  str: string,
-  breakAt: number,
-  align: "left" | "center" | "right" = "center"
-) => {
-  const result: string[] = [];
-  str.split("\n").forEach((current) => {
-    if (current.length == 0) {
-      result.push("");
-      return;
-    }
-
-    let i = 0;
-    while (i < current.length) {
-      let currentLine = current.substring(i, i + breakAt);
-      let rightmostSpace = currentLine.lastIndexOf(" ");
-      let brokenLine;
-      if (i + breakAt >= current.length) {
-        brokenLine = currentLine;
-        i = i + breakAt;
-      } else if (rightmostSpace == -1) {
-        brokenLine = current.substring(i, i + breakAt);
-        i = i + breakAt;
-      } else {
-        brokenLine = current.substring(i, i + rightmostSpace);
-        i = i + rightmostSpace + 1;
-      }
-      if (align == "left") {
-        brokenLine = alignLeft(brokenLine, breakAt);
-      } else if (align == "right") {
-        brokenLine = alignRight(brokenLine, breakAt);
-      }
-      result.push(brokenLine);
-    }
-  });
-
-  return result.join("\n");
-};
-
-const spaceBetween = (
-  str1: string,
-  str2: string,
-  numOfChars: number,
-  paddingCharacter: string = " "
-) => {
-  const paddingLength = numOfChars - str1.length - str2.length;
-
-  return `${str1}${paddingCharacter.repeat(paddingLength)}${str2}`;
-};
-
-interface FixedWidthTextProps extends TextProps<string> {
-  charactersPerLine: number;
-}
-const FixedWidthText = (props: FixedWidthTextProps) => {
-  const { children, style, charactersPerLine, ...rest } = props;
+const FixedWidthText = (props: TextProps<string>) => {
+  const { children, style, ...rest } = props;
   const fontFamily = Platform.OS === "ios" ? "Courier New" : "monospace";
 
   return (
@@ -154,54 +77,25 @@ const PrinterSettings = () => {
       ? 32
       : 48;
 
-  const header = [
-    ...(storeSettings?.name
-      ? [breakWord(storeSettings.name, charactersPerLine)]
-      : []),
-    ...(storeSettings?.address
-      ? [breakWord(storeSettings.address, charactersPerLine)]
-      : []),
-    ...(storeSettings?.phoneNumber
-      ? [breakWord(storeSettings.phoneNumber, charactersPerLine)]
-      : []),
-  ];
-  const content = [
-    ...header,
-    lineBreak(charactersPerLine, "-"),
-    ...(newPrinterSettings.showQueueNumber
-      ? [breakWord("Antrian 166", charactersPerLine)]
-      : []),
-    spaceBetween("12/10/23", "14:30 WIB", charactersPerLine),
-    lineBreak(charactersPerLine, "-"),
-    breakWord("Bakso Komplit", charactersPerLine, "left"),
-    spaceBetween("1 X @30,000", "30,000", charactersPerLine),
-    breakWord("Pangsit Goreng Udang", charactersPerLine, "left"),
-    spaceBetween("1 X @30,000", "30,000", charactersPerLine),
-    breakWord("Pangsit Goreng Cumi", charactersPerLine, "left"),
-    spaceBetween("1 X @30,000", "30,000", charactersPerLine),
-    lineBreak(charactersPerLine, "-"),
-    breakWord(
-      "Total : " + alignRight("90,000", 11),
-      charactersPerLine,
-      "right"
-    ),
-    breakWord(
-      "Tunai : " + alignRight("100,000", 11),
-      charactersPerLine,
-      "right"
-    ),
-    breakWord(
-      "Kembali : " + alignRight("10,000", 11),
-      charactersPerLine,
-      "right"
-    ),
-    ...(newPrinterSettings.receiptFooter.length > 0
-      ? [
-          lineBreak(charactersPerLine, "-"),
-          breakWord(newPrinterSettings.receiptFooter, charactersPerLine),
-        ]
-      : []),
-  ];
+  const mockTransaction = {
+    id: 1,
+    createdAt: "2023-09-26T12:53:15.000Z",
+    totalPrice: 90000,
+    moneyReceived: 100000,
+    change: 10000,
+    paymentType: PaymentType.CASH,
+    products: [
+      { id: 1, name: "Bakso Komplit", price: 30000, quantity: 1 },
+      { id: 2, name: "Pangsit Goreng Udang", price: 30000, quantity: 1 },
+      { id: 3, name: "Pangsit Goreng Cumi", price: 30000, quantity: 1 },
+    ],
+    queueNumber: 1,
+  };
+  const content = new ReceiptFormatter().format(
+    mockTransaction,
+    newPrinterSettings,
+    storeSettings
+  );
 
   const saveSettings = () => {
     dispatch(
@@ -306,31 +200,31 @@ const PrinterSettings = () => {
       <View style={styles(theme).leftContainer}>
         <View style={styles(theme).receiptPreview}>
           <View style={{ alignItems: "center" }}>
-            {newPrinterSettings.showLogo && (
-              <>
-                <Image
-                  source={{ uri: storeSettings?.logoImgUri }}
-                  style={{ width: 100, height: 100 }}
-                />
+            {content.map((row, idx) =>
+              row.type == ReceiptRowType.TEXT ? (
                 <FixedWidthText
+                  key={`receiptContent-${idx}`}
                   variant="bodyMedium"
                   style={{ textAlign: "center" }}
-                  charactersPerLine={32}
                 >
-                  {""}
+                  {row.str}
                 </FixedWidthText>
-              </>
+              ) : row.type == ReceiptRowType.LARGE_TEXT ? (
+                <FixedWidthText
+                  key={`receiptContent-${idx}`}
+                  variant="titleLarge"
+                  style={{ textAlign: "center" }}
+                >
+                  {row.str}
+                </FixedWidthText>
+              ) : (
+                <Image
+                  key={`receiptContent-${idx}`}
+                  source={{ uri: row.str }}
+                  style={{ width: 100, height: 100 }}
+                />
+              )
             )}
-            {content.map((text, idx) => (
-              <FixedWidthText
-                key={`receiptContent-${idx}`}
-                variant="bodyMedium"
-                style={{ textAlign: "center" }}
-                charactersPerLine={32}
-              >
-                {text}
-              </FixedWidthText>
-            ))}
           </View>
         </View>
         <Text
