@@ -12,7 +12,6 @@ export const fetchSettings = createAsyncThunk(
   "settings/fetch",
   async (service: SettingsService) => {
     const settings = await service.get();
-    debugger;
 
     return SettingsSerializer.serialize(settings);
   }
@@ -25,7 +24,6 @@ export const updateSettings = createAsyncThunk(
     service: SettingsService;
   }) => {
     const settings = await payload.service.update(payload.data);
-    debugger;
 
     return SettingsSerializer.serialize(settings);
   }
@@ -44,6 +42,7 @@ const initialState: SettingsState = {
     paperSize: 58,
     showLogo: false,
     showQueueNumber: false,
+    autoPrintReceipt: false,
   },
 };
 

@@ -25,7 +25,7 @@ export class ProductModel {
   @Column()
   price: number;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   imgUri?: string | null;
 
   @ManyToMany("CategoryModel", "products", {

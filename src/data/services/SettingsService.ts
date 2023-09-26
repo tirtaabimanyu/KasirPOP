@@ -56,26 +56,38 @@ export class SettingsService {
   ): Promise<CombinedSettingsModel> {
     const settings = await this.getSettings();
 
-    const storeSettings = data.storeSettings
-      ? await this.storeSettingsRepository.save({
-          id: settings.storeSettings?.id,
-          ...data.storeSettings,
-        })
-      : settings.storeSettings;
+    let storeSettings = settings.storeSettings;
+    if (data.storeSettings != undefined) {
+      const result = await this.storeSettingsRepository.save({
+        id: settings.storeSettings?.id,
+        ...data.storeSettings,
+      });
+      storeSettings = await this.storeSettingsRepository.findOneByOrFail({
+        id: result.id,
+      });
+    }
 
-    const paymentSettings = data.paymentSettings
-      ? await this.paymentSettingsRepository.save({
-          id: settings.paymentSettings.id,
-          ...data.paymentSettings,
-        })
-      : settings.paymentSettings;
+    let paymentSettings = settings.paymentSettings;
+    if (data.paymentSettings != undefined) {
+      const result = await this.paymentSettingsRepository.save({
+        id: settings.paymentSettings.id,
+        ...data.paymentSettings,
+      });
+      paymentSettings = await this.paymentSettingsRepository.findOneByOrFail({
+        id: result.id,
+      });
+    }
 
-    const printerSettings = data.printerSettings
-      ? await this.printerSettingsRepository.save({
-          id: settings.printerSettings.id,
-          ...data.printerSettings,
-        })
-      : settings.printerSettings;
+    let printerSettings = settings.printerSettings;
+    if (data.printerSettings != undefined) {
+      const result = await this.printerSettingsRepository.save({
+        id: settings.printerSettings.id,
+        ...data.printerSettings,
+      });
+      printerSettings = await this.printerSettingsRepository.findOneByOrFail({
+        id: result.id,
+      });
+    }
 
     return { storeSettings, paymentSettings, printerSettings };
   }

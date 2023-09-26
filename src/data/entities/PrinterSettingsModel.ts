@@ -6,13 +6,13 @@ export class PrinterSettingsModel {
   @PrimaryGeneratedColumn("increment")
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   printerName?: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   printerIdentifier?: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   printerInterfaceType?: string | null;
 
   @Column({ default: "" })
@@ -30,4 +30,7 @@ export class PrinterSettingsModel {
 
   @Column({ default: false })
   showQueueNumber: boolean;
+
+  @Column({ default: false })
+  autoPrintReceipt: boolean;
 }

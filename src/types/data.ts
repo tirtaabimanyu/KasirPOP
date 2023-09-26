@@ -6,7 +6,7 @@ export type ProductData = {
   stock: number;
   isAlwaysInStock: boolean;
   price: number;
-  imgUri?: string;
+  imgUri?: string | null;
   categoryIds: number[];
 };
 
@@ -123,13 +123,14 @@ export type UpdateStoreSettingsData = {
 };
 
 export type PrinterSettingsData = {
-  printerName?: string;
-  printerIdentifier?: string;
-  printerInterfaceType?: string;
+  printerName?: string | null;
+  printerIdentifier?: string | null;
+  printerInterfaceType?: string | null;
   receiptFooter: string;
   paperSize: number;
   showLogo: boolean;
   showQueueNumber: boolean;
+  autoPrintReceipt: boolean;
 };
 
 export type UpdatePrinterSettingsData = {
@@ -140,6 +141,7 @@ export type UpdatePrinterSettingsData = {
   paperSize?: number;
   showLogo?: boolean;
   showQueueNumber?: boolean;
+  autoPrintReceipt?: boolean;
 };
 
 export type CombinedSettingsData = {

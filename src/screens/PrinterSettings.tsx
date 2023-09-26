@@ -133,7 +133,13 @@ const PrinterSettings = () => {
   );
   const printerService = new StarPrinterService();
 
-  const [newPrinterSettings, setNewPrinterSettings] = useState(printerSettings);
+  const [newPrinterSettings, setNewPrinterSettings] = useState({
+    autoPrintReceipt: printerSettings.autoPrintReceipt,
+    showLogo: printerSettings.showLogo,
+    showQueueNumber: printerSettings.showQueueNumber,
+    paperSize: printerSettings.paperSize,
+    receiptFooter: printerSettings.receiptFooter,
+  });
 
   const paperSize = [
     PaperSize.FIFTY_SEVEN,
@@ -235,7 +241,6 @@ const PrinterSettings = () => {
       updateSettings({
         data: {
           printerSettings: {
-            ...newPrinterSettings,
             printerIdentifier: printerData.identifier,
             printerInterfaceType: printerData.interfaceType,
             printerName: printerData.name,
@@ -351,6 +356,20 @@ const PrinterSettings = () => {
               backgroundColor: theme.colors.outlineVariant,
             }}
           />
+          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+            <Text variant="bodyMedium">
+              Otomatis Cetak Struk Setelah Pembayaran
+            </Text>
+            <Switch
+              value={newPrinterSettings.autoPrintReceipt}
+              onValueChange={() =>
+                setNewPrinterSettings((state) => ({
+                  ...state,
+                  autoPrintReceipt: !state.autoPrintReceipt,
+                }))
+              }
+            />
+          </Row>
           <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
             <Text variant="bodyMedium">Tampilkan Logo Toko</Text>
             <Switch

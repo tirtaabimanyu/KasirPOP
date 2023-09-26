@@ -26,6 +26,7 @@ const SettingsSerializer = class {
       paperSize: data.printerSettings.paperSize,
       showLogo: data.printerSettings.showLogo,
       showQueueNumber: data.printerSettings.showQueueNumber,
+      autoPrintReceipt: data.printerSettings.autoPrintReceipt,
     },
   });
 
