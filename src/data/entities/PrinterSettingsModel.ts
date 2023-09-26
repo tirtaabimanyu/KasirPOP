@@ -12,6 +12,9 @@ export class PrinterSettingsModel {
   @Column({ nullable: true })
   printerIdentifier?: string;
 
+  @Column({ nullable: true })
+  printerInterfaceType?: string;
+
   @Column({ default: "" })
   receiptFooter: string;
 

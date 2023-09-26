@@ -21,6 +21,7 @@ const SettingsSerializer = class {
     printerSettings: {
       printerName: data.printerSettings.printerName,
       printerIdentifier: data.printerSettings.printerIdentifier,
+      printerInterfaceType: data.printerSettings.printerInterfaceType,
       receiptFooter: data.printerSettings.receiptFooter,
       paperSize: data.printerSettings.paperSize,
       showLogo: data.printerSettings.showLogo,

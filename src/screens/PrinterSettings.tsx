@@ -1,9 +1,17 @@
-import { Image, Platform, StyleSheet, View } from "react-native";
+import {
+  Image,
+  Linking,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import {
   Button,
   Card,
   Chip,
   Divider,
+  List,
   MD3Theme,
   Switch,
   Text,
@@ -19,6 +27,13 @@ import { updateSettings } from "../redux/slices/settingsSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { showSnackbar } from "../redux/slices/layoutSlice";
 import { PaperSize } from "../types/data";
+import {
+  PrinterData,
+  StarPrinterService,
+} from "../services/StarPrinterService";
+import BluetoothStateManager from "react-native-bluetooth-state-manager";
+import BaseDialog from "../components/BaseDialog";
+import useDialog from "../hooks/useDialog";
 
 const lineBreak = (
   charactersPerLine: number,
@@ -116,12 +131,9 @@ const PrinterSettings = () => {
   const { storeSettings, printerSettings } = useAppSelector(
     (state) => state.settings
   );
+  const printerService = new StarPrinterService();
 
-  const [newPrinterSettings, setNewPrinterSettings] = useState({
-    showLogo: printerSettings.showLogo,
-    paperSize: printerSettings.paperSize,
-    receiptFooter: printerSettings.receiptFooter,
-  });
+  const [newPrinterSettings, setNewPrinterSettings] = useState(printerSettings);
 
   const paperSize = [
     PaperSize.FIFTY_SEVEN,
@@ -150,6 +162,9 @@ const PrinterSettings = () => {
   const content = [
     ...header,
     lineBreak(charactersPerLine, "-"),
+    ...(newPrinterSettings.showQueueNumber
+      ? [breakWord("Antrian 166", charactersPerLine)]
+      : []),
     spaceBetween("12/10/23", "14:30 WIB", charactersPerLine),
     lineBreak(charactersPerLine, "-"),
     breakWord("Bakso Komplit", charactersPerLine, "left"),
@@ -193,11 +208,96 @@ const PrinterSettings = () => {
     });
   };
 
+  const [btAlert, showBtAlert, hideBtAlert] = useDialog();
+
+  const [discoveredPrinters, setDiscoveredPrinters] = useState<PrinterData[]>(
+    []
+  );
+  const [isDiscovering, setIsDiscovering] = useState(false);
+  const onPressDiscover = async () => {
+    const btStatus = await BluetoothStateManager.getState();
+    if (btStatus == "PoweredOff") {
+      showBtAlert();
+      return;
+    }
+
+    setDiscoveredPrinters([]);
+    setIsDiscovering(true);
+    printerService.startDiscovery(
+      (printerData) =>
+        setDiscoveredPrinters((state) => [...state, printerData]),
+      () => setIsDiscovering(false)
+    );
+  };
+
+  const onSelectPrinter = (printerData: PrinterData) => {
+    dispatch(
+      updateSettings({
+        data: {
+          printerSettings: {
+            ...newPrinterSettings,
+            printerIdentifier: printerData.identifier,
+            printerInterfaceType: printerData.interfaceType,
+            printerName: printerData.name,
+          },
+        },
+        service: settingsService,
+      })
+    ).then(() => {
+      setDiscoveredPrinters([]);
+      dispatch(
+        showSnackbar({ message: "Pengaturan printer telah diperbarui." })
+      );
+    });
+  };
+
+  const onRemovePrinter = () => {
+    dispatch(
+      updateSettings({
+        data: {
+          printerSettings: {
+            ...newPrinterSettings,
+            printerIdentifier: null,
+            printerInterfaceType: null,
+            printerName: null,
+          },
+        },
+        service: settingsService,
+      })
+    ).then(() =>
+      dispatch(
+        showSnackbar({ message: "Pengaturan printer telah diperbarui." })
+      )
+    );
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles(theme).container}
       keyboardShouldPersistTaps="handled"
     >
+      <BaseDialog visible={btAlert} dismissable onDismiss={hideBtAlert}>
+        <BaseDialog.Title>Aktifkan Bluetooth</BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text>
+            {`Untuk mencari printer, Anda harus mengaktifkan Bluetooth pada perangkat ini.\n` +
+              `Anda dapat mengaktifkan Bluetooth pada menu Pengaturan Bluetooth.`}
+          </Text>
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button onPress={hideBtAlert}>Kembali</Button>
+          <Button
+            mode="contained"
+            style={{ paddingHorizontal: 16 }}
+            onPress={() => {
+              hideBtAlert();
+              BluetoothStateManager.openSettings();
+            }}
+          >
+            Cek Pengaturan Bluetooth
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <View style={styles(theme).leftContainer}>
         <View style={styles(theme).receiptPreview}>
           <View style={{ alignItems: "center" }}>
@@ -262,6 +362,18 @@ const PrinterSettings = () => {
                 }))
               }
               disabled={storeSettings?.logoImgUri == undefined}
+            />
+          </Row>
+          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+            <Text variant="bodyMedium">Tampilkan Nomor Antrian</Text>
+            <Switch
+              value={newPrinterSettings.showQueueNumber}
+              onValueChange={() =>
+                setNewPrinterSettings((state) => ({
+                  ...state,
+                  showQueueNumber: !state.showQueueNumber,
+                }))
+              }
             />
           </Row>
           <View style={{ marginBottom: 24 }}>
@@ -331,19 +443,94 @@ const PrinterSettings = () => {
               backgroundColor: theme.colors.outlineVariant,
             }}
           />
-          <Text
-            variant="labelLarge"
-            style={{ textAlign: "center", marginBottom: 16 }}
-          >
-            Belum Ada Printer Terhubung
-          </Text>
-          <Button
-            icon={"plus"}
-            mode="contained"
-            style={{ alignSelf: "center" }}
-          >
-            Tambah Printer
-          </Button>
+          {printerSettings.printerIdentifier == undefined ? (
+            <>
+              {discoveredPrinters.length == 0 ? (
+                <>
+                  <Text
+                    variant="labelLarge"
+                    style={{ textAlign: "center", marginBottom: 16 }}
+                  >
+                    Belum Ada Printer Terhubung
+                  </Text>
+                  <Text
+                    variant="bodyMedium"
+                    style={{ textAlign: "center", marginBottom: 16 }}
+                  >
+                    Cek koneksi printer di menu Pengaturan Bluetooth pada
+                    perangkat ini. Setelah printer terhubung, klik tombol Cari
+                    Printer di bawah ini.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  {discoveredPrinters.map((printer, idx) => (
+                    <List.Item
+                      key={`printer-${idx}`}
+                      title={printer.name}
+                      description={
+                        printer.isConnected ? "Terhubung" : "Tidak Terhubung"
+                      }
+                      descriptionStyle={[
+                        !printer.isConnected && { color: theme.colors.error },
+                      ]}
+                      left={(props) => (
+                        <List.Icon
+                          {...props}
+                          icon={
+                            printer.isConnected
+                              ? "printer-check"
+                              : "printer-alert"
+                          }
+                        />
+                      )}
+                      right={(props) => (
+                        <Button
+                          {...props}
+                          mode="outlined"
+                          disabled={!printer.isConnected}
+                          onPress={() => onSelectPrinter(printer)}
+                        >
+                          Pilih Printer
+                        </Button>
+                      )}
+                    />
+                  ))}
+                </>
+              )}
+              <Row style={{ justifyContent: "center" }}>
+                <Button
+                  mode="outlined"
+                  onPress={() => BluetoothStateManager.openSettings()}
+                  style={{ marginRight: 16 }}
+                >
+                  Cek Pengaturan Bluetooth
+                </Button>
+                <Button
+                  icon={"printer-search"}
+                  mode="contained"
+                  onPress={onPressDiscover}
+                  loading={isDiscovering}
+                >
+                  Cari Printer
+                </Button>
+              </Row>
+            </>
+          ) : (
+            <List.Item
+              title={printerSettings.printerName}
+              left={(props) => <List.Icon {...props} icon={"printer-check"} />}
+              right={(props) => (
+                <Button
+                  {...props}
+                  mode="outlined"
+                  onPress={() => onRemovePrinter()}
+                >
+                  Hapus Printer
+                </Button>
+              )}
+            />
+          )}
         </Card>
       </View>
     </ScrollView>
@@ -355,10 +542,9 @@ export default PrinterSettings;
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
-      position: "relative",
+      flexGrow: 1,
       paddingHorizontal: 32,
-      width: "100%",
+      paddingBottom: 32,
       flexDirection: "row",
     },
     leftContainer: {

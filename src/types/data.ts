@@ -125,6 +125,7 @@ export type UpdateStoreSettingsData = {
 export type PrinterSettingsData = {
   printerName?: string;
   printerIdentifier?: string;
+  printerInterfaceType?: string;
   receiptFooter: string;
   paperSize: number;
   showLogo: boolean;
@@ -132,8 +133,9 @@ export type PrinterSettingsData = {
 };
 
 export type UpdatePrinterSettingsData = {
-  printerName?: string;
-  printerIdentifier?: string;
+  printerName?: string | null;
+  printerIdentifier?: string | null;
+  printerInterfaceType?: string | null;
   receiptFooter?: string;
   paperSize?: number;
   showLogo?: boolean;

@@ -15,13 +15,14 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "light",
-      "bundleIdentifier": "com.tirtaabimanyu.kasirbodoh"
+      "bundleIdentifier": "com.tirtaabimanyu.kasirbodoh",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "This app need a bluetooth connection to discover bluetooth printers."
+      }
     },
     "android": {
       "userInterfaceStyle": "light",
@@ -60,10 +61,7 @@
           "photosPermission": "The app accesses your photos to let you choose suitable picture for your products."
         }
       ],
-      [
-        "./plugins/withDisableForcedDarkModeAndroid.js",
-        {}
-      ]
+      ["./plugins/withDisableForcedDarkModeAndroid.js", {}]
     ]
   }
 }
