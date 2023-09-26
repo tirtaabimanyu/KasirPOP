@@ -1,12 +1,25 @@
 import {
   InterfaceType,
+  StarConnectionSettings,
   StarDeviceDiscoveryManager,
   StarDeviceDiscoveryManagerFactory,
   StarIO10Error,
   StarPrinter,
   StarPrinterModel,
+  StarXpandCommand,
 } from "kasirbodoh-star-io10";
 import { PermissionsAndroid, Platform } from "react-native";
+import {
+  PaymentType,
+  PrinterSettingsData,
+  StoreSettingsData,
+  TransactionData,
+} from "../types/data";
+import {
+  ReceiptFormatter,
+  ReceiptRowAlign,
+  ReceiptRowType,
+} from "./ReceiptFormatter";
 
 export type PrinterData = {
   identifier: string;
@@ -17,6 +30,7 @@ export type PrinterData = {
 
 export class StarPrinterService {
   private _discoveryManager?: StarDeviceDiscoveryManager;
+  private _defaultAlignment = StarXpandCommand.Printer.Alignment.Right;
 
   private async _confirmBluetoothPermission(): Promise<boolean> {
     let hasPermission = false;
@@ -101,5 +115,105 @@ export class StarPrinterService {
 
   async stopDiscovery() {
     await this._discoveryManager?.stopDiscovery();
+  }
+
+  async printReceipt(
+    transaction: TransactionData,
+    printerSettings: PrinterSettingsData,
+    storeSettings?: StoreSettingsData
+  ) {
+    var settings = new StarConnectionSettings();
+    settings.interfaceType =
+      printerSettings.printerInterfaceType as InterfaceType;
+    settings.identifier = printerSettings.printerIdentifier || "";
+
+    if (Platform.OS == "android" && 31 <= Platform.Version) {
+      let hasPermission = await this._confirmBluetoothPermission();
+
+      if (!hasPermission) {
+        console.log(
+          `PERMISSION ERROR: You have to allow Nearby devices to use the Bluetooth printer`
+        );
+        return;
+      }
+    }
+
+    var printer = new StarPrinter(settings);
+
+    try {
+      let commandBuilder = new StarXpandCommand.StarXpandCommandBuilder();
+      let documentBuilder = new StarXpandCommand.DocumentBuilder();
+      if (transaction.paymentType == PaymentType.CASH)
+        documentBuilder.addDrawer(
+          new StarXpandCommand.DrawerBuilder().actionOpen(
+            new StarXpandCommand.Drawer.OpenParameter().setChannel(
+              StarXpandCommand.Drawer.Channel.No1
+            )
+          )
+        );
+
+      let printerBuilder = new StarXpandCommand.PrinterBuilder()
+        .styleInternationalCharacter(
+          StarXpandCommand.Printer.InternationalCharacterType.Usa
+        )
+        .styleCharacterSpace(0)
+        .styleAlignment(StarXpandCommand.Printer.Alignment.Center);
+
+      const receiptRows = new ReceiptFormatter().format(
+        transaction,
+        printerSettings,
+        storeSettings
+      );
+      receiptRows.forEach((row) => {
+        if (row.align == ReceiptRowAlign.CENTER) {
+          printerBuilder = printerBuilder.styleAlignment(
+            StarXpandCommand.Printer.Alignment.Center
+          );
+        } else if (row.align == ReceiptRowAlign.LEFT) {
+          printerBuilder = printerBuilder.styleAlignment(
+            StarXpandCommand.Printer.Alignment.Left
+          );
+        } else if (row.align == ReceiptRowAlign.RIGHT) {
+          printerBuilder = printerBuilder.styleAlignment(
+            StarXpandCommand.Printer.Alignment.Right
+          );
+        }
+
+        if (row.type == ReceiptRowType.TEXT) {
+          printerBuilder = printerBuilder.actionPrintText(row.str + "\n");
+        } else if (row.type == ReceiptRowType.LARGE_TEXT) {
+          printerBuilder = printerBuilder.add(
+            new StarXpandCommand.PrinterBuilder()
+              .styleMagnification(
+                new StarXpandCommand.MagnificationParameter(2, 2)
+              )
+              .actionPrintText(row.str + "\n")
+          );
+        } else if (row.type == ReceiptRowType.IMG) {
+          printerBuilder = printerBuilder.actionPrintImage(
+            new StarXpandCommand.Printer.ImageParameter(row.str, 200)
+          );
+        }
+        if (row.align != undefined)
+          printerBuilder = printerBuilder.styleAlignment(
+            this._defaultAlignment
+          );
+      });
+      printerBuilder.actionCut(StarXpandCommand.Printer.CutType.Partial);
+
+      documentBuilder.addPrinter(printerBuilder);
+      commandBuilder.addDocument(documentBuilder);
+      var commands = await commandBuilder.getCommands();
+
+      await printer.open();
+      await printer.print(commands);
+
+      console.log("Success");
+    } catch (error) {
+      console.log(`Error: ${String(error)}`);
+    } finally {
+      await printer.close();
+      await printer.dispose();
+    }
   }
 }

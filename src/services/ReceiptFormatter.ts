@@ -123,6 +123,7 @@ export class ReceiptFormatter {
           {
             type: ReceiptRowType.IMG,
             str: storeSettings?.logoImgUri || "",
+            align: ReceiptRowAlign.CENTER,
           },
           {
             type: ReceiptRowType.TEXT,
@@ -134,16 +135,19 @@ export class ReceiptFormatter {
       header.push({
         type: ReceiptRowType.TEXT,
         str: this.breakWord(storeSettings.name, characterPerLine),
+        align: ReceiptRowAlign.CENTER,
       });
     if (storeSettings?.address && storeSettings?.address.length > 0)
       header.push({
         type: ReceiptRowType.TEXT,
         str: this.breakWord(storeSettings.address, characterPerLine),
+        align: ReceiptRowAlign.CENTER,
       });
     if (storeSettings?.phoneNumber && storeSettings?.phoneNumber.length > 0)
       header.push({
         type: ReceiptRowType.TEXT,
         str: this.breakWord(storeSettings.phoneNumber, characterPerLine),
+        align: ReceiptRowAlign.CENTER,
       });
     header.push({
       type: ReceiptRowType.TEXT,
@@ -165,6 +169,7 @@ export class ReceiptFormatter {
           `Antrian ${transaction.queueNumber}`,
           characterPerLine
         ),
+        align: ReceiptRowAlign.CENTER,
       });
 
     content.push({
@@ -257,6 +262,7 @@ export class ReceiptFormatter {
               printerSettings.receiptFooter,
               characterPerLine
             ),
+            align: ReceiptRowAlign.CENTER,
           },
         ]
       );

@@ -170,6 +170,15 @@ const PrinterSettings = () => {
     );
   };
 
+  const onPressPrintSample = () => {
+    const printerService = new StarPrinterService();
+    printerService.printReceipt(
+      mockTransaction,
+      printerSettings,
+      storeSettings
+    );
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles(theme).container}
@@ -229,13 +238,16 @@ const PrinterSettings = () => {
         </View>
         <Text
           variant="bodySmall"
-          style={{ textAlign: "center", width: "100%" }}
+          style={{ textAlign: "center", width: "100%", marginBottom: 24 }}
         >
           {`Struk di atas hanyalah contoh\n` +
             `Untuk mengubah Logo, Nama, Alamat\n` +
             `dan Nomor Telepon Toko dapat dilakukan\n` +
             `di menu Informasi Toko`}
         </Text>
+        <Button mode="contained" onPress={onPressPrintSample}>
+          Cetak struk sampel
+        </Button>
       </View>
       <View style={styles(theme).rightContainer}>
         <Card
