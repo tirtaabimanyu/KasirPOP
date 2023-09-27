@@ -58,7 +58,9 @@ const CashierItem = (props: CashierItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const onChangeText = (value: number) => {
-    value = Math.min(value, props.itemData.stock);
+    value = props.itemData.isAlwaysInStock
+      ? value
+      : Math.min(value, props.itemData.stock);
     props.editable && props.onChangeText(value);
   };
 
