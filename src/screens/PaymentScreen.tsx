@@ -21,6 +21,12 @@ import { PaymentType } from "../types/data";
 import FloatingRecap from "../components/FloatingRecap";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
+import { StarPrinterService } from "../services/StarPrinterService";
+import {
+  StarIO10CommunicationError,
+  StarIO10IllegalDeviceStateError,
+  StarIO10UnprintableError,
+} from "kasirbodoh-star-io10";
 
 const PaymentScreen = ({
   navigation,
@@ -29,7 +35,9 @@ const PaymentScreen = ({
   const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const queueNumber = useAppSelector((state) => state.transaction.nextQueue);
-  const { paymentSettings } = useAppSelector((state) => state.settings);
+  const { paymentSettings, printerSettings, storeSettings } = useAppSelector(
+    (state) => state.settings
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -53,14 +61,6 @@ const PaymentScreen = ({
         ]
       : []),
   ];
-
-  const [successDialogVisible, showSuccessDialog, hideSuccessDialog] =
-    useDialog();
-  const onPressCloseDialog = () => {
-    dispatch(resetCart());
-    hideSuccessDialog();
-    navigation.navigate("home");
-  };
 
   const [moneyReceived, setMoneyReceived] = useState<number>(0);
   const totalChange = moneyReceived - cart.totalPrice;
@@ -98,8 +98,13 @@ const PaymentScreen = ({
     showFloatingRecap = true;
   }
 
-  const onCreateTransaction = () => {
-    dispatch(
+  const [connectErrorDialog, showConnectErrorDialog, hideConnectErrorDialog] =
+    useDialog();
+  const [printErrorDialog, showPrintErrorDialog, hidePrintErrorDialog] =
+    useDialog();
+
+  const onCreateTransaction = async () => {
+    const transactionData = await dispatch(
       createTransaction({
         data: {
           products: Object.values(cart.products),
@@ -111,33 +116,125 @@ const PaymentScreen = ({
         },
         services: services,
       })
-    ).then(showSuccessDialog);
+    ).unwrap();
+    dispatch(resetCart());
+    navigation.navigate("paymentSuccess", { transactionData });
+  };
+
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  const onPressPay = async () => {
+    const data = {
+      createdAt: new Date().toISOString(),
+      products: Object.values(cart.products),
+      totalPrice: cart.totalPrice,
+      moneyReceived: moneyReceived,
+      change: totalChange,
+      paymentType: paymentType,
+      queueNumber: queueNumber,
+    };
+
+    if (printerSettings.autoPrintReceipt && printerSettings.printerIdentifier) {
+      const printerService = new StarPrinterService();
+      try {
+        setIsPrinting(true);
+        await printerService.printReceipt(
+          { ...data, id: 0 },
+          printerSettings,
+          storeSettings
+        );
+        onCreateTransaction();
+      } catch (error) {
+        if (
+          error instanceof StarIO10IllegalDeviceStateError ||
+          error instanceof StarIO10CommunicationError
+        ) {
+          showConnectErrorDialog();
+        } else if (error instanceof StarIO10UnprintableError) {
+          showPrintErrorDialog();
+        }
+      } finally {
+        setIsPrinting(false);
+      }
+    } else {
+      onCreateTransaction();
+    }
   };
 
   return (
     <View style={styles(theme).container}>
-      <BaseDialog visible={successDialogVisible}>
-        <BaseDialog.Icon
-          icon={"check-circle"}
-          size={24}
-          color={theme.colors.primary}
-        />
-        <BaseDialog.Title style={{ textAlign: "center" }}>
-          Transaksi Sudah Selesai
+      <BaseDialog
+        visible={connectErrorDialog}
+        dismissable
+        onDismiss={hideConnectErrorDialog}
+      >
+        <BaseDialog.Title>
+          <Text variant="headlineSmall">Printer tidak terhubung</Text>
         </BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text>
+            {`Pastikan beberapa hal di bawah ini lalu klik Cetak Ulang Struk:\n` +
+              ` - Printer sudah menyala\n` +
+              ` - Bluetooth perangkat ini aktif\n` +
+              ` - Printer sudah terhubung dengan perangkat ini\n` +
+              `\nJika Anda ingin melanjutkan semua transaksi tanpa cetak struk, matikan Otomatis Cetak pada Pengaturan Struk & Printer.`}
+          </Text>
+        </BaseDialog.Content>
         <BaseDialog.Actions>
           <Button
-            onPress={onPressCloseDialog}
-            style={{ paddingHorizontal: 16 }}
+            style={{ marginRight: 8 }}
+            onPress={() => {
+              hideConnectErrorDialog();
+              onCreateTransaction();
+            }}
           >
-            Cetak Struk Dapur
+            Lanjutkan Tanpa Struk
           </Button>
           <Button
             mode="contained"
-            onPress={onPressCloseDialog}
             style={{ paddingHorizontal: 24 }}
+            onPress={() => {
+              hideConnectErrorDialog();
+              onPressPay();
+            }}
           >
-            Tutup
+            Cetak Ulang Struk
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
+      <BaseDialog
+        visible={printErrorDialog}
+        dismissable
+        onDismiss={hidePrintErrorDialog}
+      >
+        <BaseDialog.Title>
+          <Text variant="headlineSmall">Cetak Struk Gagal</Text>
+        </BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text>
+            {`Pastikan beberapa hal di bawah ini lalu klik Cetak Ulang Struk:\n` +
+              ` - Printer memiliki kertas struk`}
+          </Text>
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button
+            style={{ marginRight: 8 }}
+            onPress={() => {
+              hidePrintErrorDialog();
+              onCreateTransaction();
+            }}
+          >
+            Lanjutkan Tanpa Struk
+          </Button>
+          <Button
+            mode="contained"
+            style={{ paddingHorizontal: 24 }}
+            onPress={() => {
+              hidePrintErrorDialog();
+              onPressPay();
+            }}
+          >
+            Cetak Ulang Struk
           </Button>
         </BaseDialog.Actions>
       </BaseDialog>
@@ -242,7 +339,8 @@ const PaymentScreen = ({
               ? "Terima Pembayaran"
               : "Sudah Bayar"
           }
-          onPressButton={onCreateTransaction}
+          onPressButton={onPressPay}
+          isButtonLoading={isPrinting}
         />
       )}
     </View>

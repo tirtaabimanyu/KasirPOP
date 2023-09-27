@@ -210,7 +210,7 @@ export class StarPrinterService {
 
       console.log("Success");
     } catch (error) {
-      console.log(`Error: ${String(error)}`);
+      throw error;
     } finally {
       await printer.close();
       await printer.dispose();

@@ -24,7 +24,8 @@ import CategoryScreen from "../screens/CategoryScreen";
 import PaymentTypeScreen from "../screens/PaymentTypeScreen";
 import StoreSettingsScreen from "../screens/StoreSettingsScreen";
 import { useAppSelector } from "../hooks/typedStore";
-import PrinterSettings from "../screens/PrinterSettingsScreen";
+import PrinterSettingsScreen from "../screens/PrinterSettingsScreen";
+import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
 
 enableScreens();
 enableFreeze();
@@ -95,6 +96,11 @@ const Router = () => {
           options={{ title: "Pembayaran" }}
         />
         <Stack.Screen
+          name="paymentSuccess"
+          component={PaymentSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="addProduct"
           component={AddProductScreen}
           options={{ title: "Tambah Produk" }}
@@ -121,7 +127,7 @@ const Router = () => {
         />
         <Stack.Screen
           name="printerSettings"
-          component={PrinterSettings}
+          component={PrinterSettingsScreen}
           options={{ title: "Struk & Printer" }}
         />
       </Stack.Navigator>

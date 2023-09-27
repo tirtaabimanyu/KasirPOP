@@ -47,7 +47,7 @@ const FixedWidthText = (props: TextProps<string>) => {
   );
 };
 
-const PrinterSettings = () => {
+const PrinterSettingsScreen = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { settingsService } = useDatabaseConnection();
@@ -463,7 +463,7 @@ const PrinterSettings = () => {
   );
 };
 
-export default PrinterSettings;
+export default PrinterSettingsScreen;
 
 const styles = (theme: MD3Theme) =>
   StyleSheet.create({

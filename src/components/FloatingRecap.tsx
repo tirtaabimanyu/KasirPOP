@@ -5,6 +5,7 @@ type FloatingRecapProps = {
   contentText: string;
   buttonText: string;
   onPressButton: () => void;
+  isButtonLoading?: boolean;
 };
 
 const FloatingRecap = (props: FloatingRecapProps) => {
@@ -20,6 +21,7 @@ const FloatingRecap = (props: FloatingRecapProps) => {
           contentStyle={styles(theme).floatingRecapButton}
           labelStyle={styles(theme).floatingRecapButtonLabel}
           onPress={props.onPressButton}
+          loading={props.isButtonLoading}
         >
           {props.buttonText}
         </Button>
