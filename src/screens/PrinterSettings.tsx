@@ -155,7 +155,7 @@ const PrinterSettings = () => {
       updateSettings({
         data: {
           printerSettings: {
-            ...newPrinterSettings,
+            autoPrintReceipt: false,
             printerIdentifier: null,
             printerInterfaceType: null,
             printerName: null,
@@ -274,6 +274,7 @@ const PrinterSettings = () => {
                   autoPrintReceipt: !state.autoPrintReceipt,
                 }))
               }
+              disabled={printerSettings.printerIdentifier == undefined}
             />
           </Row>
           <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
