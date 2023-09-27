@@ -24,7 +24,7 @@ import CategoryScreen from "../screens/CategoryScreen";
 import PaymentTypeScreen from "../screens/PaymentTypeScreen";
 import StoreSettingsScreen from "../screens/StoreSettingsScreen";
 import { useAppSelector } from "../hooks/typedStore";
-import PrinterSettings from "../screens/PrinterSettings";
+import PrinterSettings from "../screens/PrinterSettingsScreen";
 
 enableScreens();
 enableFreeze();

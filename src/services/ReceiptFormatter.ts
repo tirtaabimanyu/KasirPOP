@@ -1,4 +1,3 @@
-import PrinterSettings from "../screens/PrinterSettings";
 import {
   PaymentType,
   PrinterSettingsData,
