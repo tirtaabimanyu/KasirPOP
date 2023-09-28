@@ -1,6 +1,6 @@
 {
-  "name": "kasirbodoh",
-  "version": "1.0.0",
+  "name": "kasirpop",
+  "version": "0.1.0",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",

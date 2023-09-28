@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "kasirbodoh",
-    "slug": "kasirbodoh",
-    "version": "1.0.0",
+    "name": "KasirPOP",
+    "slug": "KasirPOP",
+    "version": "0.1.0",
     "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "light",
-      "bundleIdentifier": "com.tirtaabimanyu.kasirbodoh",
+      "bundleIdentifier": "com.tirtaabimanyu.kasirpop",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "This app need a bluetooth connection to discover bluetooth printers."
       }
@@ -31,14 +31,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6750A4"
       },
-      "package": "com.tirtaabimanyu.kasirbodoh"
+      "package": "com.tirtaabimanyu.kasirpop"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "f1c75e90-5121-4694-8278-326a29e48c8c"
+        "projectId": "b32c2b07-c448-405d-8721-fe0dfc299c50"
       }
     },
     "plugins": [
