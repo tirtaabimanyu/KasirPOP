@@ -225,8 +225,12 @@ const styles = (theme: MD3Theme) =>
     saveButton: {
       alignSelf: "flex-end",
     },
-    formCard: { marginBottom: 24 },
-    formCardContent: { padding: 24, backgroundColor: "white" },
+    formCard: {
+      marginBottom: 24,
+      backgroundColor: "white",
+      borderColor: theme.colors.outlineVariant,
+    },
+    formCardContent: { padding: 24 },
     divider: {
       width: 1,
       height: "100%",

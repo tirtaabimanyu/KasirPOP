@@ -245,7 +245,11 @@ const PrinterSettingsScreen = () => {
       <View style={styles(theme).rightContainer}>
         <Card
           mode="outlined"
-          style={{ backgroundColor: "white", marginBottom: 24 }}
+          style={{
+            backgroundColor: "white",
+            borderColor: theme.colors.outlineVariant,
+            marginBottom: 24,
+          }}
           contentStyle={{ padding: 16 }}
         >
           <Text variant="titleMedium">Struk</Text>
@@ -352,7 +356,10 @@ const PrinterSettingsScreen = () => {
         </Card>
         <Card
           mode="outlined"
-          style={{ backgroundColor: "white" }}
+          style={{
+            backgroundColor: "white",
+            borderColor: theme.colors.outlineVariant,
+          }}
           contentStyle={{ padding: 16 }}
         >
           <Text variant="titleMedium">Printer</Text>
