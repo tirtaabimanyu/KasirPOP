@@ -22,7 +22,6 @@ type ProductFormProps = {
   productData: CreateProductData;
   errors: ErrorsType;
   setProductData: React.Dispatch<React.SetStateAction<CreateProductData>>;
-  setErrors: React.Dispatch<React.SetStateAction<ErrorsType>>;
   onPressAddCategory: () => void;
 };
 

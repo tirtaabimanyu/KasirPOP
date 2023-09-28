@@ -26,6 +26,7 @@ import StoreSettingsScreen from "../screens/StoreSettingsScreen";
 import { useAppSelector } from "../hooks/typedStore";
 import PrinterSettingsScreen from "../screens/PrinterSettingsScreen";
 import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
+import InitialSetupScreen from "../screens/InitialSetupScreen";
 
 enableScreens();
 enableFreeze();
@@ -78,8 +79,13 @@ const Router = () => {
           contentStyle: styles(theme).card,
           header: (props) => <Header {...props} theme={theme} />,
         }}
-        initialRouteName={storeSettings == undefined ? "storeSettings" : "home"}
+        initialRouteName={storeSettings == undefined ? "initialSetup" : "home"}
       >
+        <Stack.Screen
+          name="initialSetup"
+          component={InitialSetupScreen}
+          options={{ title: "Pengaturan Awal Toko" }}
+        />
         <Stack.Screen
           name="home"
           component={HomeDrawer}

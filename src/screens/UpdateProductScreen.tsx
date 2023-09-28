@@ -37,8 +37,7 @@ const UpdateProductScreen = ({
     categoryIds: [],
   };
   const [errors, setErrors] = useState(initialErrors);
-
-  const canSubmit = JSON.stringify(initialErrors) == JSON.stringify(errors);
+  const [canSubmit, setCanSubmit] = useState(false);
   const [canNavigate, setCanNavigate] = useState(false);
 
   const updateItem = useCallback(async () => {
@@ -75,10 +74,13 @@ const UpdateProductScreen = ({
 
   const validation = () => {
     const newErrors = initialErrors;
+    let canSubmit = true;
     if (newProductData.name.length == 0) {
+      canSubmit = false;
       newErrors["name"].push("Nama produk tidak boleh kosong");
     }
     setErrors(newErrors);
+    setCanSubmit(canSubmit);
   };
 
   const [backAlertVisible, setBackAlertVisible] = useState(false);
@@ -167,7 +169,6 @@ const UpdateProductScreen = ({
         productData={newProductData}
         setProductData={setNewProductData}
         errors={errors}
-        setErrors={setErrors}
         onPressAddCategory={() => navigation.navigate("category")}
       />
       <View style={styles(theme).actionButtonContainer}>

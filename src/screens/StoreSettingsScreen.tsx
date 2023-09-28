@@ -20,6 +20,7 @@ import { StoreSettingsData } from "../types/data";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
 import { SaveFormat } from "expo-image-manipulator";
+import StoreSettingsForm from "../components/StoreSettingsForm";
 
 const StoreSettingsScreen = (
   props: NativeStackScreenProps<RootStackParamList, "storeSettings">
@@ -34,14 +35,6 @@ const StoreSettingsScreen = (
   const hasUnsavedChanges =
     JSON.stringify(storeSettings) !== JSON.stringify(newStoreSettings);
 
-  const initialIsDirty = {
-    name: false,
-    logoImgUri: false,
-    address: false,
-    phoneNumber: false,
-  };
-  const [isDirty, setIsDirty] = useState(initialIsDirty);
-
   const initialErrors: { [key in keyof StoreSettingsData]: string[] } = {
     name: [],
     logoImgUri: [],
@@ -49,7 +42,8 @@ const StoreSettingsScreen = (
     phoneNumber: [],
   };
   const [errors, setErrors] = useState(initialErrors);
-  const canSubmit = JSON.stringify(initialErrors) == JSON.stringify(errors);
+  const [canSubmit, setCanSubmit] = useState(false);
+  const [canNavigate, setCanNavigate] = useState(false);
 
   const onPressSave = () => {
     dispatch(
@@ -68,15 +62,20 @@ const StoreSettingsScreen = (
 
   const validation = () => {
     const newErrors = initialErrors;
-    if (newStoreSettings?.name.length == 0) {
+    let canSubmit = true;
+    if (
+      newStoreSettings?.name == undefined ||
+      newStoreSettings.name.length == 0
+    ) {
+      canSubmit = false;
       newErrors["name"].push("Nama toko tidak boleh kosong");
     }
     setErrors(newErrors);
+    setCanSubmit(canSubmit);
   };
 
   useEffect(validation, [newStoreSettings, hasUnsavedChanges]);
 
-  const [canNavigate, setCanNavigate] = useState(false);
   const [backAlert, showBackAlert, hideBackAlert] = useDialog();
   useEffect(() => {
     const unsubscribe = props.navigation.addListener("beforeRemove", (e) => {
@@ -125,82 +124,11 @@ const StoreSettingsScreen = (
           </Button>
         </BaseDialog.Actions>
       </BaseDialog>
-      <Card
-        mode="outlined"
-        style={styles(theme).formCard}
-        contentStyle={styles(theme).formCardContent}
-      >
-        <View style={styles(theme).formItem}>
-          <Text variant="bodySmall" style={styles(theme).label}>
-            Logo Toko (Opsional)
-          </Text>
-          <InputImagePicker
-            imgUri={newStoreSettings?.logoImgUri}
-            onRemoveImage={() =>
-              setNewStoreSettings((state) => ({
-                ...state,
-                logoImgUri: undefined,
-              }))
-            }
-            onSelectImage={(uri) => {
-              setIsDirty((state) => ({ ...state, logoImgUri: true }));
-              setNewStoreSettings((state) => ({ ...state, logoImgUri: uri }));
-            }}
-            resize={{ width: 100, height: 100 }}
-            base64
-            saveFormat={SaveFormat.PNG}
-          />
-        </View>
-        <View style={styles(theme).formItem}>
-          <TextInput
-            label={"Nama Toko"}
-            mode="outlined"
-            value={newStoreSettings?.name || ""}
-            onChangeText={(value) => {
-              setIsDirty((state) => ({ ...state, name: true }));
-              setNewStoreSettings((state) => ({ ...state, name: value }));
-            }}
-            style={styles(theme).transparent}
-            error={isDirty["name"] && errors["name"].length > 0}
-          />
-          {isDirty["name"] &&
-            errors["name"].map((value, idx) => (
-              <Text
-                key={`error-name-${idx}`}
-                style={{ color: theme.colors.error, marginTop: 4 }}
-              >
-                {value}
-              </Text>
-            ))}
-        </View>
-        <View style={styles(theme).formItem}>
-          <TextInput
-            label={"Alamat Toko (Opsional)"}
-            mode="outlined"
-            value={newStoreSettings?.address || ""}
-            onChangeText={(value) => {
-              setIsDirty((state) => ({ ...state, address: true }));
-              setNewStoreSettings((state) => ({ ...state, address: value }));
-            }}
-            style={styles(theme).transparent}
-          />
-        </View>
-        <View style={styles(theme).formItem}>
-          <TextInput
-            label={"No. Telepon Toko (Opsional)"}
-            mode="outlined"
-            value={newStoreSettings?.phoneNumber || ""}
-            onChangeText={(value) => {
-              setIsDirty((state) => ({ ...state, phoneNumber: true }));
-              setNewStoreSettings((state) => ({
-                ...state,
-                phoneNumber: value,
-              }));
-            }}
-            style={styles(theme).transparent}
-          />
-        </View>
-      </Card>
+      <StoreSettingsForm
+        storeSettings={newStoreSettings}
+        setStoreSettings={setNewStoreSettings}
+        errors={errors}
+      />
       <Button
         mode="contained"
         style={styles(theme).saveButton}
