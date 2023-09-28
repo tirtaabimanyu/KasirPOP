@@ -81,7 +81,7 @@ const Router = () => {
           contentStyle: styles(theme).card,
           header: (props) => <Header {...props} theme={theme} />,
         }}
-        initialRouteName={storeSettings == undefined ? "landing" : "tutorial"}
+        initialRouteName={storeSettings == undefined ? "landing" : "home"}
       >
         <Stack.Screen
           name="landing"

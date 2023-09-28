@@ -98,7 +98,7 @@ const InitialSetupScreen = (
       })
     ).then(() => {
       dispatch(showSnackbar({ message: "Informasi toko telah diperbarui." }));
-      props.navigation.replace("home", { screen: "cashier" });
+      props.navigation.replace("tutorial");
     });
   };
 
