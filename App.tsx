@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { PaperProvider, MD3LightTheme } from "react-native-paper";
+import { PaperProvider, MD3LightTheme, useTheme } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 
@@ -18,11 +18,8 @@ import { fetchSettings } from "./src/redux/slices/settingsSlice";
 import FullscreenSpinner from "./src/components/FullscreenSpinner";
 import { fetchQueueNumber } from "./src/redux/slices/transactionSlice";
 
-const DataInit = ({
-  children,
-}: {
-  children: React.JSX.Element | React.JSX.Element[];
-}) => {
+const Init = () => {
+  const theme = useTheme();
   const [isReady, setIsReady] = useState(false);
   const dispatch = useAppDispatch();
   const {
@@ -47,7 +44,9 @@ const DataInit = ({
   }, []);
   return isReady ? (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      {children}
+      <StatusBar style="light" backgroundColor={theme.colors.primary} />
+      <GlobalSnackbar />
+      <Router />
     </SafeAreaView>
   ) : (
     <FullscreenSpinner />
@@ -60,11 +59,7 @@ const App = () => {
       <ReduxProvider store={store}>
         <SafeAreaProvider>
           <PaperProvider theme={MD3LightTheme}>
-            <DataInit>
-              <StatusBar style="auto" />
-              <GlobalSnackbar />
-              <Router />
-            </DataInit>
+            <Init />
           </PaperProvider>
         </SafeAreaProvider>
       </ReduxProvider>
