@@ -1,7 +1,7 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Linking, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import {
   Button,

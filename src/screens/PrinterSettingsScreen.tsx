@@ -1,11 +1,4 @@
-import {
-  Image,
-  Linking,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
