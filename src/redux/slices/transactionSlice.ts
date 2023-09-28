@@ -77,6 +77,21 @@ export const fetchQueueNumber = createAsyncThunk(
   }
 );
 
+export const fetchReport = createAsyncThunk(
+  "transaction/fetchReport",
+  async (payload: {
+    dateRange: { start: Date; end: Date };
+    service: TransactionService;
+  }) => {
+    const result = await payload.service.getAll({
+      dateRange: payload.dateRange,
+      ascending: true,
+    });
+
+    return TransactionSerializer.serializeMany(result);
+  }
+);
+
 export type TransactionState = {
   transactions: TransactionData[];
   summary: {

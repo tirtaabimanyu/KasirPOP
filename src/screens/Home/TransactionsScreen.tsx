@@ -1,7 +1,7 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import {
   Button,
@@ -17,15 +17,23 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import BaseDialog from "../../components/BaseDialog";
 import { HomeDrawerParamList, RootStackParamList } from "../../types/routes";
 import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
-import { toRupiah } from "../../utils/formatUtils";
+import {
+  toFormattedDate,
+  toFormattedDateTime,
+  toRupiah,
+} from "../../utils/formatUtils";
 import useDialog from "../../hooks/useDialog";
 import {
+  fetchReport,
   fetchTransactionSummary,
   fetchTransactions,
 } from "../../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../../data/connection";
 import { PaymentType, TransactionData } from "../../types/data";
 import useDateRange from "../../hooks/useDateRange";
+import { jsonToCSV } from "react-native-csv";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 type TransactionPaymentType = PaymentType | "all";
 const paymentTypeChip: { value: TransactionPaymentType; label: string }[] = [
@@ -107,6 +115,7 @@ const TransactionsScreen = ({
   const { summary, transactions } = useAppSelector(
     (state) => state.transaction
   );
+  const { storeSettings } = useAppSelector((state) => state.settings);
   const cashTransactions = transactions.filter(
     (transaction) => transaction.paymentType == PaymentType.CASH
   );
@@ -178,12 +187,59 @@ const TransactionsScreen = ({
     );
   }, [isFocused, summaryDateRange, transactionsDateRange]);
 
+  const generateReport = async (dateRange: { start: Date; end: Date }) => {
+    type ReportRow = {
+      "ID Transaksi": string;
+      "Tanggal Pembayaran": string;
+      "Tipe Pembayaran": string;
+      "Nama Produk": string;
+      "Jumlah Produk": string;
+      "Harga Jual (IDR)": string;
+      "Total Penjualan (IDR)": string;
+    };
+
+    const transactions = await dispatch(
+      fetchReport({ dateRange, service: transactionService })
+    ).unwrap();
+    const data = transactions?.reduce((obj, transaction) => {
+      const currentId = transaction.products.map((product, idx) => ({
+        "ID Transaksi": `${idx == 0 ? transaction.id : ""}`,
+        "Tanggal Pembayaran": `${toFormattedDateTime(
+          new Date(transaction.createdAt)
+        )}`,
+        "Tipe Pembayaran": `${transaction.paymentType}`,
+        "Nama Produk": `${product.name}`,
+        "Jumlah Produk": `${product.quantity}`,
+        "Harga Jual (IDR)": `${product.price}`,
+        "Total Penjualan (IDR)": `${transaction.totalPrice}`,
+      }));
+      return [...obj, ...currentId];
+    }, [] as ReportRow[]);
+
+    const CSV = jsonToCSV(data);
+
+    const directoryUri = FileSystem.cacheDirectory;
+    const fileUri =
+      directoryUri +
+      `Laporan_${storeSettings?.name}_${toFormattedDate(
+        dateRange.start
+      )}-${toFormattedDate(dateRange.end)}.csv`;
+
+    await FileSystem.writeAsStringAsync(fileUri, CSV, { encoding: "utf8" });
+
+    const canShare = await Sharing.isAvailableAsync();
+    if (canShare) {
+      Sharing.shareAsync(fileUri);
+    }
+  };
+
   return (
     <View style={styles(theme).container}>
       <DownloadDialog
         visible={downloadDialog}
         onDismiss={hideDownloadDialog}
-        onDownload={() => {
+        onDownload={async (dateRange) => {
+          generateReport(dateRange);
           hideDownloadDialog();
         }}
       />

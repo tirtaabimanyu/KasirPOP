@@ -27,10 +27,11 @@ export class TransactionService {
       start: Date;
       end: Date;
     };
+    ascending?: boolean;
   }): Promise<TransactionModel[]> {
     let query: FindManyOptions<TransactionModel> = {
       order: {
-        id: "DESC",
+        id: options?.ascending ? "ASC" : "DESC",
       },
     };
     if (options?.dateRange)

@@ -34,3 +34,7 @@ export const toFormattedTime = (value: Date): string => {
     minute: "numeric",
   })}${displayedTimezone}`;
 };
+
+export const toFormattedDateTime = (value: Date): string => {
+  return `${toFormattedDate(value)} ${toFormattedTime(value)}`;
+};
