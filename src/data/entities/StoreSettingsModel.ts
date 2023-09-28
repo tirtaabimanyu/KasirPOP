@@ -8,8 +8,8 @@ export class StoreSettingsModel {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  logoImgUri?: string;
+  @Column({ type: "varchar", nullable: true })
+  logoImgUri?: string | null;
 
   @Column({ nullable: true })
   address?: string;

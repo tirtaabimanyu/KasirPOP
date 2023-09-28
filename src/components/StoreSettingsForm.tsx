@@ -49,7 +49,7 @@ const StoreSettingsForm = ({
           onRemoveImage={() =>
             setStoreSettings((state) => ({
               ...state,
-              logoImgUri: undefined,
+              logoImgUri: null,
             }))
           }
           onSelectImage={(uri) => {

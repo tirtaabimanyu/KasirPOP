@@ -110,14 +110,14 @@ export type UpdatePaymentSettingsData = {
 
 export type StoreSettingsData = {
   name: string;
-  logoImgUri?: string;
+  logoImgUri?: string | null;
   address?: string;
   phoneNumber?: string;
 };
 
 export type UpdateStoreSettingsData = {
   name?: string;
-  logoImgUri?: string;
+  logoImgUri?: string | null;
   address?: string;
   phoneNumber?: string;
 };
