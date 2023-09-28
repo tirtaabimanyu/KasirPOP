@@ -11,7 +11,9 @@ export type RootStackParamList = {
   storeSettings: undefined;
   paymentType: undefined;
   printerSettings: undefined;
+  landing: undefined;
   initialSetup: undefined;
+  tutorial: undefined;
 };
 
 export type HomeDrawerParamList = {

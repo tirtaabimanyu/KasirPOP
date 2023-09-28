@@ -26,7 +26,9 @@ import StoreSettingsScreen from "../screens/StoreSettingsScreen";
 import { useAppSelector } from "../hooks/typedStore";
 import PrinterSettingsScreen from "../screens/PrinterSettingsScreen";
 import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
-import InitialSetupScreen from "../screens/InitialSetupScreen";
+import InitialSetupScreen from "../screens/InitialSetup/InitialSetupScreen";
+import LandingScreen from "../screens/InitialSetup/LandingScreen";
+import TutorialScreen from "../screens/InitialSetup/TutorialScreen";
 
 enableScreens();
 enableFreeze();
@@ -79,12 +81,22 @@ const Router = () => {
           contentStyle: styles(theme).card,
           header: (props) => <Header {...props} theme={theme} />,
         }}
-        initialRouteName={storeSettings == undefined ? "initialSetup" : "home"}
+        initialRouteName={storeSettings == undefined ? "landing" : "tutorial"}
       >
+        <Stack.Screen
+          name="landing"
+          component={LandingScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="initialSetup"
           component={InitialSetupScreen}
           options={{ title: "Pengaturan Awal Toko" }}
+        />
+        <Stack.Screen
+          name="tutorial"
+          component={TutorialScreen}
+          options={{ title: "Cara Penggunaan KasirPOP" }}
         />
         <Stack.Screen
           name="home"

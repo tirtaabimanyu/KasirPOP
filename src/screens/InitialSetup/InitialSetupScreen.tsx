@@ -7,17 +7,20 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
-import StoreSettingsForm from "../components/StoreSettingsForm";
-import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
-import { useDatabaseConnection } from "../data/connection";
+import StoreSettingsForm from "../../components/StoreSettingsForm";
+import { useAppDispatch, useAppSelector } from "../../hooks/typedStore";
+import { useDatabaseConnection } from "../../data/connection";
 import { useEffect, useState } from "react";
-import { StoreSettingsData, UpdateCombinedSettingsData } from "../types/data";
+import {
+  StoreSettingsData,
+  UpdateCombinedSettingsData,
+} from "../../types/data";
 import { Image, View } from "react-native";
-import QrisListItem from "../components/QrisListItem";
-import { updateSettings } from "../redux/slices/settingsSlice";
-import { showSnackbar } from "../redux/slices/layoutSlice";
+import QrisListItem from "../../components/QrisListItem";
+import { updateSettings } from "../../redux/slices/settingsSlice";
+import { showSnackbar } from "../../redux/slices/layoutSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/routes";
+import { RootStackParamList } from "../../types/routes";
 
 const InitialSetupScreen = (
   props: NativeStackScreenProps<RootStackParamList, "initialSetup">
