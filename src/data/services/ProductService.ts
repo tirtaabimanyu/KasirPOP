@@ -17,6 +17,9 @@ export class ProductService {
       relations: {
         categories: true,
       },
+      order: {
+        name: "ASC",
+      },
     });
 
     return products;
