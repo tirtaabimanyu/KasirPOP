@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
 import { Button, Checkbox, List, MD3Theme, useTheme } from "react-native-paper";
 import Row from "./Row";
 import { PaymentSettingsData } from "../types/data";

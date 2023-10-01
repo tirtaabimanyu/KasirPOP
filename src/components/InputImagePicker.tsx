@@ -1,4 +1,11 @@
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  Image,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { Button, Card, MD3Theme, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { useCallback } from "react";
@@ -15,6 +22,7 @@ type InputImagePickerProp = {
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   saveFormat?: SaveFormat.JPEG | SaveFormat.PNG;
+  allowsEditing?: boolean;
 };
 const InputImagePicker = ({
   imgUri,
@@ -32,7 +40,7 @@ const InputImagePicker = ({
   const pickImage = useCallback(async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+      allowsEditing: Platform.OS == "ios" ? false : true,
       aspect: [resize.width, resize.height],
     });
 

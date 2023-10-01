@@ -4,7 +4,11 @@ import {
   StoreSettingsData,
   TransactionData,
 } from "../types/data";
-import { toFormattedTime, toRupiah } from "../utils/formatUtils";
+import {
+  toFormattedDate,
+  toFormattedTime,
+  toRupiah,
+} from "../utils/formatUtils";
 
 export enum ReceiptRowType {
   TEXT = "text",
@@ -174,7 +178,7 @@ export class ReceiptFormatter {
     content.push({
       type: ReceiptRowType.TEXT,
       str: this.spaceBetween(
-        `${new Date(transaction.createdAt).toLocaleDateString("en-gb")}`,
+        `${toFormattedDate(new Date(transaction.createdAt))}`,
         `${toFormattedTime(new Date(transaction.createdAt))}`,
         characterPerLine
       ),

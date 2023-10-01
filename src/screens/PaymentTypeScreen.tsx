@@ -1,6 +1,5 @@
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
-  Button,
   Card,
   Checkbox,
   List,
@@ -10,11 +9,6 @@ import {
 } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/routes";
-import { useState } from "react";
-import BaseDialog from "../components/BaseDialog";
-import InputImagePicker from "../components/InputImagePicker";
-import useDialog from "../hooks/useDialog";
-import Row from "../components/Row";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { useDatabaseConnection } from "../data/connection";
 import { updateSettings } from "../redux/slices/settingsSlice";

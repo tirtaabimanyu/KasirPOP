@@ -35,7 +35,7 @@ const FixedWidthText = (props: TextProps<string>) => {
 
   return (
     <Text {...rest} style={[{ fontFamily }, style]}>
-      {children}
+      {children + `\u00AD`}
     </Text>
   );
 };
@@ -63,16 +63,9 @@ const PrinterSettingsScreen = () => {
     PaperSize.EIGHTY,
   ];
 
-  const charactersPerLine =
-    newPrinterSettings.paperSize == PaperSize.FIFTY_SEVEN
-      ? 30
-      : newPrinterSettings.paperSize == PaperSize.FIFTY_EIGHT
-      ? 32
-      : 48;
-
   const mockTransaction = {
     id: 1,
-    createdAt: "2023-09-26T12:53:15.000Z",
+    createdAt: new Date().toString(),
     totalPrice: 90000,
     moneyReceived: 100000,
     change: 10000,
@@ -238,7 +231,11 @@ const PrinterSettingsScreen = () => {
             `dan Nomor Telepon Toko dapat dilakukan\n` +
             `di menu Informasi Toko`}
         </Text>
-        <Button mode="contained" onPress={onPressPrintSample}>
+        <Button
+          mode="contained"
+          onPress={onPressPrintSample}
+          disabled={printerSettings.printerIdentifier == undefined}
+        >
           Cetak struk sampel
         </Button>
       </View>

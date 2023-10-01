@@ -18,3 +18,7 @@ web-build/
 
 # android build
 build-*
+
+# prebuild
+/android/
+/ios/

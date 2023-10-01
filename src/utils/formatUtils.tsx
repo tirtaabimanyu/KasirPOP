@@ -1,5 +1,9 @@
+import moment from "moment";
+
 export const toRupiah = (value: number, withSymbol: boolean = true): string =>
-  `${withSymbol ? "Rp" : ""}${value.toLocaleString("en-GB")}`;
+  `${withSymbol ? "Rp" : ""}${value
+    .toString()
+    .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")}`;
 
 export const toNumber = (value: string): number =>
   Number(value.replaceAll(/[^0-9]/g, ""));
@@ -11,11 +15,7 @@ export const toFormattedDate = (
   if (asToday && value.toDateString() == new Date().toDateString())
     return "Hari ini";
 
-  return value.toLocaleDateString("id", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return moment(value).format("DD/MM/YYYY");
 };
 
 export const toFormattedTime = (value: Date): string => {
@@ -29,10 +29,7 @@ export const toFormattedTime = (value: Date): string => {
     displayedTimezone = " WIT";
   }
 
-  return `${value.toLocaleTimeString("en-gb", {
-    hour: "numeric",
-    minute: "numeric",
-  })}${displayedTimezone}`;
+  return `${moment(value).format("HH:mm")}${displayedTimezone}`;
 };
 
 export const toFormattedDateTime = (value: Date): string => {

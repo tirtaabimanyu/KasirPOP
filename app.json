@@ -62,7 +62,8 @@
           "photosPermission": "The app accesses your photos to let you choose suitable picture for your products."
         }
       ],
-      ["./plugins/withDisableForcedDarkModeAndroid.js", {}]
+      ["./plugins/withDisableForcedDarkModeAndroid.js", {}],
+      ["./plugins/withRemoveiOSNotificationEntitlement.js", {}]
     ]
   }
 }

@@ -4,6 +4,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { Pressable, StyleProp, TextStyle, View, ViewStyle } from "react-native";
 import { TextInput } from "react-native-paper";
+import moment from "moment";
 
 type InputDatePickerProps = {
   setDate: (d: Date) => void;
@@ -31,14 +32,7 @@ const InputDatePicker = (props: InputDatePickerProps) => {
         <TextInput
           mode="outlined"
           label={props.label}
-          value={
-            props.date &&
-            props.date.toLocaleDateString("id", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })
-          }
+          value={props.date && moment(props.date).format("DD MMM YYYY")}
           editable={false}
           error={props.error}
           style={[{ backgroundColor: "transparent" }, props.inputStyle]}
