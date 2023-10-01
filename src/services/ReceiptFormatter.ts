@@ -14,6 +14,7 @@ export enum ReceiptRowType {
   TEXT = "text",
   LARGE_TEXT = "largeText",
   IMG = "img",
+  QR = "qr",
 }
 export enum ReceiptRowAlign {
   CENTER = "center",
@@ -252,23 +253,37 @@ export class ReceiptFormatter {
     const characterPerLine = this._characterPerLine[printerSettings.paperSize];
     const footer = [];
 
+    if (
+      printerSettings.receiptFooter.length > 0 ||
+      printerSettings.footerLink.length > 0
+    )
+      footer.push({
+        type: ReceiptRowType.TEXT,
+        str: this.lineBreak(characterPerLine, "-"),
+      });
+
     if (printerSettings.receiptFooter.length > 0)
-      footer.push(
-        ...[
-          {
-            type: ReceiptRowType.TEXT,
-            str: this.lineBreak(characterPerLine, "-"),
-          },
-          {
-            type: ReceiptRowType.TEXT,
-            str: this.breakWord(
-              printerSettings.receiptFooter,
-              characterPerLine
-            ),
-            align: ReceiptRowAlign.CENTER,
-          },
-        ]
-      );
+      footer.push({
+        type: ReceiptRowType.TEXT,
+        str: this.breakWord(printerSettings.receiptFooter, characterPerLine),
+        align: ReceiptRowAlign.CENTER,
+      });
+
+    if (printerSettings.footerLink.length > 0) {
+      if (printerSettings.footerLinkAsQR) {
+        footer.push({
+          type: ReceiptRowType.QR,
+          str: printerSettings.footerLink,
+          align: ReceiptRowAlign.CENTER,
+        });
+      } else {
+        footer.push({
+          type: ReceiptRowType.TEXT,
+          str: this.breakWord(printerSettings.footerLink, characterPerLine),
+          align: ReceiptRowAlign.CENTER,
+        });
+      }
+    }
 
     return footer;
   };

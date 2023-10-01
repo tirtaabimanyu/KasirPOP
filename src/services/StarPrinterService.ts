@@ -193,6 +193,13 @@ export class StarPrinterService {
           printerBuilder = printerBuilder.actionPrintImage(
             new StarXpandCommand.Printer.ImageParameter(row.str, 200)
           );
+        } else if (row.type == ReceiptRowType.QR) {
+          printerBuilder = printerBuilder.actionPrintQRCode(
+            new StarXpandCommand.Printer.QRCodeParameter(row.str)
+              .setModel(StarXpandCommand.Printer.QRCodeModel.Model2)
+              .setLevel(StarXpandCommand.Printer.QRCodeLevel.L)
+              .setCellSize(8)
+          );
         }
         if (row.align != undefined)
           printerBuilder = printerBuilder.styleAlignment(

@@ -127,6 +127,8 @@ export type PrinterSettingsData = {
   printerIdentifier?: string | null;
   printerInterfaceType?: string | null;
   receiptFooter: string;
+  footerLink: string;
+  footerLinkAsQR: boolean;
   paperSize: number;
   showLogo: boolean;
   showQueueNumber: boolean;
@@ -138,6 +140,8 @@ export type UpdatePrinterSettingsData = {
   printerIdentifier?: string | null;
   printerInterfaceType?: string | null;
   receiptFooter?: string;
+  footerLink?: string;
+  footerLinkAsQR?: boolean;
   paperSize?: number;
   showLogo?: boolean;
   showQueueNumber?: boolean;

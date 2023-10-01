@@ -39,6 +39,8 @@ const initialState: SettingsState = {
   paymentSettings: { cash: false, qris: false },
   printerSettings: {
     receiptFooter: "",
+    footerLink: "",
+    footerLinkAsQR: false,
     paperSize: 58,
     showLogo: false,
     showQueueNumber: false,

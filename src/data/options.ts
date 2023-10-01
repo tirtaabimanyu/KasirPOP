@@ -10,6 +10,7 @@ import { AddPaymentSettings1695283462638 } from "./migrations/1695283462638-add-
 import { AddStoreSettings1695372133911 } from "./migrations/1695372133911-add-store-settings";
 import { AddReceiptDetailsToTransactions1695539034773 } from "./migrations/1695539034773-add-receipt-details-to-transactions";
 import { AddPrinterSettings1695724577465 } from "./migrations/1695724577465-add-printer-settings";
+import { AddLinksToReceiptFooter1696175688638 } from "./migrations/1696175688638-add-links-to-receipt-footer";
 
 export const CommonDataSourceOptions = {
   entities: [
@@ -26,5 +27,6 @@ export const CommonDataSourceOptions = {
     AddStoreSettings1695372133911,
     AddReceiptDetailsToTransactions1695539034773,
     AddPrinterSettings1695724577465,
+    AddLinksToReceiptFooter1696175688638,
   ],
 };

@@ -55,6 +55,8 @@ const PrinterSettingsScreen = () => {
     showQueueNumber: printerSettings.showQueueNumber,
     paperSize: printerSettings.paperSize,
     receiptFooter: printerSettings.receiptFooter,
+    footerLink: printerSettings.footerLink,
+    footerLinkAsQR: printerSettings.footerLinkAsQR,
   });
 
   const paperSize = [
@@ -212,11 +214,17 @@ const PrinterSettingsScreen = () => {
                 >
                   {row.str}
                 </FixedWidthText>
-              ) : (
+              ) : row.type == ReceiptRowType.IMG ? (
                 <Image
                   key={`receiptContent-${idx}`}
                   source={{ uri: row.str }}
                   style={{ width: 100, height: 100 }}
+                />
+              ) : (
+                <Image
+                  key={`receiptContent-${idx}`}
+                  source={require("../../assets/QR-Placeholder.png")}
+                  style={{ width: 150, height: 150 }}
                 />
               )
             )}
@@ -343,6 +351,33 @@ const PrinterSettingsScreen = () => {
               }))
             }
           />
+          <TextInput
+            multiline
+            mode="outlined"
+            label={"Tautan Footer (Opsional)"}
+            style={{ marginBottom: 16 }}
+            value={newPrinterSettings.footerLink}
+            onChangeText={(text) =>
+              setNewPrinterSettings((state) => ({
+                ...state,
+                footerLink: text,
+              }))
+            }
+          />
+          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+            <Text variant="bodyMedium">
+              Tampilkan Tautan Footer Sebagai QR Code
+            </Text>
+            <Switch
+              value={newPrinterSettings.footerLinkAsQR}
+              onValueChange={() =>
+                setNewPrinterSettings((state) => ({
+                  ...state,
+                  footerLinkAsQR: !state.footerLinkAsQR,
+                }))
+              }
+            />
+          </Row>
           <Button
             mode="contained"
             style={{ alignSelf: "center" }}
