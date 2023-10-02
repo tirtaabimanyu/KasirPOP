@@ -236,15 +236,16 @@ export class ReceiptFormatter {
       ),
     });
 
-    content.push({
-      type: ReceiptRowType.TEXT,
-      str: this.breakWord(
-        "Kembali : " +
-          this.alignRight(`${toRupiah(transaction.change, false)}`, 11),
-        characterPerLine,
-        ReceiptRowAlign.RIGHT
-      ),
-    });
+    if (transaction.paymentType == PaymentType.CASH)
+      content.push({
+        type: ReceiptRowType.TEXT,
+        str: this.breakWord(
+          "Kembali : " +
+            this.alignRight(`${toRupiah(transaction.change, false)}`, 11),
+          characterPerLine,
+          ReceiptRowAlign.RIGHT
+        ),
+      });
 
     return content;
   };
