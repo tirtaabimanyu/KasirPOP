@@ -15,7 +15,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import Row from "../components/Row";
 import { ScrollView } from "react-native-gesture-handler";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateSettings } from "../redux/slices/settingsSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { showSnackbar } from "../redux/slices/layoutSlice";
@@ -28,6 +28,8 @@ import BluetoothStateManager from "react-native-bluetooth-state-manager";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
 import { ReceiptFormatter, ReceiptRowType } from "../services/ReceiptFormatter";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/routes";
 
 const FixedWidthText = (props: TextProps<string>) => {
   const { children, style, ...rest } = props;
@@ -40,7 +42,9 @@ const FixedWidthText = (props: TextProps<string>) => {
   );
 };
 
-const PrinterSettingsScreen = () => {
+const PrinterSettingsScreen = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, "printerSettings">) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { settingsService } = useDatabaseConnection();
@@ -49,7 +53,7 @@ const PrinterSettingsScreen = () => {
   );
   const printerService = new StarPrinterService();
 
-  const [newPrinterSettings, setNewPrinterSettings] = useState({
+  const initialData = {
     autoPrintReceipt: printerSettings.autoPrintReceipt,
     showLogo: printerSettings.showLogo,
     showQueueNumber: printerSettings.showQueueNumber,
@@ -57,7 +61,10 @@ const PrinterSettingsScreen = () => {
     receiptFooter: printerSettings.receiptFooter,
     footerLink: printerSettings.footerLink,
     footerLinkAsQR: printerSettings.footerLinkAsQR,
-  });
+  };
+  const [newPrinterSettings, setNewPrinterSettings] = useState(initialData);
+  const hasUnsavedChanges =
+    JSON.stringify(initialData) !== JSON.stringify(newPrinterSettings);
 
   const paperSize = [
     PaperSize.FIFTY_SEVEN,
@@ -167,11 +174,48 @@ const PrinterSettingsScreen = () => {
     );
   };
 
+  const [backAlert, showBackAlert, hideBackAlert] = useDialog();
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      if (!hasUnsavedChanges || backAlert) {
+        return;
+      }
+      e.preventDefault();
+      showBackAlert();
+    });
+    return unsubscribe;
+  }, [navigation, hasUnsavedChanges, backAlert, showBackAlert]);
+
   return (
     <ScrollView
       contentContainerStyle={styles(theme).container}
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
+      <BaseDialog
+        visible={backAlert}
+        onDismiss={hideBackAlert}
+        dismissable={true}
+      >
+        <BaseDialog.Title>Apakah Anda yakin keluar halaman?</BaseDialog.Title>
+        <BaseDialog.Content>
+          <Text variant="bodyMedium">
+            {`Perubahan yang ada di halaman ini akan hilang jika Anda keluar halaman.`}
+          </Text>
+        </BaseDialog.Content>
+        <BaseDialog.Actions>
+          <Button onPress={hideBackAlert} style={{ paddingHorizontal: 16 }}>
+            Batal
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => navigation.goBack()}
+            style={{ paddingHorizontal: 24 }}
+          >
+            Keluar Halaman
+          </Button>
+        </BaseDialog.Actions>
+      </BaseDialog>
       <BaseDialog visible={btAlert} dismissable onDismiss={hideBtAlert}>
         <BaseDialog.Title>Aktifkan Bluetooth</BaseDialog.Title>
         <BaseDialog.Content>
