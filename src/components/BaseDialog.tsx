@@ -5,6 +5,7 @@ type CommonProps = {
   visible: boolean;
   children: React.JSX.Element[] | React.JSX.Element;
   style?: StyleProp<ViewStyle>;
+  transparent?: boolean;
 };
 
 interface DismissableDialog extends CommonProps {
@@ -23,11 +24,15 @@ const BaseDialog = (props: BaseDialogProps) => {
   return (
     <Portal>
       <Dialog
-        theme={{
-          colors: {
-            backdrop: "transparent",
-          },
-        }}
+        {...(props.transparent
+          ? {
+              theme: {
+                colors: {
+                  backdrop: "transparent",
+                },
+              },
+            }
+          : {})}
         visible={props.visible}
         style={[
           {

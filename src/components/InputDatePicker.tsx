@@ -65,6 +65,7 @@ const InputDatePicker = (props: InputDatePickerProps) => {
             shadowRadius: 16.0,
             elevation: 24,
           }}
+          transparent
         >
           <BaseDialog.Content>
             <DateTimePicker
