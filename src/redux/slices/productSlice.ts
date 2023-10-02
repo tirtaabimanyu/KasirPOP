@@ -25,8 +25,7 @@ export const createProduct = createAsyncThunk(
   }): Promise<ProductData> => {
     const product = await payload.service.create(payload.data);
 
-    const serialized = ProductSerializer.serialize(product);
-    return serialized;
+    return ProductSerializer.serialize(product);
   }
 );
 
@@ -78,12 +77,18 @@ export const productSlice = createSlice({
     });
     builder.addCase(createProduct.fulfilled, (state, action) => {
       state.products.push(action.payload);
+      state.products.sort((a, b) =>
+        a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+      );
     });
     builder.addCase(updateProduct.fulfilled, (state, action) => {
       const productIndex = state.products.findIndex(
         (product) => product.id == action.payload.id
       );
       state.products[productIndex] = action.payload;
+      state.products.sort((a, b) =>
+        a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+      );
     });
     builder.addCase(deleteProduct.fulfilled, (state, action) => {
       state.products = state.products.filter(
