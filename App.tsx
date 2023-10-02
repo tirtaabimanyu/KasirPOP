@@ -1,6 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { PaperProvider, MD3LightTheme, useTheme } from "react-native-paper";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 
 import Router from "./src/routes";
@@ -17,6 +20,7 @@ import { fetchAllCategories } from "./src/redux/slices/categorySlice";
 import { fetchSettings } from "./src/redux/slices/settingsSlice";
 import FullscreenSpinner from "./src/components/FullscreenSpinner";
 import { fetchQueueNumber } from "./src/redux/slices/transactionSlice";
+import { View } from "react-native";
 
 const Init = () => {
   const theme = useTheme();
@@ -42,12 +46,20 @@ const Init = () => {
 
     fetch();
   }, []);
+
+  const insets = useSafeAreaInsets();
   return isReady ? (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <StatusBar style="light" backgroundColor={theme.colors.primary} />
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top,
+        backgroundColor: theme.colors.primary,
+      }}
+    >
+      <StatusBar style={"light"} backgroundColor={theme.colors.primary} />
       <GlobalSnackbar />
       <Router />
-    </SafeAreaView>
+    </View>
   ) : (
     <FullscreenSpinner />
   );
