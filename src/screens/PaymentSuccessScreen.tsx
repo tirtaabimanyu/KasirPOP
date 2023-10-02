@@ -130,6 +130,7 @@ const PaymentSuccessScreen = ({
             backgroundColor: theme.colors.primaryContainer,
             borderRadius: 64,
             marginBottom: 16,
+            overflow: "hidden",
           }}
         />
         <Text variant="headlineLarge">Transaksi Berhasil</Text>

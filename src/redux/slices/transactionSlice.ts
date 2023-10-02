@@ -8,6 +8,7 @@ import { TransactionService } from "../../data/services/TransactionService";
 import TransactionSerializer from "../../data/serializers/TransactionSerializer";
 import { fetchAllProducts } from "./productSlice";
 import { DatabaseConnectionContextData } from "../../types/connection";
+import { toFormattedDate } from "../../utils/formatUtils";
 
 export const fetchTransactions = createAsyncThunk(
   "transaction/fetch",
@@ -73,7 +74,7 @@ export const fetchQueueNumber = createAsyncThunk(
     };
     const result = await payload.service.countByDate(dateRange);
 
-    return result + 1;
+    return { nextQueue: result + 1, queueDate: toFormattedDate(payload.date) };
   }
 );
 
@@ -99,12 +100,14 @@ export type TransactionState = {
     qris: number;
   };
   nextQueue: number;
+  queueDate: string;
 };
 
 const initialState: TransactionState = {
   transactions: [],
   summary: { cash: 0, qris: 0 },
   nextQueue: 0,
+  queueDate: "",
 };
 
 export const transactionSlice = createSlice({
@@ -123,7 +126,8 @@ export const transactionSlice = createSlice({
       state.nextQueue = action.payload.queueNumber + 1;
     });
     builder.addCase(fetchQueueNumber.fulfilled, (state, action) => {
-      state.nextQueue = action.payload;
+      state.nextQueue = action.payload.nextQueue;
+      state.queueDate = action.payload.queueDate;
     });
   },
 });

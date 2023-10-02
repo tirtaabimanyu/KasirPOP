@@ -10,12 +10,15 @@ import {
 } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
 import NumericKeyboard from "../components/NumericKeyboard";
-import { toRupiah } from "../utils/formatUtils";
+import { toFormattedDate, toRupiah } from "../utils/formatUtils";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import { resetCart } from "../redux/slices/cartSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/routes";
-import { createTransaction } from "../redux/slices/transactionSlice";
+import {
+  createTransaction,
+  fetchQueueNumber,
+} from "../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../data/connection";
 import { PaymentType } from "../types/data";
 import FloatingRecap from "../components/FloatingRecap";
@@ -35,10 +38,20 @@ const PaymentScreen = ({
   const services = useDatabaseConnection();
   const cart = useAppSelector((state) => state.cart);
   const queueNumber = useAppSelector((state) => state.transaction.nextQueue);
+  const queueDate = useAppSelector((state) => state.transaction.queueDate);
   const { paymentSettings, printerSettings, storeSettings } = useAppSelector(
     (state) => state.settings
   );
   const dispatch = useAppDispatch();
+
+  const today = new Date();
+  useEffect(() => {
+    if (toFormattedDate(today) != queueDate) {
+      dispatch(
+        fetchQueueNumber({ date: today, service: services.transactionService })
+      );
+    }
+  }, [today]);
 
   useEffect(() => {
     if (cart.totalItem == 0) navigation.navigate("home");
@@ -152,6 +165,8 @@ const PaymentScreen = ({
           showConnectErrorDialog();
         } else if (error instanceof StarIO10UnprintableError) {
           showPrintErrorDialog();
+        } else {
+          console.log(error);
         }
       } finally {
         setIsPrinting(false);
