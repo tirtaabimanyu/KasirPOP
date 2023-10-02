@@ -130,7 +130,7 @@ const PaymentSuccessScreen = ({
           color={theme.colors.primary}
           style={{
             backgroundColor: theme.colors.primaryContainer,
-            borderRadius: 64,
+            borderRadius: 32,
             marginBottom: 16,
             overflow: "hidden",
           }}
