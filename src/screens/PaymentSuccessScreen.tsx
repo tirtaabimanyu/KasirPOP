@@ -12,6 +12,7 @@ import { StarPrinterService } from "../services/StarPrinterService";
 import {
   StarIO10CommunicationError,
   StarIO10IllegalDeviceStateError,
+  StarIO10NotFoundError,
   StarIO10UnprintableError,
 } from "kasirbodoh-star-io10";
 import BaseDialog from "../components/BaseDialog";
@@ -47,7 +48,8 @@ const PaymentSuccessScreen = ({
     } catch (error) {
       if (
         error instanceof StarIO10IllegalDeviceStateError ||
-        error instanceof StarIO10CommunicationError
+        error instanceof StarIO10CommunicationError ||
+        error instanceof StarIO10NotFoundError
       ) {
         showConnectErrorDialog();
       } else if (error instanceof StarIO10UnprintableError) {
