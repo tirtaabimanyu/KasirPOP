@@ -1,10 +1,18 @@
-import { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Pressable, StyleProp, TextStyle, View, ViewStyle } from "react-native";
+import {
+  Platform,
+  Pressable,
+  StyleProp,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 import { TextInput } from "react-native-paper";
 import moment from "moment";
+import useDialog from "../hooks/useDialog";
+import BaseDialog from "./BaseDialog";
 
 type InputDatePickerProps = {
   setDate: (d: Date) => void;
@@ -16,19 +24,21 @@ type InputDatePickerProps = {
 };
 
 const InputDatePicker = (props: InputDatePickerProps) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow, hideShow] = useDialog();
+  const showDatePicker =
+    Platform.OS == "ios" || (Platform.OS == "android" && show);
 
   const onChange = (
     e: DateTimePickerEvent,
     selectedDate: Date = new Date()
   ) => {
-    setShow(false);
+    hideShow();
     props.setDate(selectedDate);
   };
 
   return (
     <View style={props.style}>
-      <Pressable onPress={() => setShow(true)}>
+      <Pressable onPress={() => setShow()}>
         <TextInput
           mode="outlined"
           label={props.label}
@@ -36,16 +46,46 @@ const InputDatePicker = (props: InputDatePickerProps) => {
           editable={false}
           error={props.error}
           style={[{ backgroundColor: "transparent" }, props.inputStyle]}
+          pointerEvents="none"
         />
       </Pressable>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={props.date}
-          mode={"date"}
-          is24Hour={true}
-          onChange={onChange}
-        />
+      {Platform.OS == "ios" ? (
+        <BaseDialog
+          visible={show}
+          dismissable
+          onDismiss={hideShow}
+          style={{
+            width: 450,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 12,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 16.0,
+            elevation: 24,
+          }}
+        >
+          <BaseDialog.Content>
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={props.date}
+              mode={"date"}
+              onChange={onChange}
+              display={"inline"}
+            />
+          </BaseDialog.Content>
+        </BaseDialog>
+      ) : (
+        show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={props.date}
+            mode={"date"}
+            onChange={onChange}
+            display={"default"}
+          />
+        )
       )}
     </View>
   );

@@ -222,10 +222,16 @@ const TransactionsScreen = ({
     const fileUri =
       directoryUri +
       `Laporan_${storeSettings?.name}_${toFormattedDate(
-        dateRange.start
-      )}-${toFormattedDate(dateRange.end)}.csv`;
+        dateRange.start,
+        false,
+        "-"
+      )}_${toFormattedDate(dateRange.end, false, "-")}.csv`;
 
-    await FileSystem.writeAsStringAsync(fileUri, CSV, { encoding: "utf8" });
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, CSV, { encoding: "utf8" });
+    } catch (error) {
+      console.log(error);
+    }
 
     const canShare = await Sharing.isAvailableAsync();
     if (canShare) {

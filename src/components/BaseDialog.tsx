@@ -1,8 +1,10 @@
+import { StyleProp, ViewStyle } from "react-native";
 import { Dialog, Portal } from "react-native-paper";
 
 type CommonProps = {
   visible: boolean;
   children: React.JSX.Element[] | React.JSX.Element;
+  style?: StyleProp<ViewStyle>;
 };
 
 interface DismissableDialog extends CommonProps {
@@ -21,12 +23,20 @@ const BaseDialog = (props: BaseDialogProps) => {
   return (
     <Portal>
       <Dialog
-        visible={props.visible}
-        style={{
-          backgroundColor: "white",
-          width: "50%",
-          alignSelf: "center",
+        theme={{
+          colors: {
+            backdrop: "transparent",
+          },
         }}
+        visible={props.visible}
+        style={[
+          {
+            backgroundColor: "white",
+            width: "50%",
+            alignSelf: "center",
+          },
+          props.style,
+        ]}
         {...(props.dismissable
           ? {
               dismissable: props.dismissable,

@@ -10,12 +10,13 @@ export const toNumber = (value: string): number =>
 
 export const toFormattedDate = (
   value: Date,
-  asToday: boolean = false
+  asToday: boolean = false,
+  separator: string = "/"
 ): string => {
   if (asToday && value.toDateString() == new Date().toDateString())
     return "Hari ini";
 
-  return moment(value).format("DD/MM/YYYY");
+  return moment(value).format(`DD${separator}MM${separator}YYYY`);
 };
 
 export const toFormattedTime = (value: Date): string => {
