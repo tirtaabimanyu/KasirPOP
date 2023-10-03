@@ -11,6 +11,7 @@ const TransactionSerializer = class {
     paymentType: transaction.paymentType,
     products: transaction.products,
     queueNumber: transaction.queueNumber,
+    tableNumber: transaction.tableNumber,
   });
 
   static serializeMany = (

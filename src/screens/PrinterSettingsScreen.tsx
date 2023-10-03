@@ -54,7 +54,6 @@ const PrinterSettingsScreen = ({
   const printerService = new StarPrinterService();
 
   const initialData = {
-    autoPrintReceipt: printerSettings.autoPrintReceipt,
     showLogo: printerSettings.showLogo,
     showQueueNumber: printerSettings.showQueueNumber,
     paperSize: printerSettings.paperSize,
@@ -88,7 +87,11 @@ const PrinterSettingsScreen = ({
   };
   const content = new ReceiptFormatter().format(
     mockTransaction,
-    newPrinterSettings,
+    {
+      ...newPrinterSettings,
+      autoPrintReceipt: printerSettings.autoPrintReceipt,
+      autoPrintKitchenReceipt: printerSettings.autoPrintKitchenReceipt,
+    },
     storeSettings
   );
 
@@ -151,6 +154,7 @@ const PrinterSettingsScreen = ({
         data: {
           printerSettings: {
             autoPrintReceipt: false,
+            autoPrintKitchenReceipt: false,
             printerIdentifier: null,
             printerInterfaceType: null,
             printerName: null,
@@ -301,28 +305,13 @@ const PrinterSettingsScreen = ({
           }}
           contentStyle={{ padding: 16 }}
         >
-          <Text variant="titleMedium">Struk</Text>
+          <Text variant="titleMedium">Desain Struk</Text>
           <Divider
             style={{
               marginVertical: 16,
               backgroundColor: theme.colors.outlineVariant,
             }}
           />
-          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
-            <Text variant="bodyMedium">
-              Otomatis Cetak Struk Setelah Pembayaran
-            </Text>
-            <Switch
-              value={newPrinterSettings.autoPrintReceipt}
-              onValueChange={() =>
-                setNewPrinterSettings((state) => ({
-                  ...state,
-                  autoPrintReceipt: !state.autoPrintReceipt,
-                }))
-              }
-              disabled={printerSettings.printerIdentifier == undefined}
-            />
-          </Row>
           <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
             <Text variant="bodyMedium">Tampilkan Logo Toko</Text>
             <Switch
@@ -429,6 +418,72 @@ const PrinterSettingsScreen = ({
           >
             Simpan
           </Button>
+        </Card>
+        <Card
+          mode="outlined"
+          style={{
+            backgroundColor: "white",
+            borderColor: theme.colors.outlineVariant,
+            marginBottom: 24,
+          }}
+          contentStyle={{ padding: 16 }}
+        >
+          <Text variant="titleMedium" style={{ marginBottom: 16 }}>
+            Mekanisme Cetak Struk
+          </Text>
+          <Divider
+            style={{
+              marginVertical: 16,
+              backgroundColor: theme.colors.outlineVariant,
+            }}
+          />
+          <Text variant="bodyMedium">
+            Jika dinyalakan, struk akan dicetak otomatis setelah pembayaran.
+          </Text>
+          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+            <Text variant="bodyMedium">Struk Pelanggan</Text>
+            <Switch
+              value={printerSettings.autoPrintReceipt}
+              onValueChange={(value) => {
+                dispatch(
+                  updateSettings({
+                    data: { printerSettings: { autoPrintReceipt: value } },
+                    service: settingsService,
+                  })
+                ).then(() => {
+                  dispatch(
+                    showSnackbar({
+                      message: "Pengaturan struk telah diperbarui",
+                    })
+                  );
+                });
+              }}
+              disabled={printerSettings.printerIdentifier == undefined}
+            />
+          </Row>
+          <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+            <Text variant="bodyMedium">Struk Dapur</Text>
+            <Switch
+              value={printerSettings.autoPrintKitchenReceipt}
+              onValueChange={(value) => {
+                dispatch(
+                  updateSettings({
+                    data: {
+                      printerSettings: { autoPrintKitchenReceipt: value },
+                    },
+                    service: settingsService,
+                  })
+                ).then(() => {
+                  dispatch(
+                    showSnackbar({
+                      message: "Pengaturan struk telah diperbarui",
+                    })
+                  );
+                });
+              }}
+              disabled={printerSettings.printerIdentifier == undefined}
+            />
+          </Row>
         </Card>
         <Card
           mode="outlined"

@@ -34,6 +34,9 @@ export class PrinterSettingsModel {
   @Column({ default: false })
   autoPrintReceipt: boolean;
 
+  @Column({ default: false })
+  autoPrintKitchenReceipt: boolean;
+
   @Column({ default: "" })
   footerLink: string;
 

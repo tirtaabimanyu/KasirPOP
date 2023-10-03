@@ -29,6 +29,7 @@ const SettingsSerializer = class {
       showLogo: data.printerSettings.showLogo,
       showQueueNumber: data.printerSettings.showQueueNumber,
       autoPrintReceipt: data.printerSettings.autoPrintReceipt,
+      autoPrintKitchenReceipt: data.printerSettings.autoPrintKitchenReceipt,
     },
   });
 

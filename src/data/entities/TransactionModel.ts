@@ -30,4 +30,7 @@ export class TransactionModel {
 
   @Column()
   queueNumber: number;
+
+  @Column({ type: "integer", nullable: true })
+  tableNumber?: number | null;
 }

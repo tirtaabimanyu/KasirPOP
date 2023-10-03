@@ -77,6 +77,7 @@ export type TransactionData = {
   paymentType: PaymentType;
   products: ProductSnapshotData[];
   queueNumber: number;
+  tableNumber?: number | null;
 };
 
 export type CreateTransactionData = {
@@ -86,6 +87,7 @@ export type CreateTransactionData = {
   paymentType: PaymentType;
   products: CartItemData[];
   queueNumber: number;
+  tableNumber?: number | null;
 };
 
 // Settings
@@ -133,6 +135,7 @@ export type PrinterSettingsData = {
   showLogo: boolean;
   showQueueNumber: boolean;
   autoPrintReceipt: boolean;
+  autoPrintKitchenReceipt: boolean;
 };
 
 export type UpdatePrinterSettingsData = {
@@ -146,6 +149,7 @@ export type UpdatePrinterSettingsData = {
   showLogo?: boolean;
   showQueueNumber?: boolean;
   autoPrintReceipt?: boolean;
+  autoPrintKitchenReceipt?: boolean;
 };
 
 export type CombinedSettingsData = {

@@ -5,6 +5,7 @@ import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import Row from "../../components/Row";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/routes";
+import { ScrollView } from "react-native-gesture-handler";
 
 const TutorialScreen = (
   props: NativeStackScreenProps<RootStackParamList, "tutorial">
@@ -31,7 +32,13 @@ const TutorialScreen = (
   const carouselRef = useRef<ICarouselInstance>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   return (
-    <View style={{ flex: 1, paddingHorizontal: 32, paddingBottom: 32 }}>
+    <ScrollView
+      contentContainerStyle={{
+        flex: 1,
+        paddingHorizontal: 32,
+        paddingBottom: 32,
+      }}
+    >
       <Carousel
         ref={carouselRef}
         loop={false}
@@ -88,7 +95,7 @@ const TutorialScreen = (
           {currentIndex == data.length - 1 ? "Selesai Tutorial" : "Selanjutnya"}
         </Button>
       </Row>
-    </View>
+    </ScrollView>
   );
 };
 
