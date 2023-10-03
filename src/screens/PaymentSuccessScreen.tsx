@@ -1,5 +1,12 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Card, List, Text, useTheme } from "react-native-paper";
+import {
+  Button,
+  ButtonProps,
+  Card,
+  List,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { RootStackParamList } from "../types/routes";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -9,15 +16,7 @@ import { PaymentType } from "../types/data";
 import { toRupiah } from "../utils/formatUtils";
 import { useAppSelector } from "../hooks/typedStore";
 import { StarPrinterService } from "../services/StarPrinterService";
-import {
-  StarIO10CommunicationError,
-  StarIO10IllegalDeviceStateError,
-  StarIO10NotFoundError,
-  StarIO10UnprintableError,
-} from "kasirbodoh-star-io10";
-import BaseDialog from "../components/BaseDialog";
-import useDialog from "../hooks/useDialog";
-import { useState } from "react";
+import PrintButton from "../components/PrintButton";
 
 const PaymentSuccessScreen = ({
   navigation,
@@ -29,100 +28,10 @@ const PaymentSuccessScreen = ({
     (state) => state.settings
   );
 
-  const [connectErrorDialog, showConnectErrorDialog, hideConnectErrorDialog] =
-    useDialog();
-  const [printErrorDialog, showPrintErrorDialog, hidePrintErrorDialog] =
-    useDialog();
-
-  const [isPrinting, setIsPrinting] = useState(false);
-
-  const onPressPrint = async () => {
-    const printerService = new StarPrinterService();
-    try {
-      setIsPrinting(true);
-      await printerService.printReceipt(
-        transactionData,
-        printerSettings,
-        storeSettings
-      );
-    } catch (error) {
-      if (
-        error instanceof StarIO10IllegalDeviceStateError ||
-        error instanceof StarIO10CommunicationError ||
-        error instanceof StarIO10NotFoundError
-      ) {
-        showConnectErrorDialog();
-      } else if (error instanceof StarIO10UnprintableError) {
-        showPrintErrorDialog();
-      }
-    } finally {
-      setIsPrinting(false);
-    }
-  };
-
   return (
     <ScrollView
       contentContainerStyle={{ paddingHorizontal: 32, paddingVertical: 16 }}
     >
-      <BaseDialog
-        visible={connectErrorDialog}
-        dismissable
-        onDismiss={hideConnectErrorDialog}
-      >
-        <BaseDialog.Title>
-          <Text variant="headlineSmall">Printer tidak terhubung</Text>
-        </BaseDialog.Title>
-        <BaseDialog.Content>
-          <Text>
-            {`Pastikan beberapa hal di bawah ini lalu klik Cetak Ulang Struk:\n` +
-              ` - Printer sudah menyala\n` +
-              ` - Bluetooth perangkat ini aktif\n` +
-              ` - Printer sudah terhubung dengan perangkat ini\n` +
-              `\nJika Anda ingin melanjutkan semua transaksi tanpa cetak struk, matikan Otomatis Cetak pada Pengaturan Struk & Printer.`}
-          </Text>
-        </BaseDialog.Content>
-        <BaseDialog.Actions>
-          {/* <Button style={{ marginRight: 8 }}>Lanjutkan Tanpa Struk</Button> */}
-          <Button
-            mode="contained"
-            style={{ paddingHorizontal: 24 }}
-            onPress={() => {
-              hideConnectErrorDialog();
-              onPressPrint();
-            }}
-          >
-            Cetak Ulang Struk
-          </Button>
-        </BaseDialog.Actions>
-      </BaseDialog>
-      <BaseDialog
-        visible={printErrorDialog}
-        dismissable
-        onDismiss={hidePrintErrorDialog}
-      >
-        <BaseDialog.Title>
-          <Text variant="headlineSmall">Cetak Struk Gagal</Text>
-        </BaseDialog.Title>
-        <BaseDialog.Content>
-          <Text>
-            {`Pastikan beberapa hal di bawah ini lalu klik Cetak Ulang Struk:\n` +
-              ` - Printer memiliki kertas struk`}
-          </Text>
-        </BaseDialog.Content>
-        <BaseDialog.Actions>
-          {/* <Button style={{ marginRight: 8 }}>Lanjutkan Tanpa Struk</Button> */}
-          <Button
-            mode="contained"
-            style={{ paddingHorizontal: 24 }}
-            onPress={() => {
-              hidePrintErrorDialog();
-              onPressPrint();
-            }}
-          >
-            Cetak Ulang Struk
-          </Button>
-        </BaseDialog.Actions>
-      </BaseDialog>
       <View style={{ alignItems: "center", marginBottom: 16 }}>
         <MaterialCommunityIcons
           name="check"
@@ -159,40 +68,83 @@ const PaymentSuccessScreen = ({
         </Row>
         <Row style={{ justifyContent: "space-between" }}>
           <Text variant="bodyLarge">Kembalian</Text>
-          <Text variant="bodyLarge">{toRupiah(transactionData.change)}</Text>
+          <Text
+            variant="titleLarge"
+            style={{ color: theme.colors.onPrimaryContainer }}
+          >
+            {toRupiah(transactionData.change)}
+          </Text>
         </Row>
       </Card>
       {printerSettings.printerIdentifier && (
-        <Card
-          mode="outlined"
-          style={{
-            backgroundColor: "white",
-            borderColor: theme.colors.outlineVariant,
-            marginBottom: 24,
-          }}
-        >
-          <List.Item
-            title={printerSettings.printerName}
-            left={(props) => <List.Icon {...props} icon={"printer-check"} />}
-            right={(props) => (
-              <Row {...props}>
+        <>
+          <Card
+            mode="outlined"
+            style={{
+              backgroundColor: "white",
+              borderColor: theme.colors.outlineVariant,
+              marginBottom: 24,
+            }}
+            contentStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 16,
+            }}
+          >
+            <Row style={{ justifyContent: "space-between", marginBottom: 16 }}>
+              <Text variant="bodyLarge">Struk Pelanggan</Text>
+              <PrintButton
+                mode="outlined"
+                onPressPrint={async () => {
+                  const printerService = new StarPrinterService();
+                  await printerService.printReceipt(
+                    transactionData,
+                    printerSettings,
+                    storeSettings
+                  );
+                }}
+              >
+                Cetak Struk Pelanggan
+              </PrintButton>
+            </Row>
+            <Row style={{ justifyContent: "space-between" }}>
+              <Text variant="bodyLarge">Struk Dapur</Text>
+              <PrintButton
+                mode="outlined"
+                onPressPrint={async () => {
+                  const printerService = new StarPrinterService();
+                  await printerService.printKitchenReceipt(
+                    transactionData,
+                    printerSettings
+                  );
+                }}
+              >
+                Cetak Struk Dapur
+              </PrintButton>
+            </Row>
+          </Card>
+          <Card
+            mode="outlined"
+            style={{
+              backgroundColor: "white",
+              borderColor: theme.colors.outlineVariant,
+              marginBottom: 24,
+            }}
+          >
+            <List.Item
+              title={printerSettings.printerName}
+              left={(props) => <List.Icon {...props} icon={"printer-check"} />}
+              right={(props) => (
                 <Button
+                  {...props}
                   onPress={() => navigation.navigate("printerSettings")}
                   style={{ marginRight: 16 }}
                 >
                   Ubah Printer
                 </Button>
-                <Button
-                  mode="outlined"
-                  onPress={onPressPrint}
-                  loading={isPrinting}
-                >
-                  Cetak Struk
-                </Button>
-              </Row>
-            )}
-          />
-        </Card>
+              )}
+            />
+          </Card>
+        </>
       )}
       <Button
         mode="contained"

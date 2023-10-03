@@ -6,6 +6,7 @@ import {
 } from "../types/data";
 import {
   toFormattedDate,
+  toFormattedDateTime,
   toFormattedTime,
   toRupiah,
 } from "../utils/formatUtils";
@@ -299,5 +300,46 @@ export class ReceiptFormatter {
     const footer = this.buildFooter(printerSettings);
 
     return [...header, ...content, ...footer];
+  }
+
+  public formatKitchen(
+    transaction: TransactionData,
+    printerSettings: PrinterSettingsData
+  ) {
+    const characterPerLine = this._characterPerLine[printerSettings.paperSize];
+
+    const content = [];
+    content.push({
+      type: ReceiptRowType.TEXT,
+      str: this.spaceBetween(
+        `Antrian : ${transaction.queueNumber}`,
+        `Meja : ${transaction.tableNumber || ""}`,
+        characterPerLine
+      ),
+    });
+    content.push({
+      type: ReceiptRowType.TEXT,
+      str: this.breakWord(
+        `${toFormattedDateTime(new Date(transaction.createdAt))}`,
+        characterPerLine,
+        ReceiptRowAlign.LEFT
+      ),
+    });
+    content.push({
+      type: ReceiptRowType.TEXT,
+      str: this.lineBreak(characterPerLine, "-"),
+    });
+    transaction.products.forEach((product) => {
+      content.push({
+        type: ReceiptRowType.TEXT,
+        str: this.breakWord(
+          `${product.quantity} ${product.name}`,
+          characterPerLine,
+          ReceiptRowAlign.LEFT
+        ),
+      });
+    });
+
+    return content;
   }
 }

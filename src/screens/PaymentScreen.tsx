@@ -20,7 +20,7 @@ import {
   fetchQueueNumber,
 } from "../redux/slices/transactionSlice";
 import { useDatabaseConnection } from "../data/connection";
-import { PaymentType } from "../types/data";
+import { CreateTransactionData, PaymentType } from "../types/data";
 import FloatingRecap from "../components/FloatingRecap";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
@@ -117,18 +117,10 @@ const PaymentScreen = ({
   const [printErrorDialog, showPrintErrorDialog, hidePrintErrorDialog] =
     useDialog();
 
-  const onCreateTransaction = async () => {
+  const onCreateTransaction = async (data: CreateTransactionData) => {
     const transactionData = await dispatch(
       createTransaction({
-        data: {
-          products: Object.values(cart.products),
-          totalPrice: cart.totalPrice,
-          moneyReceived: moneyReceived,
-          change: totalChange,
-          paymentType: paymentType,
-          queueNumber: queueNumber,
-          tableNumber: cart.tableNumber,
-        },
+        data,
         services: services,
       })
     ).unwrap();
@@ -138,7 +130,7 @@ const PaymentScreen = ({
 
   const [isPrinting, setIsPrinting] = useState(false);
 
-  const onPressPay = async () => {
+  const onPressPay = async (withReceipt: boolean = true) => {
     const data = {
       createdAt: new Date().toISOString(),
       products: Object.values(cart.products),
@@ -147,35 +139,48 @@ const PaymentScreen = ({
       change: totalChange,
       paymentType: paymentType,
       queueNumber: queueNumber,
+      tableNumber: cart.tableNumber,
     };
 
-    if (printerSettings.autoPrintReceipt && printerSettings.printerIdentifier) {
+    try {
+      setIsPrinting(true);
       const printerService = new StarPrinterService();
-      try {
-        setIsPrinting(true);
+      if (
+        withReceipt &&
+        printerSettings.autoPrintReceipt &&
+        printerSettings.printerIdentifier
+      ) {
         await printerService.printReceipt(
           { ...data, id: 0 },
           printerSettings,
           storeSettings
         );
-        onCreateTransaction();
-      } catch (error) {
-        if (
-          error instanceof StarIO10IllegalDeviceStateError ||
-          error instanceof StarIO10CommunicationError ||
-          error instanceof StarIO10NotFoundError
-        ) {
-          showConnectErrorDialog();
-        } else if (error instanceof StarIO10UnprintableError) {
-          showPrintErrorDialog();
-        } else {
-          console.log(error);
-        }
-      } finally {
-        setIsPrinting(false);
       }
-    } else {
-      onCreateTransaction();
+      if (
+        withReceipt &&
+        printerSettings.autoPrintKitchenReceipt &&
+        printerSettings.printerIdentifier
+      ) {
+        await printerService.printKitchenReceipt(
+          { ...data, id: 0 },
+          printerSettings
+        );
+      }
+      onCreateTransaction(data);
+    } catch (error) {
+      if (
+        error instanceof StarIO10IllegalDeviceStateError ||
+        error instanceof StarIO10CommunicationError ||
+        error instanceof StarIO10NotFoundError
+      ) {
+        showConnectErrorDialog();
+      } else if (error instanceof StarIO10UnprintableError) {
+        showPrintErrorDialog();
+      } else {
+        console.log(error);
+      }
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -203,7 +208,7 @@ const PaymentScreen = ({
             style={{ marginRight: 8 }}
             onPress={() => {
               hideConnectErrorDialog();
-              onCreateTransaction();
+              onPressPay(false);
             }}
           >
             Lanjutkan Tanpa Struk
@@ -239,7 +244,7 @@ const PaymentScreen = ({
             style={{ marginRight: 8 }}
             onPress={() => {
               hidePrintErrorDialog();
-              onCreateTransaction();
+              onPressPay(false);
             }}
           >
             Lanjutkan Tanpa Struk

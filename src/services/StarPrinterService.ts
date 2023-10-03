@@ -17,6 +17,7 @@ import {
 } from "../types/data";
 import {
   ReceiptFormatter,
+  ReceiptRow,
   ReceiptRowAlign,
   ReceiptRowType,
 } from "./ReceiptFormatter";
@@ -117,10 +118,10 @@ export class StarPrinterService {
     await this._discoveryManager?.stopDiscovery();
   }
 
-  async printReceipt(
-    transaction: TransactionData,
+  async print(
+    receiptRows: ReceiptRow[],
     printerSettings: PrinterSettingsData,
-    storeSettings?: StoreSettingsData
+    addDrawer: boolean = false
   ) {
     var settings = new StarConnectionSettings();
     settings.interfaceType =
@@ -143,7 +144,7 @@ export class StarPrinterService {
     try {
       let commandBuilder = new StarXpandCommand.StarXpandCommandBuilder();
       let documentBuilder = new StarXpandCommand.DocumentBuilder();
-      if (transaction.paymentType == PaymentType.CASH)
+      if (addDrawer)
         documentBuilder.addDrawer(
           new StarXpandCommand.DrawerBuilder().actionOpen(
             new StarXpandCommand.Drawer.OpenParameter().setChannel(
@@ -159,11 +160,6 @@ export class StarPrinterService {
         .styleCharacterSpace(0)
         .styleAlignment(StarXpandCommand.Printer.Alignment.Center);
 
-      const receiptRows = new ReceiptFormatter().format(
-        transaction,
-        printerSettings,
-        storeSettings
-      );
       receiptRows.forEach((row) => {
         if (row.align == ReceiptRowAlign.CENTER) {
           printerBuilder = printerBuilder.styleAlignment(
@@ -222,5 +218,33 @@ export class StarPrinterService {
       await printer.close();
       await printer.dispose();
     }
+  }
+
+  async printReceipt(
+    transaction: TransactionData,
+    printerSettings: PrinterSettingsData,
+    storeSettings?: StoreSettingsData
+  ) {
+    const receiptRows = new ReceiptFormatter().format(
+      transaction,
+      printerSettings,
+      storeSettings
+    );
+    await this.print(
+      receiptRows,
+      printerSettings,
+      transaction.paymentType == PaymentType.CASH
+    );
+  }
+
+  async printKitchenReceipt(
+    transaction: TransactionData,
+    printerSettings: PrinterSettingsData
+  ) {
+    const receiptRows = new ReceiptFormatter().formatKitchen(
+      transaction,
+      printerSettings
+    );
+    await this.print(receiptRows, printerSettings);
   }
 }
