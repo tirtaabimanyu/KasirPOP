@@ -30,6 +30,7 @@ import useDialog from "../hooks/useDialog";
 import { ReceiptFormatter, ReceiptRowType } from "../services/ReceiptFormatter";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/routes";
+import PrintButton from "../components/PrintButton";
 
 const FixedWidthText = (props: TextProps<string>) => {
   const { children, style, ...rest } = props;
@@ -169,9 +170,9 @@ const PrinterSettingsScreen = ({
     );
   };
 
-  const onPressPrintSample = () => {
+  const onPressPrintSample = async () => {
     const printerService = new StarPrinterService();
-    printerService.printReceipt(
+    await printerService.printReceipt(
       mockTransaction,
       printerSettings,
       storeSettings
@@ -287,13 +288,13 @@ const PrinterSettingsScreen = ({
             `dan Nomor Telepon Toko dapat dilakukan\n` +
             `di menu Informasi Toko`}
         </Text>
-        <Button
+        <PrintButton
           mode="contained"
-          onPress={onPressPrintSample}
+          onPressPrint={onPressPrintSample}
           disabled={printerSettings.printerIdentifier == undefined}
         >
-          Cetak struk sampel
-        </Button>
+          Cetak Struk Sampel
+        </PrintButton>
       </View>
       <View style={styles(theme).rightContainer}>
         <Card
