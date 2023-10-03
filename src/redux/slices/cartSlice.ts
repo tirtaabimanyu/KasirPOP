@@ -8,6 +8,7 @@ export type CartState = {
   };
   totalPrice: number;
   totalItem: number;
+  tableNumber?: number;
 };
 
 const initialState: CartState = { products: {}, totalPrice: 0, totalItem: 0 };
@@ -60,11 +61,19 @@ export const cartSlice = createSlice({
       }
     },
     resetCart: () => initialState,
+    updateTableNumber: (state, action: PayloadAction<number>) => {
+      state.tableNumber = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addToCart, removeFromCart, updateCartAmount, resetCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  updateCartAmount,
+  resetCart,
+  updateTableNumber,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

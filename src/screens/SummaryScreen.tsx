@@ -1,22 +1,31 @@
 import { StyleSheet, View } from "react-native";
-import { Button, MD3Theme, Text, useTheme } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Divider,
+  List,
+  MD3Theme,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import CashierItem from "../components/CashierItem";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { useAppDispatch, useAppSelector } from "../hooks/typedStore";
 import {
   CartState,
   addToCart,
   removeFromCart,
+  updateTableNumber,
 } from "../redux/slices/cartSlice";
 import { useEffect } from "react";
-import { toRupiah } from "../utils/formatUtils";
+import { toNumber, toRupiah } from "../utils/formatUtils";
 import { AppDispatch } from "../redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ProductData } from "../types/data";
 import { RootStackParamList } from "../types/routes";
 import FloatingRecap from "../components/FloatingRecap";
-
-const RowSeparator = () => <View style={{ height: 12 }} />;
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const NormalizedCashierItem = ({
   itemData,
@@ -36,6 +45,7 @@ const NormalizedCashierItem = ({
       onPressDecrease={() => dispatch(removeFromCart(itemData))}
       onPressIncrease={() => dispatch(addToCart(itemData))}
       cartQuantity={cartQuantity}
+      style={{ marginBottom: 16 }}
     />
   );
 };
@@ -45,6 +55,7 @@ const SummaryScreen = ({
 }: NativeStackScreenProps<RootStackParamList, "summary">) => {
   const theme = useTheme();
   const cartState = useAppSelector((state) => state.cart);
+  const { printerSettings } = useAppSelector((state) => state.settings);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -53,19 +64,69 @@ const SummaryScreen = ({
 
   return (
     <View style={styles(theme).container}>
-      <FlatList
-        contentContainerStyle={{ paddingBottom: 200, paddingTop: 24 }}
-        renderItem={({ item }) => (
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 200 }}
+        automaticallyAdjustKeyboardInsets
+        showsVerticalScrollIndicator={false}
+      >
+        {Object.values(cartState.products).map((product, idx) => (
           <NormalizedCashierItem
-            itemData={item}
+            key={`cart-${idx}`}
+            itemData={product}
             cart={cartState}
             dispatch={dispatch}
           />
+        ))}
+        {printerSettings.printerIdentifier && (
+          <Card
+            mode="outlined"
+            style={{
+              flex: 1,
+              backgroundColor: "white",
+              borderColor: theme.colors.outlineVariant,
+            }}
+            contentStyle={{
+              flex: 1,
+              justifyContent: "space-between",
+            }}
+          >
+            <List.Accordion
+              title={<Text variant="titleMedium">Informasi Tambahan</Text>}
+              right={({ isExpanded }) => (
+                <MaterialCommunityIcons
+                  name={isExpanded ? "chevron-up" : "chevron-down"}
+                  size={24}
+                />
+              )}
+              style={{ paddingRight: 16, backgroundColor: "white" }}
+            >
+              <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+                <Divider style={{ marginBottom: 16 }} />
+                <TextInput
+                  mode="outlined"
+                  label="Nomor Meja (Opsional)"
+                  style={{ backgroundColor: "white" }}
+                  disabled={!printerSettings.autoPrintKitchenReceipt}
+                  keyboardType="numeric"
+                  onChangeText={(text) =>
+                    dispatch(updateTableNumber(toNumber(text)))
+                  }
+                />
+                {!printerSettings.autoPrintKitchenReceipt && (
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.onSurfaceDisabled }}
+                  >
+                    Untuk menambahkan nomor meja, nyalakan opsi Cetak Struk
+                    Dapur di Pengaturan Stuk & Printer
+                  </Text>
+                )}
+              </View>
+            </List.Accordion>
+          </Card>
         )}
-        data={Object.values(cartState.products)}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={RowSeparator}
-      />
+      </ScrollView>
       <FloatingRecap
         contentText={`${cartState.totalItem} Produk • ${toRupiah(
           cartState.totalPrice

@@ -127,6 +127,7 @@ const PaymentScreen = ({
           change: totalChange,
           paymentType: paymentType,
           queueNumber: queueNumber,
+          tableNumber: cart.tableNumber,
         },
         services: services,
       })
