@@ -107,21 +107,11 @@ const SummaryScreen = ({
                   mode="outlined"
                   label="Nomor Meja (Opsional)"
                   style={{ backgroundColor: "white" }}
-                  disabled={!printerSettings.autoPrintKitchenReceipt}
                   keyboardType="numeric"
                   onChangeText={(text) =>
                     dispatch(updateTableNumber(toNumber(text)))
                   }
                 />
-                {!printerSettings.autoPrintKitchenReceipt && (
-                  <Text
-                    variant="bodySmall"
-                    style={{ color: theme.colors.onSurfaceDisabled }}
-                  >
-                    Untuk menambahkan nomor meja, nyalakan opsi Cetak Struk
-                    Dapur di Pengaturan Stuk & Printer
-                  </Text>
-                )}
               </View>
             </List.Accordion>
           </Card>
