@@ -30,7 +30,7 @@ import {
   StarIO10IllegalDeviceStateError,
   StarIO10NotFoundError,
   StarIO10UnprintableError,
-} from "kasirbodoh-star-io10";
+} from "kasirpop-star-io10";
 
 const PaymentScreen = ({
   navigation,

@@ -15,7 +15,7 @@ import {
   StarDeviceDiscoveryManager,
   StarDeviceDiscoveryManagerFactory,
   StarPrinter,
-} from "kasirbodoh-star-io10";
+} from "kasirpop-star-io10";
 
 interface AppProps {}
 

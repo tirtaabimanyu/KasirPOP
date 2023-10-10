@@ -4,7 +4,7 @@ import {
   StarIO10IllegalDeviceStateError,
   StarIO10NotFoundError,
   StarIO10UnprintableError,
-} from "kasirbodoh-star-io10";
+} from "kasirpop-star-io10";
 import BaseDialog from "../components/BaseDialog";
 import useDialog from "../hooks/useDialog";
 import { useState } from "react";

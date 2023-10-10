@@ -7,7 +7,7 @@ import {
   StarPrinter,
   StarPrinterModel,
   StarXpandCommand,
-} from "kasirbodoh-star-io10";
+} from "kasirpop-star-io10";
 import { PermissionsAndroid, Platform } from "react-native";
 import {
   PaymentType,
