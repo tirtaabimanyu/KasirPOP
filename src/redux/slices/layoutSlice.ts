@@ -1,12 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { LayoutOrientation } from "../../hooks/useCheckOrientation";
 
 export type SnackBarPayload = { message: string; duration?: number };
 export type LayoutState = {
   snackbar: { visible: boolean; message: string; duration: number };
+  orientation: LayoutOrientation;
 };
 
 const initialState: LayoutState = {
   snackbar: { visible: false, message: "", duration: 3000 },
+  orientation: "portrait",
 };
 
 export const layoutSlice = createSlice({
@@ -22,10 +25,14 @@ export const layoutSlice = createSlice({
     hideSnackbar: (state) => {
       state.snackbar.visible = false;
     },
+    updateOrientation: (state, action: PayloadAction<LayoutOrientation>) => {
+      state.orientation = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { showSnackbar, hideSnackbar } = layoutSlice.actions;
+export const { showSnackbar, hideSnackbar, updateOrientation } =
+  layoutSlice.actions;
 
 export default layoutSlice.reducer;

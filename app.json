@@ -3,7 +3,6 @@
     "name": "KasirPOP",
     "slug": "KasirPOP",
     "version": "0.1.0",
-    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
@@ -19,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "light",
-      "bundleIdentifier": "com.tirtaabimanyu.kasirpop",
+      "bundleIdentifier": "com.hilyafesmia.kasirpop",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "This app need a bluetooth connection to discover bluetooth printers."
       }
@@ -63,7 +62,13 @@
         }
       ],
       ["./plugins/withDisableForcedDarkModeAndroid.js", {}],
-      ["./plugins/withRemoveiOSNotificationEntitlement.js", {}]
+      ["./plugins/withRemoveiOSNotificationEntitlement.js", {}],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ]
     ]
   }
 }

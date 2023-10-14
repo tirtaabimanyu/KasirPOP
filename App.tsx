@@ -21,6 +21,9 @@ import { fetchSettings } from "./src/redux/slices/settingsSlice";
 import FullscreenSpinner from "./src/components/FullscreenSpinner";
 import { fetchQueueNumber } from "./src/redux/slices/transactionSlice";
 import { View } from "react-native";
+import { unlockAsync } from "expo-screen-orientation";
+import useCheckOrientation from "./src/hooks/useCheckOrientation";
+import { updateOrientation } from "./src/redux/slices/layoutSlice";
 
 const Init = () => {
   const theme = useTheme();
@@ -44,8 +47,15 @@ const Init = () => {
       setIsReady(true);
     };
 
+    unlockAsync();
     fetch();
   }, []);
+
+  const orientation = useCheckOrientation();
+
+  useEffect(() => {
+    dispatch(updateOrientation(orientation));
+  }, [orientation]);
 
   const insets = useSafeAreaInsets();
   return isReady ? (
