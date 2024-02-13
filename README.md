@@ -18,4 +18,18 @@ KasirPOP is a fully offline Point of Sale (POS) application for Android and iOS.
 
 # How to build the app
 
-Please refer to this tutorial on how to build an expo project. [Create your first build](https://docs.expo.dev/build/setup/).
+### Using Expo
+
+Please refer to this tutorial on how to build an expo project: [Create your first build](https://docs.expo.dev/build/setup/)
+
+### Using Android Studio or Xcode
+
+1. Generate the android and ios app by running this command
+
+```
+npx expo prebuild
+```
+
+2. Follow these tutorials for further instructions
+   - Android Studio: [Build and run your app](https://developer.android.com/studio/run)
+   - Xcode: [Building and running an app](https://developer.apple.com/documentation/xcode/building-and-running-an-app)
