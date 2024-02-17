@@ -2,6 +2,8 @@
 
 # About
 
+<img src="./assets/Demo.gif" alt="Demo" loop=infinite>
+
 KasirPOP is a fully offline Point of Sale (POS) application for Android and iOS. Say goodbye to connectivity woes and hello to seamless transactions with KasirPOP. Our innovative Point of Sale (POS) solution is designed to cater to the needs of businesses in any environment, even when internet access is limited or unavailable.
 
 # Features
